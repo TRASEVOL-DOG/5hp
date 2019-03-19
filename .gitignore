@@ -1,3 +1,9 @@
+todo_list.txt
+
+# Castle network lua files
+bitser.lua
+serpent.lua
+
 # Compiled Lua sources
 luac.out
 
