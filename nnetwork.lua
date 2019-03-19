@@ -349,3 +349,70 @@ end
 
 
 
+-- look-up table
+
+
+-- client.home = {
+--   [1] = timestamp,
+--   
+--   [2] = player_dx_input,
+--   [3] = player_dy_input,
+--   [4] = player_shoot_id,
+--   [5] = player_angle,
+--   
+--   [6] = client_delay,
+--   [7] = player_name,
+--   
+--   [8] = local_player_position_x,
+--   [9] = local_player_position_y
+-- }
+
+
+-- server.share = {
+--   [1] = client_timestamps,
+--
+--   [2] = { -- player data
+--     [player_id] = {
+--       [1] = x,
+--       [2] = y,
+--       [3] = v.x,
+--       [4] = v.y,
+--       [5] = alive,
+--       [6] = angle,
+--       [7] = score,
+--       [8] = name,
+--       [9] = last_killer_id
+--     },
+--     ...
+--   },
+--   [3] = { -- bullet_data
+--     [bullet_id] = {
+--       [1] = x,
+--       [2] = y,
+--       [3] = v.x,
+--       [4] = v.y,
+--       [5] = from_player_id
+--     },
+--     ...
+--   },
+--   [4] = { -- destroyable_data
+--     [destro_id] = {
+--       [1] = x,
+--       [2] = y,
+--       [3] = alive,
+--       [4] = killer_id
+--     },
+--     ...
+--   }
+-- }
+
+
+-- server.share : server write
+-- server.homes : server read -> { [client_id] = client_home, ... }
+-- 
+-- client.share : client read
+-- client.home  : client write
+-- 
+-- client.connected
+-- client.id
+
