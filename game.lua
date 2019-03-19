@@ -17,6 +17,7 @@ require("fx")
 require("map")
 require("player")
 require("destroyable")
+require("loot")
 require("bullet")
 require("wind")
 require("leaderboard")
@@ -35,6 +36,7 @@ function _init()
     "player",
     "bullet",
     "destroyable",
+    "loot",
     "wind"
   )
 
@@ -138,7 +140,7 @@ function _draw()
   
   draw_menu()
   
-  -- draw_debug()
+  draw_debug()
   
   cursor:draw()
 end

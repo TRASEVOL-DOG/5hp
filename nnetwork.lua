@@ -99,6 +99,11 @@ function client_output()
     
     client.home[8] = flr(my_player.x + my_player.diff_x)
     client.home[9] = flr(my_player.y + my_player.diff_y)
+    
+    client.home[10]= false
+    
+    client.home[11]= my_player.weapon_type
+    
   end
 end
 
@@ -263,6 +268,10 @@ function server_input()
           end
         end
       end
+      
+      player.crowned = ho[10] or false
+      player.weapon_type = ho[11] or 1
+      
     else
       forget_player(id)
     end
@@ -373,15 +382,19 @@ end
 --
 --   [2] = { -- player data
 --     [player_id] = {
---       [1] = x,
---       [2] = y,
---       [3] = v.x,
---       [4] = v.y,
---       [5] = alive,
---       [6] = angle,
---       [7] = score,
---       [8] = name,
---       [9] = last_killer_id
+--       [1]  = x,
+--       [2]  = y,
+--       [3]  = v.x,
+--       [4]  = v.y,
+--       [5]  = alive,
+--       [6]  = angle,
+--       [7]  = score,
+--       [8]  = name,
+--       [9]  = last_killer_id,
+--       [10] = crowned,
+--       [11] = weapon_type,
+--       [12] = hp,
+--       [13] = ammo,
 --     },
 --     ...
 --   },
@@ -391,7 +404,8 @@ end
 --       [2] = y,
 --       [3] = v.x,
 --       [4] = v.y,
---       [5] = from_player_id
+--       [5] = from_player_id,
+--       [6] = type
 --     },
 --     ...
 --   },

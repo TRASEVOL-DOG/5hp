@@ -2,21 +2,13 @@
 require("input")
 
 player_list = {} -- { id : player }
+
 death_history = {
                   kills = {}, -- { killed = killed.name , killer = killed.name, count } 
                   last_victim = {}, -- { killed = killed.name , killer = killed.name }
                   last_killer = {} -- { killed = killed.name , killer = killed.name }
                 }
 
-player_const = {
-    t_death_anim        = .245 * 2,
-    time_fire           = .1, -- max cooldown (seconds)  for bullet fire
-    max_speed           = 7.0,
-    deceleration        = 4.5,
-    acceleration        = 8,
-    weapon_sprite       = {199}
-}
-                
 function create_player(id,x,y)
   
   local s = {
@@ -41,7 +33,7 @@ function create_player(id,x,y)
     h                   = 4,
     
     timer_fire          = 0, -- cooldown (seconds) left for bullet fire
-    weapon_type         = 1,
+    weapon_id           = 1,
     
     v                   = { x = 0, y = 0 },-- movement vector 
     angle               = 0,
@@ -210,6 +202,11 @@ function get_inputs(s)
     if btn(2) then s.dy_input =             -1 end
     if btn(3) then s.dy_input = s.dy_input + 1 end
     
+    if btn(6) then 
+      debuggg = "xxxxxxxxx"
+      spawn_weapon(s, 2)
+    end
+    
     s.shot_input = mouse_btnp(0)
   end
 end
@@ -316,15 +313,26 @@ end
 function check_firing(s)
   if ( server_only or s.id == my_id ) and s.shot_input then
     if s.timer_fire < 0 then
-      local p = create_bullet(s.id)
-      s.timer_fire = player_const.time_fire
+      -- local p = create_bullet(s.id)
+      
+      fire(s)
+      
       add_shake()
     else
       sfx("cant_shoot", s.x, s.y)
     end
   end
 end
-  
+
+function fire(s)
+
+  type = s.weapon_id
+  debuggg = type .. "                       "
+  weapon_const.fire_mod[s.weapon_id](s)
+  s.timer_fire = weapon_const.fire_rate[type]
+
+end
+
 function update_mov_bullet_like(s)
   if not server_only and s.id == my_id then cam.follow = {x = lerp(s.x+s.diff_x, cursor.x, .25), y = lerp(s.y+s.diff_y, cursor.y, .25)} end
   
@@ -408,7 +416,7 @@ function draw_player(s)
     
     -- drawing gun
     pal(3,0)
-    spr(player_const.weapon_sprite[s.weapon_type], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
+    spr(weapon_const.weapons_sprite[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
     pal(3,3)
     
     -- drawing body
@@ -540,4 +548,38 @@ function draw_player_names()
     end
   end
 end
+
+function spawn_weapon(s, weapon_id)
+  weapon_id = weapon_id or rnd(4)
+  create_loot(0, 2, s.x + 10 , s.y, weapon_id)
+end
+
+player_const = {
+  t_death_anim        = .245 * 2,
+  time_fire           = .1, -- max cooldown (seconds)  for bullet fire
+  max_speed           = 7.0,
+  deceleration        = 4.5,
+  acceleration        = 8
+}
+
+weapon_const = {
+  sprites       = {199         ,199         },
+  fire_rate     = {.1          ,.8          },
+  fire_mod      = {
+                    function (s)
+                      create_bullet(s.id)
+                    end
+                    ,
+                    function (s)
+                      local angle = s.angle
+                      local open = .05
+                      for i = 0 , 3 do
+                        s.angle = angle - open + rnd(open*2*100)/100
+                        create_bullet(s.id)
+                      end                      
+                      s.angle = angle 
+                    end
+                  }
+}
+
 
