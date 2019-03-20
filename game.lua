@@ -24,7 +24,7 @@ require("leaderboard")
 
 score = 0
 show_connection_status = false
-
+crowned_player = nil
 function _init()
   eventpump()
   

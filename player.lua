@@ -34,6 +34,9 @@ function create_player(id,x,y)
     
     timer_fire          = 0, -- cooldown (seconds) left for bullet fire
     weapon_id           = 1,
+    ammo                = 0,
+    rafale_on           = false,
+    rafale_shot         = 0, -- keep tracks of how many the bullets the player shot this rafale
     
     v                   = { x = 0, y = 0 },-- movement vector 
     angle               = 0,
@@ -203,11 +206,11 @@ function get_inputs(s)
     if btn(3) then s.dy_input = s.dy_input + 1 end
     
     if btn(6) then 
-      debuggg = "xxxxxxxxx"
-      spawn_weapon(s, 2)
+      -- spawn_weapon(s, 3)
+      loot_crown(s)
     end
     
-    s.shot_input = mouse_btnp(0)
+    s.shot_input = mouse_btnp(0) or s.rafale_on
   end
 end
 
@@ -311,10 +314,10 @@ function apply_v_to_pos(s)
 end
 
 function check_firing(s)
+  
   if ( server_only or s.id == my_id ) and s.shot_input then
     if s.timer_fire < 0 then
-      -- local p = create_bullet(s.id)
-      
+    
       fire(s)
       
       add_shake()
@@ -327,8 +330,8 @@ end
 function fire(s)
 
   type = s.weapon_id
-  debuggg = type .. "                       "
-  weapon_const.fire_mod[s.weapon_id](s)
+  weapon_const.fire_mod[type](s)
+  if s.ammo < 1 and s.weapon_id ~= 1 then  set_default_weapon(s) end
   s.timer_fire = weapon_const.fire_rate[type]
 
 end
@@ -410,20 +413,25 @@ function draw_player(s)
     
     -- drawing rest of body
     draw_anim(x, y-2, "player", state, animt, 0, a)
+    
+    if crowned_player == s.id then
+      -- debuggg = "drawing               "
+      rectfill(s.x, s.y , s.x + 2, s.y +6 , 1)
+    end
+    
   else
     -- drawing body outline
     draw_spr_outline(203, x, y-1, 1, 1, 0)
     
     -- drawing gun
     pal(3,0)
-    spr(weapon_const.weapons_sprite[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
+    spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
     pal(3,3)
     
     -- drawing body
     spr(203, x, y-1)
   end
   
-
   -- syncing debug
   if debug_mode then
     all_colors_to(1)
@@ -449,6 +457,7 @@ end
 function kill_player(s, id_killer)
   
   s.alive = false
+  if crowned_player == s.id then loot_crown(s) end
   s.animt = player_const.t_death_anim
   s.update_movement = update_mov_bullet_like
   
@@ -467,6 +476,10 @@ function kill_player(s, id_killer)
     sfx("get_hit", s.x, s.y) 
   end
   
+end
+
+function loot_crown(s)
+    create_loot(0, 0, s.x + 10 , s.y) -- create_loot(id, type, x, y, weapon_id)
 end
 
 function send_player_off(s, vx, vy) -- bullet to player vector
@@ -535,6 +548,10 @@ function add_score(s)
   s.score = s.score + 1
 end
 
+function draw_player_crown()
+  rectfill(s.x, s.y , s.x + 2, s.y +6 , 1)  
+end
+
 function draw_player_names()
   for s in group("player") do
     local x = s.x + s.diff_x
@@ -550,8 +567,13 @@ function draw_player_names()
 end
 
 function spawn_weapon(s, weapon_id)
-  weapon_id = weapon_id or rnd(4)
-  create_loot(0, 2, s.x + 10 , s.y, weapon_id)
+  -- weapon_id = weapon_id
+  create_loot(0, 0, s.x + 10 , s.y, weapon_id) -- create_loot(id, type, x, y, weapon_id)
+end
+
+function set_default_weapon(s)
+  s.weapon_id = 1
+  s.ammo = 0
 end
 
 player_const = {
@@ -563,8 +585,9 @@ player_const = {
 }
 
 weapon_const = {
-  sprites       = {199         ,199         },
-  fire_rate     = {.1          ,.8          },
+  sprites       = {199 ,199 ,199     },
+  fire_rate     = {.1  ,.6  ,.05     },
+  ammo          = {0   ,12  ,30      },
   fire_mod      = {
                     function (s)
                       create_bullet(s.id)
@@ -573,11 +596,38 @@ weapon_const = {
                     function (s)
                       local angle = s.angle
                       local open = .05
-                      for i = 0 , 3 do
+                      local m = min ( 4, s.ammo)
+                      local i = 0
+                      
+                      while i < m do
+                        s.ammo = s.ammo - 1
                         s.angle = angle - open + rnd(open*2*100)/100
-                        create_bullet(s.id)
-                      end                      
+                        local b = create_bullet(s.id)
+                        b.speed = b.speed * rnd(1, 2)
+                        i = i + 1
+                      end        
+                      
                       s.angle = angle 
+                    end
+                    ,
+                    function (s)
+                      s.rafale_on = true
+                      local angle = s.angle
+                      s.ammo = s.ammo - 1
+                      
+                      if s.rafale_shot < 3 then
+                      
+                        s.angle = angle + 0.05 *  rnd(-1, 1)
+                        local b = create_bullet(s.id)
+                        s.rafale_shot = s.rafale_shot + 1
+                        
+                        if s.rafale_shot == 3 then 
+                          s.rafale_on = false
+                          s.rafale_shot = 0
+                        end
+                        
+                        s.angle = angle 
+                      end
                     end
                   }
 }
