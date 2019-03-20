@@ -384,8 +384,12 @@ function draw_player(s)
   local y = s.y + s.diff_y
 
 --  line(x + (s.w) * cos(s.angle), y + (s.h) * sin(s.angle), x + (s.w)*1.5 * cos(s.angle), y + (s.h)*1.5 * sin(s.angle), 3)
-  
-  
+  -- if crowned_player then
+    -- debuggg = crowned_player
+  -- else
+    -- debuggg = "sssss"
+  -- end
+  -- debuggg = debuggg .. "                      "
   local state = "idle"
   local a = cos(s.angle) < 0
   local animt = s.animt * (s.v.x > 0 == a and 1 or -1)

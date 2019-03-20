@@ -48,20 +48,19 @@ function update_loot(s)
 
   s.t_y = s.t_y + delta_time
     
-  if server_only then
+  -- if server_only then
     
     local looter = all_collide_objgroup(s,"player")
     
     if(#looter>0) then
       for i=1, #looter do
         if looter[i].alive then
-          castle_print("yes")
           be_looted_by(s, looter[i])
         end
       end
     end
     
-  end
+  -- end
 end
 
 function draw_loot(s)
@@ -80,7 +79,12 @@ function be_looted_by(s, player)
   
   if s.loot_type == 0 then crown_player(s, player) end
   
-  deregister_loot(s)
+  s.looted_by = player.id  
+  -- if crowned_player then
+  debuggg = s.id .. "                         "
+  -- if server_only then
+    deregister_loot(s)
+  -- end
 end
 
 function crown_player(s, player) 
@@ -95,5 +99,9 @@ function arm_player(s, player)
 end
 
 function deregister_loot(s)
+
+  castle_print("did it")
+  if loot_list[s.id] then loot_list[s.id] = nil end
+  
   deregister_object(s)
 end

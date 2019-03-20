@@ -106,8 +106,6 @@ function client_output()
     client.home[8] = flr(my_player.x + my_player.diff_x)
     client.home[9] = flr(my_player.y + my_player.diff_y)
     
-    client.home[10]= crowned_player
-    
     client.home[11]= my_player.weapon_id
     client.home[12]= my_player.hp
     client.home[13]= my_player.ammo
@@ -228,6 +226,13 @@ function sync_destroyables(destroyable_data)
 end
 
 function sync_loot(loot_data)
+    -- loot_data[id] = {
+      -- l.id,
+      -- l.loot_type,
+      -- l.x, l.y,
+      -- l.looted_by,
+      -- l.weapon_id
+    -- }
   if not loot_data then return nil end  
   
   for id,p in pairs(loot_list) do  -- checking if any loot no longer exists
@@ -239,7 +244,8 @@ function sync_loot(loot_data)
 
   for id,l_d in pairs(loot_data) do  -- syncing loot with server data
     if not loot_list[id] then
-      create_loot(id, l_d[2], l_d[3], l_d[4], l_d[5])
+      local p = create_loot(id, l_d[2], l_d[3], l_d[4], l_d[6])
+      p.looted_by = l_d[5]
     end
     
     local l = loot_list[id]
