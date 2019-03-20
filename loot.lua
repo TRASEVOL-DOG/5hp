@@ -20,7 +20,6 @@ function create_loot(id, type, x, y, weapon_id)
     weapon_id    = weapon_id or nil, -- only if declared
     t_y          = 0
   }
-  register_object(s)
   
   -- setting id
   
@@ -40,7 +39,8 @@ function create_loot(id, type, x, y, weapon_id)
   if s.id then
     loot_list[s.id] = s
   end
-   
+  
+  register_object(s)
   return s
 end
 

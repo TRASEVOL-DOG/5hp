@@ -483,7 +483,8 @@ function kill_player(s, id_killer)
 end
 
 function loot_crown(s)
-    create_loot(0, 0, s.x + 10 , s.y) -- create_loot(id, type, x, y, weapon_id)
+  crowned_player = nil
+  create_loot(0, 0, s.x + 10 , s.y) -- create_loot(id, type, x, y, weapon_id)
 end
 
 function send_player_off(s, vx, vy) -- bullet to player vector

@@ -136,6 +136,7 @@ function sync_players(player_data)
       kill_player(p)
       deregister_object(p)
       player_list[p.id] = nil
+      if crowned_player == p.id then crowned_player = nil end
     end
   end
   
@@ -377,6 +378,13 @@ function server_output()
   end
   
   local loot_data = server.share[5]
+  
+  for id,_ in pairs(loot_data) do
+    if not loot_list[id] then
+      loot_data[id] = nil
+    end
+  end
+  
   for id,l in pairs(loot_list) do
     loot_data[id] = {
       l.id,
@@ -410,6 +418,7 @@ function forget_player(id)
     deregister_object(player)
     player_list[id] = nil
     server.share[2][id] = nil
+    if crowned_player == player.id then crowned_player = nil create_loot(0, 0, player.x, player.y) end
   end
 end
 
