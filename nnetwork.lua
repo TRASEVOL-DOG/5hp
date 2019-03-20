@@ -228,12 +228,20 @@ function sync_destroyables(destroyable_data)
 end
 
 function sync_loot(loot_data)
-  if not loot_data then return nil end
+  if not loot_data then return nil end  
+  
+  for id,p in pairs(loot_list) do  -- checking if any loot no longer exists
+    if not loot_data[id] then
+      deregister_object(p)
+      loot_list[p.id] = nil
+    end
+  end
 
   for id,l_d in pairs(loot_data) do  -- syncing loot with server data
     if not loot_list[id] then
-      create_loot(id, l_d[3], l_d[1], l_d[2])
+      create_loot(id, l_d[2], l_d[3], l_d[4], l_d[5])
     end
+    
     local l = loot_list[id]
     
     if l.looted_by then
@@ -365,8 +373,9 @@ function server_output()
   local loot_data = server.share[5]
   for id,l in pairs(loot_list) do
     loot_data[id] = {
+      l.id,
+      l.loot_type,
       l.x, l.y,
-      l.type,
       l.looted_by,
       l.weapon_id
     }
@@ -460,7 +469,7 @@ end
 --     ...
 --   },
 --   [5] = { -- loot_data
---     [destro_id] = {
+--     [loot_data] = {
 --       [1] = x,
 --       [2] = y,
 --       [3] = type,

@@ -59,6 +59,7 @@ end
 wind_timer = 0
 function _update(dt)
 
+  if server_only then  create_loot(0, 2, 512, 295) end
   wind_timer = wind_timer - delta_time
   if wind_timer < 0 then
     sfx(pick({"wind_a","wind_b","wind_c","wind_d","wind_e"}), nil, nil, 0.8+rnd(0.4), 20+rnd(30))

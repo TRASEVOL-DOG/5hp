@@ -2,6 +2,7 @@
 
 -- loot has a sprite (x, y, sprite_num) and a function to interact with the player according to the loot (id ?)
 loot_list = {}
+local loot_nextid = 1
 
 function create_loot(id, type, x, y, weapon_id)
   local s = {
@@ -20,6 +21,26 @@ function create_loot(id, type, x, y, weapon_id)
     t_y          = 0
   }
   register_object(s)
+  
+  -- setting id
+  
+  if id then -- assigned by server
+    if loot_list[id] then
+      deregister_object(loot_list[id])
+    end
+  
+    s.id = id
+    loot_nextid = max(loot_nextid, id + 1)
+    
+  elseif server_only then -- assigning id now
+    s.id = loot_nextid
+    loot_nextid = loot_nextid + 1
+  end
+  
+  if s.id then
+    loot_list[s.id] = s
+  end
+   
   return s
 end
 
@@ -34,6 +55,7 @@ function update_loot(s)
     if(#looter>0) then
       for i=1, #looter do
         if looter[i].alive then
+          castle_print("yes")
           be_looted_by(s, looter[i])
         end
       end
