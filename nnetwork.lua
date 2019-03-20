@@ -232,7 +232,7 @@ function sync_loot(loot_data)
 
   for id,l_d in pairs(loot_data) do  -- syncing loot with server data
     if not loot_list[id] then
-      create_loot(id, l_d[1], l_d[2])
+      create_loot(id, l_d[3], l_d[1], l_d[2])
     end
     local l = loot_list[id]
     
@@ -373,6 +373,7 @@ function server_output()
   end
   
   server.share[6] = crowned_player
+  
   
 end
 
