@@ -259,8 +259,6 @@ function sync_loot(loot_data)
 end
 
 function sync_crowned_player(data)
-  if not data then return nil end
-
   crowned_player = data
 end
 

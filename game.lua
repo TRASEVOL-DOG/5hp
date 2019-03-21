@@ -335,7 +335,7 @@ function draw_crown_indicator()
     if player_list[my_id] then
       local angle = 0
       local scrnw,scrnh=screen_size()
-      if crowned_player ~= nil and crowned_player ~= my_id then
+      if crowned_player ~= nil and crowned_player ~= my_id and player_list[crowned_player] then
         angle = atan2(player_list[my_id].x - player_list[crowned_player].x,
         player_list[my_id].y - player_list[crowned_player].y)
         indicate_crown(angle)
