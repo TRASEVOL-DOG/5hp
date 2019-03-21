@@ -16,7 +16,7 @@ require("fx")
 
 require("map")
 require("player")
--- require("enemy")
+require("enemy")
 require("destroyable")
 require("loot")
 require("bullet")
@@ -36,7 +36,7 @@ function _init()
   
   init_object_mgr(
     "player",
-    -- "enemy",
+    "enemy",
     "bullet",
     "destroyable",
     "loot",
@@ -463,6 +463,7 @@ function init_game()
       end
     end
     create_loot(0, 0, 512, 295)
+    create_enemy(0, 0, 522, 305)
   end
   
 end
