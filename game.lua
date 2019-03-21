@@ -24,6 +24,7 @@ require("leaderboard")
 
 score = 0
 show_connection_status = false
+crowned_player = nil
 
 function _init()
   eventpump()
@@ -111,6 +112,7 @@ function _draw()
   camera()
   draw_map()
   
+  
   apply_camera()
 
   draw_objects()
@@ -119,6 +121,8 @@ function _draw()
   
   camera()
 
+  draw_crown_indicator()
+  
   local menu = querry_menu()
   
   if not menu or menu == "gameover" then
@@ -326,6 +330,39 @@ function draw_pause_background()
   end
 end
 
+function draw_crown_indicator()
+  if my_id then
+    if player_list[my_id] then
+      local angle = 0
+      local scrnw,scrnh=screen_size()
+      if crowned_player ~= nil and crowned_player ~= my_id and player_list[crowned_player] then
+        angle = atan2(player_list[my_id].x - player_list[crowned_player].x,
+        player_list[my_id].y - player_list[crowned_player].y)
+        indicate_crown(angle)
+      else 
+        local c = crown_looted()
+        if c then
+          angle = atan2(player_list[my_id].x - c.x, player_list[my_id].y - c.y)
+          indicate_crown(angle)
+        end
+      end
+    end
+  end
+
+end
+
+function crown_looted()
+  for i, loot in pairs(loot_list) do
+    if loot.loot_type == 0 then return loot end
+  end
+  return false
+end
+function indicate_crown(angle)
+  local camx, camy = get_camera_pos()
+  color(1)
+  line(player_list[my_id].x - camx + 10 * cos(angle+.5), player_list[my_id].y - camy + 10 * sin(angle+.5), player_list[my_id].x - camx + 20 * cos(angle+.5), player_list[my_id].y - camy + 20 * sin(angle+.5))
+
+end
 function game_over()
   menu_back()
   menu_back()
@@ -423,6 +460,7 @@ function init_game()
         create_destroyable(nil, p.x+irnd(5)-3, p.y+irnd(5)-3)
       end
     end
+    create_loot(0, 0, 512, 295)
   end
   
 end

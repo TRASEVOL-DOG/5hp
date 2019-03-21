@@ -15,6 +15,8 @@ function init_network()
     server.share[2] = {} -- players
     server.share[3] = {} -- bullets
     server.share[4] = {} -- destroyables
+    server.share[5] = {} -- loot
+    server.share[6] = {} -- crowned player
   else
     shot_id = 0
     client.home[4] = shot_id
@@ -59,6 +61,10 @@ function client_input(diff)
   sync_players(client.share[2])
   sync_bullets(client.share[3])
   sync_destroyables(client.share[4])
+  sync_loot(client.share[5])
+  
+  sync_crowned_player(client.share[6])
+  
 end
 
 function client_output()
@@ -100,9 +106,9 @@ function client_output()
     client.home[8] = flr(my_player.x + my_player.diff_x)
     client.home[9] = flr(my_player.y + my_player.diff_y)
     
-    client.home[10]= false
-    
-    client.home[11]= my_player.weapon_type
+    client.home[11]= my_player.weapon_id
+    client.home[12]= my_player.hp
+    client.home[13]= my_player.ammo
     
   end
 end
@@ -130,6 +136,7 @@ function sync_players(player_data)
       kill_player(p)
       deregister_object(p)
       player_list[p.id] = nil
+      if crowned_player == p.id then crowned_player = nil end
     end
   end
   
@@ -219,6 +226,41 @@ function sync_destroyables(destroyable_data)
   end
 end
 
+function sync_loot(loot_data)
+    -- loot_data[id] = {
+      -- l.id,
+      -- l.loot_type,
+      -- l.x, l.y,
+      -- l.looted_by,
+      -- l.weapon_id
+    -- }
+  if not loot_data then return nil end  
+  
+  for id,p in pairs(loot_list) do  -- checking if any loot no longer exists
+    if not loot_data[id] then
+      deregister_object(p)
+      loot_list[p.id] = nil
+    end
+  end
+
+  for id,l_d in pairs(loot_data) do  -- syncing loot with server data
+    if not loot_list[id] then
+      local p = create_loot(id, l_d[2], l_d[3], l_d[4], l_d[6])
+      p.looted_by = l_d[5]
+    end
+    
+    local l = loot_list[id]
+    
+    if l.looted_by then
+      if l.loot_type == 0 then crowned_player = l.looted_by end
+      deregister_loot(l)
+    end
+  end
+end
+
+function sync_crowned_player(data)
+  crowned_player = data
+end
 
 
 
@@ -269,8 +311,9 @@ function server_input()
         end
       end
       
-      player.crowned = ho[10] or false
-      player.weapon_type = ho[11] or 1
+      player.weapon_id = ho[11] or 1
+      player.hp = ho[12] or 1
+      player.ammo = ho[13] or 1
       
     else
       forget_player(id)
@@ -308,7 +351,6 @@ function server_output()
     }
   end
   
-  
   local bullet_data = server.share[3]
   for id,_ in pairs(bullet_data) do
     if not bullet_list[id] then
@@ -324,7 +366,6 @@ function server_output()
     }
   end
   
-  
   local destroyable_data = server.share[4]
   for id,d in pairs(destroyable_list) do
     destroyable_data[id] = {
@@ -333,6 +374,28 @@ function server_output()
       d.killer
     }
   end
+  
+  local loot_data = server.share[5]
+  
+  for id,_ in pairs(loot_data) do
+    if not loot_list[id] then
+      loot_data[id] = nil
+    end
+  end
+  
+  for id,l in pairs(loot_list) do
+    loot_data[id] = {
+      l.id,
+      l.loot_type,
+      l.x, l.y,
+      l.looted_by,
+      l.weapon_id
+    }
+  end
+  
+  server.share[6] = crowned_player
+  
+  
 end
 
 function server_new_client(id)
@@ -353,10 +416,9 @@ function forget_player(id)
     deregister_object(player)
     player_list[id] = nil
     server.share[2][id] = nil
+    if crowned_player == player.id then crowned_player = nil create_loot(0, 0, player.x, player.y) end
   end
 end
-
-
 
 -- look-up table
 
@@ -410,11 +472,22 @@ end
 --     ...
 --   },
 --   [4] = { -- destroyable_data
---     [destro_id] = {
+--     [loot_id] = {
 --       [1] = x,
 --       [2] = y,
 --       [3] = alive,
---       [4] = killer_id
+--       [4] = type,
+--       [5] = weapon_type
+--     },
+--     ...
+--   },
+--   [5] = { -- loot_data
+--     [loot_data] = {
+--       [1] = x,
+--       [2] = y,
+--       [3] = type,
+--       [4] = looted_by,
+--       [5] = killer_id
 --     },
 --     ...
 --   }
