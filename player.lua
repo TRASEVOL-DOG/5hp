@@ -468,7 +468,6 @@ function kill_player(s, id_killer)
     local p = player_list[id_killer]
     
     if p then
-      -- add_death(s, p)
       s.last_killer_name = p.name
     end
   end
