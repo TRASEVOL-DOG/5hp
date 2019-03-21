@@ -463,7 +463,7 @@ function init_game()
       end
     end
     create_loot(0, 0, 512, 295)
-    create_enemy(0, 0, 522, 305)
+    create_enemy(0, 522, 305)
   end
   
 end

@@ -101,7 +101,6 @@ end
 
 function deregister_loot(s)
 
-  castle_print("did it")
   if loot_list[s.id] then loot_list[s.id] = nil end
   
   deregister_object(s)

@@ -171,14 +171,24 @@ function update_move_bullet(s)
 end
 
 function do_collisions_obj(s) -- collision with objects
+
   local killed = collide_objgroup(s,"player")
   if killed and killed.id ~= s.from and killed.alive then
     local killer = player_list[s.from]
     send_player_off(killed, s.v.x, s.v.y )
-    -- debuggg = "did colision, found killer" .. s.from .." xxxxxx"
     hurt_player(killed, killer.id, s.type)
-    -- kill_player(killed, killer.id)
     kill_bullet(s)
+  end
+  
+  
+  local enemy = all_collide_objgroup(s,"enemy")
+  if(#enemy>0) then
+    for i=1, #enemy do
+      if enemy[i].alive then
+        hit_enemy(enemy[i])
+        kill_bullet(s)
+      end
+    end
   end
   
   local destr = all_collide_objgroup(s,"destroyable")
@@ -190,6 +200,7 @@ function do_collisions_obj(s) -- collision with objects
       end
     end
   end
+  
 end
 
 function draw_bullet(s)

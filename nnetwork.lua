@@ -17,6 +17,7 @@ function init_network()
     server.share[4] = {} -- destroyables
     server.share[5] = {} -- loot
     server.share[6] = {} -- crowned player
+    server.share[7] = {} -- enemy player
   else
     shot_id = 0
     client.home[4] = shot_id
@@ -63,6 +64,7 @@ function client_input(diff)
   sync_destroyables(client.share[4])
   sync_loot(client.share[5])
   sync_crowned_data(client.share[6])
+  sync_enemy(client.share[7])
   
 end
 
@@ -176,6 +178,58 @@ function sync_players(player_data)
     p.angle = p_d[6]
     p.score = p_d[7]
     p.name = p_d[8]
+  end
+end
+
+function sync_enemy(enemy_data) 
+
+-- enemy_data
+--     [enemy_id] = {
+--       [1]  = x,
+--       [2]  = y,
+--       [3]  = v.x,
+--       [4]  = v.y,
+--       [5]  = alive,
+--       [6]  = angle,
+--       [7]  = hp,
+--     }
+
+  if not enemy_data then return end
+  
+  for id,p in pairs(enemy_list) do  -- checking if any player no longer exists
+    if not enemy_data[id] then
+      kill_enemy(p)
+      deregister_object(p)
+      enemy_list[p.id] = nil
+    end
+  end
+  
+  for id,e_d in pairs(enemy_data) do  -- syncing players with server data
+    if not enemy_list[id] then
+      create_enemy(id, e_d[1], e_d[2], e_d[3], e_d[4], e_d[5], e_d[6], e_d[7], e_d[8])
+    end
+    
+    local p = enemy_list[id]
+    
+    local x = e_d[1] + delay * e_d[3]
+    local y = e_d[2] + delay * e_d[4]
+    
+    if check_mapcol(p, x, y) then
+      x, y = e_d[1], e_d[2]
+    end
+    
+    p.diff_x = p.diff_x + p.x - x
+    p.diff_y = p.diff_y + p.y - y
+    
+    p.x = x
+    p.y = y
+    
+    if p.alive and not e_d[5] then
+      kill_enemy(p)
+    end
+    
+    p.server_death = not e_d[5]
+    
   end
 end
 
@@ -391,7 +445,35 @@ function server_output()
   end
   
   server.share[6] = crowned_player
+  -- {
+--       [1]  = x,
+--       [2]  = y,
+--       [3]  = v.x,
+--       [4]  = v.y,
+--       [5]  = alive,
+--       [6]  = angle,
+--       [7]  = hp,
+--       [8]  = behavior
+--     }
   
+  local enemy_data = server.share[7]
+  
+  for id,_ in pairs(enemy_data) do
+    if not enemy_list[id] then
+      enemy_data[id] = nil
+    end
+  end
+  
+  for id,p in pairs(enemy_list) do
+    enemy_data[id] = {
+      p.x, p.y,
+      p.v.x, p.v.y,
+      p.alive,
+      p.angle,
+      p.hp,
+      p.behavior,
+    }
+  end
   
 end
 
