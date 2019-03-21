@@ -195,17 +195,27 @@ end
 function draw_bullet(s)
   local x = s.x + s.diff_x
   local y = s.y + s.diff_y - 1
+  
+  if s.from == my_id then
+    pal(13,12)
+    pal(11,9)
+  else
+    pal(13,11)
+    pal(11,8)
+  end
 
   if s.anim_state == "stopped" then
-    spr(56, x, y, 1, 1, atan2(s.v.x, s.v.y))
+    spr(236, x, y, 1, 1, atan2(s.v.x, s.v.y))
   elseif s.anim_state == "killed" then 
-    spr(59, x, y, 1, 1, atan2(s.v.x, s.v.y))
+    spr(239, x, y, 1, 1, atan2(s.v.x, s.v.y))
   else
-    spr(57, x, y, 2, 1, atan2(s.v.x, s.v.y))
+    spr(237, x, y, 2, 1, atan2(s.v.x, s.v.y))
   end
   
+  all_colors_to()
+  
   if debug_mode then
-    all_colors_to(1)
+    all_colors_to(14)
     spr(57, s.x, s.y-2, 2, 1, atan2(s.v.x, s.v.y))
     all_colors_to()
   end

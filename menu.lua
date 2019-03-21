@@ -157,7 +157,7 @@ function draw_menu(x,y)
   if not curmenu then return end
   m=menus[curmenu]
   
-  local c0,c1,c2 = 0,2,3
+  local c0,c1,c2 = 14,9,6
   
   y=y-m.h/2
   

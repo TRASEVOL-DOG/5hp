@@ -4,8 +4,8 @@
 require("maths")
 require("shader")
 
-c_drk = {[0]=0, 0, 1, 2}
-c_lit = {[0]=1, 2, 3, 3}
+c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
+c_lit = {[0]=3, 4, 5, 11, 9, 10, 1, 13, 11, 12, 14, 13, 14, 14, 14}
 
 function init_graphics(w,h, window_title)
   local fonts={
@@ -214,7 +214,7 @@ function print(str,x,y,c)
 end
 
 function super_print(str,x,y,c0,c1,c2,w)
-  local c0 = c0 or 23
+  local c0 = c0 or 14
   local c1 = c1 or graphics.textdrk[c0]
   local c2 = c2 or 0
 --  local w  = w or graphics.curfont:getWidth(str)
@@ -438,7 +438,7 @@ end
 
 
 function init_palette()
-  palette = sunscorched_palette()
+  palette = equpix15_palette()
   
   palette_norm = {}
   for i = 0,#palette do
@@ -563,6 +563,26 @@ function sunscorched_palette()
     {0xab, 0x35, 0x35},
     {0xff, 0x83, 0x4a},
     {0xff, 0xff, 0xa6}
+  }
+end
+
+function equpix15_palette()
+  return {
+[0]={0x52, 0x3c, 0x4e},
+    {0x2a, 0x2a, 0x3a},
+    {0x3e, 0x54, 0x42},
+    {0x84, 0x54, 0x5c},
+    {0x38, 0x60, 0x7c},
+    {0x5c, 0x7a, 0x56},
+    {0x10, 0x10, 0x24},
+    {0xb2, 0x7e, 0x56},
+    {0xd4, 0x4e, 0x52},
+    {0x55, 0xa8, 0x94},
+    {0x80, 0xac, 0x40},
+    {0xec, 0x8a, 0x4b},
+    {0x8b, 0xd0, 0xba},
+    {0xff, 0xcc, 0x68},
+    {0xff, 0xf8, 0xc0}
   }
 end
 
