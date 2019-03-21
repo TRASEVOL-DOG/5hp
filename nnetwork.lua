@@ -62,8 +62,7 @@ function client_input(diff)
   sync_bullets(client.share[3])
   sync_destroyables(client.share[4])
   sync_loot(client.share[5])
-  
-  sync_crowned_player(client.share[6])
+  sync_crowned_data(client.share[6])
   
 end
 
@@ -258,10 +257,9 @@ function sync_loot(loot_data)
   end
 end
 
-function sync_crowned_player(data)
+function sync_crowned_data(data)
   crowned_player = data
 end
-
 
 function server_input()
 --  if not server then
@@ -488,6 +486,8 @@ end
 --       [4] = looted_by,
 --       [5] = killer_id
 --     },
+--   [6] = { -- crown_data
+--       crowned_player,
 --     ...
 --   }
 -- }

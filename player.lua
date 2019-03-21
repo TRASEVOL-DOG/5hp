@@ -2,6 +2,9 @@
 require("input")
 
 player_list = {} -- { id : player }
+-- last_pickup_crown = nil -- timestamp to compare and count points for the currently crowned player
+
+old_scores = {}
 
 death_history = {
                   kills = {}, -- { killed = killed.name , killer = killed.name, count } 
@@ -24,7 +27,7 @@ function create_player(id,x,y)
     regs                = {"to_update", "to_draw0", "player"},
     alive               = true,
     dead_sfx_player     = false,
-    score               = 0,
+    score               = old_scores[id] or 0,
     bounce              = false,
     last_killer_name    = "accident",
     last_killer_id      = "accident",
@@ -92,6 +95,8 @@ function update_player(s)
   
   -- change anime time
   s.animt = s.animt - delta_time
+  
+  if crowned_player == s.id and s.alive then add_score(s) end
   
   if s.hp > 11 then s.hp = s.hp - dt/2 end -- slow decrease of health according to time if above the 10 maximum
   
@@ -453,6 +458,8 @@ end
 function kill_player(s, id_killer)
   
   s.alive = false
+  s.score = math.floor(s.score)
+  old_scores[s.id] = s.score
   if crowned_player == s.id then loot_crown(s) end
   s.animt = player_const.t_death_anim
   s.update_movement = update_mov_bullet_like
@@ -461,7 +468,7 @@ function kill_player(s, id_killer)
     local p = player_list[id_killer]
     
     if p then
-      add_death(s, p)
+      -- add_death(s, p)
       s.last_killer_name = p.name
     end
   end
@@ -542,7 +549,7 @@ function add_death(victim, killer) -- two players
 end
 
 function add_score(s)
-  s.score = s.score + 1
+  s.score = s.score + delta_time
 end
 
 function draw_player_crown(s, x, y)

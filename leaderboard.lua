@@ -27,11 +27,13 @@ function get_list_leaderboard()
     
     local lrank = rank or 1
     local lname = list_player[index].name or ""
+    local lid = list_player[index].id or 0
     local lscore = list_player[index].score or 1
     
     add(sorted_list, {  rank = lrank, 
                         name = lname,
-                        score = lscore})
+                        id = lid,
+                        score = math.floor(lscore)})
     delat(list_player, index)
     rank = rank + 1
     
@@ -62,9 +64,10 @@ end
 function draw_leaderboard()
   
   local sx, sy = screen_size()
-  
+  local l_t = " Leaderboard "
+  local l_w = str_width(l_t)
+  local lb_w = str_width(" ") + leaderboard.width
   local y = 8
-  local x = 70
     
   local size = #leaderboard.list
   
@@ -73,13 +76,14 @@ function draw_leaderboard()
     size = size > 5 and 5 or size
     y = - 13
     
-    draw_text_oultined("\"Tab\" to expand", sx - str_width("\"Tab\" to expand"),  y + 3 + (size+1)*8, 0)
+    draw_text_oultined("\"Tab\" to expand", sx - str_width("\"Tab\" to expand"),  y + 3 + (size+1)*9, 0)
   else
-    rectfill(sx - x - 2, y + 1, sx - 2 , y + 12 , 0)
-    rectfill(sx - x - 1, y + 2, sx - 3 , y + 11 , 1)
-    draw_text_oultined(" Leaderboard", sx - x, y - 2, 0)
-    rectfill(sx - x - 2, y + 13     , sx - 2 , y + 10 + (size+1) * 8    , 0)
-    rectfill(sx - x - 1, y + 13 + 1 , sx - 3 , y + 10 + (size+1) * 8 - 1, 1)
+    rectfill(sx - l_w - 2, y + 1, sx - 1 , y + 12 , 0)
+    rectfill(sx - l_w - 1, y + 2, sx - 2 , y + 11 , 1)
+    draw_text_oultined(l_t, sx - l_w, y - 2, 0)
+    
+    rectfill(sx - lb_w - 2, y + 13     , sx - 1 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0))    , 0)
+    rectfill(sx - lb_w - 1, y + 13 + 1 , sx - 2 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0)) - 1, 1)
     sx = sx - 4
     
     
@@ -92,23 +96,20 @@ function draw_leaderboard()
   for i = 1, size do
   
     local player = leaderboard.list[i]
-    local c = not ( my_place == i )
     local str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
     
     if leaderboard.is_large then    
       str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
-    else 
-      if i == 4 and my_place > 5  then
+    elseif my_place > 5 then
+      if i == 4 then
         str = "..."
-      end
-      if i == 5 and my_place > 5  then        
+      elseif i == 5 then        
         player = leaderboard.list[my_place]
         str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
-        c = 2        
       end
     end
-    
-    draw_text_oultined(str, sx - leaderboard.width - 19 , y + 3 + i*8 , c)
+    local c = (my_id ~= player.id)
+    draw_text_oultined(str, sx - leaderboard.width , y + 3 + i*(9 + (leaderboard.is_large and 1 or 0)) , c)
   end
   
   str = "Last victim :"
@@ -215,9 +216,8 @@ end
 function get_length_leaderboard()
   local maxi = 0
   if (graphics) then
-    for i = 1, #leaderboard.list do
-      local name = leaderboard.list[i].name or ""
-      local length = str_width(name)
+    for i,player in pairs(leaderboard.list) do
+      local length = str_width(player.rank .. "."..player.name.."("..player.score..")")
       if length > maxi then
         maxi = length
       end  

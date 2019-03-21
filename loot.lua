@@ -88,6 +88,7 @@ function be_looted_by(s, player)
 end
 
 function crown_player(s, player) 
+  -- last_pickup_crown = love.time.getTime()
   crowned_player = player.id
 end
 -- function heal_player(player) player.hp = player.hp + 5 end

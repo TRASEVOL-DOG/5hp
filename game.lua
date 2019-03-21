@@ -16,6 +16,7 @@ require("fx")
 
 require("map")
 require("player")
+-- require("enemy")
 require("destroyable")
 require("loot")
 require("bullet")
@@ -35,6 +36,7 @@ function _init()
   
   init_object_mgr(
     "player",
+    -- "enemy",
     "bullet",
     "destroyable",
     "loot",
