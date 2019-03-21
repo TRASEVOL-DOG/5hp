@@ -263,7 +263,6 @@ function sync_crowned_player(data)
 end
 
 
-
 function server_input()
 --  if not server then
 --    return

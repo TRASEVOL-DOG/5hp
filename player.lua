@@ -383,13 +383,6 @@ function draw_player(s)
   local x = s.x + s.diff_x
   local y = s.y + s.diff_y
 
---  line(x + (s.w) * cos(s.angle), y + (s.h) * sin(s.angle), x + (s.w)*1.5 * cos(s.angle), y + (s.h)*1.5 * sin(s.angle), 3)
-  -- if crowned_player then
-    -- debuggg = crowned_player
-  -- else
-    -- debuggg = "sssss"
-  -- end
-  -- debuggg = debuggg .. "                      "
   local state = "idle"
   local a = cos(s.angle) < 0
   local animt = s.animt * (s.v.x > 0 == a and 1 or -1)
@@ -419,8 +412,7 @@ function draw_player(s)
     draw_anim(x, y-2, "player", state, animt, 0, a)
     
     if crowned_player == s.id then
-      -- debuggg = "drawing               "
-      rectfill(s.x, s.y , s.x + 2, s.y +6 , 1)
+      draw_player_crown(s, x, y)
     end
     
   else
@@ -553,8 +545,10 @@ function add_score(s)
   s.score = s.score + 1
 end
 
-function draw_player_crown()
-  rectfill(s.x, s.y , s.x + 2, s.y +6 , 1)  
+function draw_player_crown(s, x, y)
+  x = x or s.x
+  y = y or s.y
+  rectfill(x, y , x + 2, y + 6 , 1)  
 end
 
 function draw_player_names()
