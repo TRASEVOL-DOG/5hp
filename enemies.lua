@@ -9,7 +9,7 @@ function create_enemy(id,x,y)
   
   local s = {
     id                  = id,
-    name                = "",
+    name                = "helldog",
     update              = update_enemy,
     draw                = draw_enemy,
   
