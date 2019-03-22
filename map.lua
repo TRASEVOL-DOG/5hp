@@ -21,7 +21,7 @@ local walls = {2}
 
 original_map = {}
 
-local map_data = {[0]=
+map_data = {[0]=
   {[0]=2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
   {[0]=2,2,2,2,2,2,2,2,2,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
   {[0]=2,2,2,2,2,2,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,2,2,0,0,0,0,2,2,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
@@ -97,7 +97,7 @@ local map_data = {[0]=
 }
 
 function init_map()
-  original_map = copy_table(map_data)
+  original_map = copy_table(map_data, true)
   
   local owalls = walls
   walls = {}
@@ -184,7 +184,7 @@ wall_flash = {}
 -- x and y have to be tile coordinates (so flr(world_x/8))
 function hurt_wall(x,y,dmg)
   if not server_only then
-    add(wall_flash,{x=x, y=y, t=0.05})
+    add(wall_flash,{x=x, y=y, t=0.03})
     return
   end
   
@@ -214,7 +214,7 @@ function grow_walls()
   growth_t = growth_t - delta_time
   if growth_t > 0 then return end
   
-  for i=1,10 do
+  for i=1,16 do
     local x,y = irnd(MAP_W)-1, irnd(MAP_H)-1
     local hp = wall_hp[y][x]
   
@@ -222,21 +222,21 @@ function grow_walls()
       hp = min(hp+0.5+rnd(1), WALL_HP)
       
       if hp == WALL_HP and map_data[y][x] == 0 then
-        update_map_wall(wall.x, wall.y, true)
+        update_map_wall(x, y, true)
       end
       
       wall_hp[y][x] = hp
     end
   end
   
-  growth_t = 0.1
+  growth_t = 0.03
 end
 
 -- x and y have to be tile coordinates (so flr(world_x/8))
 -- exists is true (growth) or false (destroyed)
 function update_map_wall(x,y,exists,fx)
   if fx then
-    add(wall_flash,{x=x, y=y, t=0.05})
+    add(wall_flash,{x=x, y=y, t=0.03})
   end
   
   map_data[y][x] = exists and 2 or 0
@@ -268,6 +268,11 @@ function update_walltile(x,y,recursive)
     
     draw_to(map_ground_surf)
     spr(59+irnd(4),xx,yy)
+    
+    draw_to(map_wall_surf)
+    pal(7,6)
+    spr(0,xx,yy)
+    pal(7,7)
   elseif v == 2 then
     local n
     local left = (d_line[x-1] == 0)
@@ -460,9 +465,13 @@ function gen_mapsurf()
           spr(21+irnd(2), xx+8, yy)
         end
         
+        if up then
+          spr(26, xx, yy-8)
+        end
+        
         if down then
           if downleft and downright then
-            spr(25+irnd(4), xx, yy+8)
+            spr(26+irnd(3), xx, yy+8)
           elseif downleft then
             spr(24, xx, yy+8)
           elseif downright then
