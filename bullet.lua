@@ -243,15 +243,39 @@ end
 function kill_bullet(s)
   if s.time_despawn > 1 then 
     s.speed = s.speed * .95
-    create_explosion(s.x, s.y, 10+rnd(1.5), pick{1,2,3})
-    for i = -5, 5 do
-      for j = -5, 5 do
-        if check_mapcol(s,s.x + i*4 ,s.y + j*4) then
-        -- flr((s.x + i*4)/8)
-        hurt_wall(flr((s.x + i*4)/8),flr((s.y + j*4)/8), 6) end
-      end
-    end
+    create_explosion(s.x, s.y, 15+rnd(5), pick{1,2,3})
+    
+    local tx = flr(s.x / 8) 
+    local ty = flr(s.y / 8) 
+    
+    hurt_wall(tx-1, ty-2, 7)
+    hurt_wall(tx,   ty-2, 7)
+    hurt_wall(tx+1, ty-2, 7)
+
+    hurt_wall(tx-2, ty-1, 7)
+    hurt_wall(tx-1, ty-1, 7)
+    hurt_wall(tx,   ty-1, 7)
+    hurt_wall(tx+1, ty-1, 7)
+    hurt_wall(tx+2, ty-1, 7)
+
+    hurt_wall(tx-2, ty  , 7)
+    hurt_wall(tx-1, ty  , 7)
+    hurt_wall(tx,   ty  , 7)
+    hurt_wall(tx+1, ty  , 7)
+    hurt_wall(tx+2, ty  , 7)
+
+    hurt_wall(tx-2, ty+1, 7)
+    hurt_wall(tx-1, ty+1, 7)
+    hurt_wall(tx,   ty+1, 7)
+    hurt_wall(tx+1, ty+1, 7)
+    hurt_wall(tx+2, ty+1, 7)
+
+    hurt_wall(tx-1, ty+2, 7)
+    hurt_wall(tx,   ty+2, 7)
+    hurt_wall(tx+1, ty+2, 7)
+    
   end
+  
   s.anim_state = "killed"
 end
 
