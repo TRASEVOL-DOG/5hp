@@ -603,10 +603,10 @@ player_const = {
 }
 
 weapon_const = {
-  loot_sprites  = {112 ,113 ,114     },
-  sprites       = {120 ,121 ,122     },
-  fire_rate     = {.1  ,.6  ,.05     },
-  ammo          = {0   ,12  ,30      },
+  loot_sprites  = {112 ,113 ,114 ,116    },
+  sprites       = {120 ,121 ,122 ,124    },
+  fire_rate     = {.1  ,.6  ,.05 ,1.3    },
+  ammo          = {0   ,12  ,30  ,5      },
   fire_mod      = {
                     function (s)
                       create_bullet(s.id)
@@ -647,6 +647,14 @@ weapon_const = {
                         
                         s.angle = angle 
                       end
+                    end
+                    ,
+                    function(s)
+                    
+                      b = create_bullet(s.id)
+                      b.speed = b.speed * 2.5
+                      b.time_despawn = 0.8 * 2.5
+                      
                     end
                   }
 }

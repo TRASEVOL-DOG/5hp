@@ -81,6 +81,7 @@ function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
   if not server_only then
     for i=1,16 do
       create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{1,2,3})
+      -- create_explosion(s.x, s.y, 10+rnd(1.5), pick{1,2,3})
     end
   end
   
@@ -149,7 +150,10 @@ function kill_enemy(s)
 
   if not server_only then
     for i=1,16 do
+      -- function create_smoke(x,y,spd,r,c,a)
+      -- function create_explosion(x,y,r,c)
       create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{1,2,3})
+      -- create_explosion(s.x, s.y, 10+rnd(1.5), pick{1,2,3})
     end
   end
   sfx("get_hit", s.x, s.y) 
@@ -198,6 +202,7 @@ end
   
   -- if server_only then
     -- acc = acc * 1.25
+      -- create_explosion(s.x, s.y, 10+rnd(1.5), pick{1,2,3})
     -- dec = dec * 1.25
   -- else
     -- acc = acc * 0.75

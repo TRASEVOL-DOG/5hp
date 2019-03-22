@@ -188,7 +188,8 @@ function hurt_wall(x,y,dmg)
     return
   end
   
-  if x==0 or y==0 or x==MAP_W-1 or y==MAP_H-1 then return end
+  -- if x==0 or y==0 or x==MAP_W-1 or y==MAP_H-1 then return end
+  if x<=0 or y>=0 or x>=MAP_W-1 or y>=MAP_H-1 then return end
   
   local hp = wall_hp[y][x]
   if not hp then

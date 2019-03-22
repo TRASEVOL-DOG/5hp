@@ -35,7 +35,6 @@ function create_bullet(player_id, id)
     draw                = draw_bullet,
     regs                = {"to_update", "to_draw1", "bullet"},
     speed               = 18, -- per second
-    speed_lost_rebound  = 1/4,
     v                   = { x = 0, y = 0}, -- movement vector
     time_despawn        = 0.8, -- seconds a bullet would have at spawn before despawn
     timer_despawn       = 0, -- seconds remaining before despawn
@@ -110,6 +109,7 @@ function update_bullet(s)
   
 
   s.timer_despawn = s.timer_despawn - delta_time
+  if s.time_despawn > 1 then s.speed = s.speed * .90 end
   
   
   if( s.timer_despawn < 0 and s.anim_state ~= "killed") then 
@@ -144,12 +144,12 @@ function update_move_bullet(s)
     local tx = flr((nx + col.dir_x * s.w * 0.5) / 8)
     s.x = tx * 8 + 4 - col.dir_x * (8 + s.w + 0.5) * 0.5
     s.v.x = s.v.x *-1
-    s.speed = s.speed * ( 1 - s.speed_lost_rebound )
-    s.timer_despawn = s.timer_despawn * ( 1 - s.speed_lost_rebound ) -- Remy was here: made bullet lose lifetime on bounce
+    s.speed = s.speed * ( 1 - bullet_const.speed_lost_rebound )
+    s.timer_despawn = s.timer_despawn * ( 1 - bullet_const.speed_lost_rebound ) -- Remy was here: made bullet lose lifetime on bounce
     
     local ty = flr((s.y + col.dir_y * s.h * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    
+    kill_bullet(s)
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.x = nx
@@ -161,12 +161,12 @@ function update_move_bullet(s)
     local ty = flr((ny + col.dir_y * s.h * 0.5) / 8)
     s.y = ty * 8 + 4 - col.dir_y * (8 + s.h + 0.5) * 0.5
     s.v.y = s.v.y *-1
-    s.speed = s.speed * ( 1 - s.speed_lost_rebound )
-    s.timer_despawn = s.timer_despawn * ( 1 - s.speed_lost_rebound )
+    s.speed = s.speed * ( 1 - bullet_const.speed_lost_rebound )
+    s.timer_despawn = s.timer_despawn * ( 1 - bullet_const.speed_lost_rebound )
     
     local tx = flr((s.x + col.dir_x * s.w * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    
+    kill_bullet(s)
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.y = ny
@@ -241,6 +241,17 @@ function draw_bullet(s)
 end
 
 function kill_bullet(s)
+  if s.time_despawn > 1 then 
+    s.speed = s.speed * .95
+    create_explosion(s.x, s.y, 10+rnd(1.5), pick{1,2,3})
+    for i = -5, 5 do
+      for j = -5, 5 do
+        if check_mapcol(s,s.x + i*4 ,s.y + j*4) then
+        -- flr((s.x + i*4)/8)
+        hurt_wall(flr((s.x + i*4)/8),flr((s.y + j*4)/8), 6) end
+      end
+    end
+  end
   s.anim_state = "killed"
 end
 
