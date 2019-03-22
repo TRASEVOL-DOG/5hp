@@ -45,6 +45,8 @@ function create_player(id,x,y)
     angle               = 0,
     speed               = 0,
     
+    skin                = pick{13, 11, 7, 3, 0},
+    
     -- { killed_by = {name : count}, killed = {name : count}, last_killer = player.name, last_killed = player.name}
     
     
@@ -406,6 +408,12 @@ function draw_player(s)
   
   palt(6,false)
   palt(1,true)
+  pal(7,s.skin)
+  
+  if s.id ~= my_id then
+    pal(9,8)
+    pal(12,11)
+  end
   
   if state ~= "dead" then
     -- drawing body outline
@@ -418,7 +426,7 @@ function draw_player(s)
     -- drawing rest of body
     palt(6,true)
     draw_anim(x, y-2, "player", state, animt, 0, a)
-    palt(0,false)
+    palt(6,false)
     
     if crowned_player == s.id then
       draw_player_crown(s, x, y)
@@ -450,6 +458,12 @@ function draw_player(s)
   
   palt(1,false)
   palt(6,true)
+  pal(7,7)
+  
+  if s.id ~= my_id then
+    pal(9,9)
+    pal(12,12)
+  end
 end
 
 function hurt_player(victim, id_attacker, bullet_type)
@@ -561,7 +575,11 @@ end
 function draw_player_crown(s, x, y)
   x = x or s.x
   y = y or s.y
-  rectfill(x, y , x + 2, y + 6 , 1)  
+--  rectfill(x, y , x + 2, y + 6 , 1)
+  
+  local dy = -10+cos(s.animt*0.5)
+
+  spr(224, x, y+dy)
 end
 
 function draw_player_names()

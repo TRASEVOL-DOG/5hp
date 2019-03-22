@@ -128,9 +128,9 @@ function _draw()
   
   draw_player_names()
   
-  camera()
-
   draw_crown_indicator()
+  
+  camera()
   
   local menu = querry_menu()
   
@@ -276,10 +276,10 @@ function draw_title()
   
   spritesheet("title")
   
-  local x = 0.5 * scrnw - 8 * 9
+  local x = 0.5 * scrnw - 9 * 9
   local y = 0.25 * scrnh - 14
   
-  for i=0,8 do
+  for i=0,9 do
     local s = (i*2)%16 + flr(i*2/16)*32
     local v = t*0.25+i*0.1
     
@@ -289,7 +289,7 @@ function draw_title()
     
     draw_spr_outline(s, x, yy, 2, 2, 6, a)
     draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
-    pal(14,9)
+    pal(14,10)
     spr(s, x, yy+1, 2, 2, a)
     pal(14,14)
     spr(s, x, yy, 2, 2, a)
@@ -310,7 +310,7 @@ function draw_title()
     
     draw_spr_outline(s, x, yy, 2, 2, 6, a)
     draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
-    pal(14,9)
+    pal(14,8)
     spr(s, x, yy+1, 2, 2, a)
     pal(14,14)
     spr(s, x, yy, 2, 2, a)
@@ -318,7 +318,7 @@ function draw_title()
     x = x + 18
   end
   
-  pal(3,3)
+  pal(14,14)
   
   spritesheet("sprites")
   
@@ -369,10 +369,27 @@ function crown_looted()
 end
 
 function indicate_crown(angle)
-  local camx, camy = get_camera_pos()
-  color(13)
-  line(player_list[my_id].x - camx + 10 * cos(angle+.5), player_list[my_id].y - camy + 10 * sin(angle+.5), player_list[my_id].x - camx + 20 * cos(angle+.5), player_list[my_id].y - camy + 20 * sin(angle+.5))
+--  local camx, camy = get_camera_pos()
+--  color(13)
+--  line(player_list[my_id].x - camx + 10 * cos(angle+.5), player_list[my_id].y - camy + 10 * sin(angle+.5), player_list[my_id].x - camx + 20 * cos(angle+.5), player_list[my_id].y - camy + 20 * sin(angle+.5))
 
+  local player = player_list[my_id]
+  if not player then return end
+
+  angle = angle + 0.5
+  
+  local l = 12 + cos(t)
+  local x = player.x + player.diff_x + l*cos(angle)
+  local y = player.y + player.diff_y + l*sin(angle)
+
+  palt(6,false)
+  palt(1,true)
+  
+  spr(232, x, y, 1, 1, angle)
+--  spr(233, x, y-4+cos(t))
+  
+  palt(6,true)
+  palt(1,false)
 end
 
 function game_over()
