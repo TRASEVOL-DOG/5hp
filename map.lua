@@ -257,7 +257,7 @@ function gen_mapsurf()
 
   
   palt(6,true)
-  for y = 0,MAP_H-2 do
+  for y = MAP_H-2,0,-1 do
     local d_line = map_data[y]
     for x = 0,MAP_W-1 do
       local v = d_line[x]
@@ -301,15 +301,15 @@ function gen_mapsurf()
         end
         
         if down then
-          spr(25+irnd(4), xx, yy+8)
-        end
-        
-        if downleft and not (down or left) then
-          spr(24, xx-8, yy+8)
-        end
-        
-        if downright and not (down or right) then
-          spr(25, xx+8, yy+8)
+          if downleft and downright then
+            spr(25+irnd(4), xx, yy+8)
+          elseif downleft then
+            spr(24, xx, yy+8)
+          elseif downright then
+            spr(25, xx, yy+8)
+          else
+            spr(79, xx, yy+8)
+          end
         end
       end
     end
