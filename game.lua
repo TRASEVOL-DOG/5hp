@@ -84,6 +84,7 @@ function _update(dt)
   end
 
   update_objects()
+  grow_walls()
   
   update_leaderboard()
   
@@ -286,11 +287,11 @@ function draw_title()
     local yy = y + dy
     local a = 0.03*cos(v+0.25)
     
-    draw_spr_outline(s, x, yy, 2, 2, 3, a)
-    draw_spr_outline(s, x, yy+1, 2, 2, 3, a)
-    pal(3,2)
+    draw_spr_outline(s, x, yy, 2, 2, 6, a)
+    draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
+    pal(14,9)
     spr(s, x, yy+1, 2, 2, a)
-    pal(3,0)
+    pal(14,14)
     spr(s, x, yy, 2, 2, a)
     
     x = x + 18
@@ -307,11 +308,11 @@ function draw_title()
     local yy = y + dy
     local a = 0.03*cos(v+0.25)
     
-    draw_spr_outline(s, x, yy, 2, 2, 3, a)
-    draw_spr_outline(s, x, yy+1, 2, 2, 3, a)
-    pal(3,2)
+    draw_spr_outline(s, x, yy, 2, 2, 6, a)
+    draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
+    pal(14,9)
     spr(s, x, yy+1, 2, 2, a)
-    pal(3,0)
+    pal(14,14)
     spr(s, x, yy, 2, 2, a)
     
     x = x + 18
