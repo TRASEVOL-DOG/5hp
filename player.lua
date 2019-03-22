@@ -603,8 +603,8 @@ player_const = {
 }
 
 weapon_const = {
-  loot_sprites  = {112 ,114 ,116     },
-  sprites       = {120 ,122 ,124     },
+  loot_sprites  = {112 ,113 ,114     },
+  sprites       = {120 ,121 ,122     },
   fire_rate     = {.1  ,.6  ,.05     },
   ammo          = {0   ,12  ,30      },
   fire_mod      = {

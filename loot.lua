@@ -11,14 +11,14 @@ function create_loot(id, type, x, y, weapon_id)
     draw         = draw_loot,
     regs         = {"to_update", "to_draw1", "loot"},
     looted_by    = nil,
-      
+
     x            = x or 0,
     y            = y or 0,
     w            = 8,
     h            = 8,
     loot_type    = type or 0, -- 0 for Crown, 1 for Health, 2 for weapon
     weapon_id    = weapon_id or nil, -- only if declared
-    t_y          = 0
+    animt        = 0
   }
   
   -- setting id
@@ -46,7 +46,7 @@ end
 
 function update_loot(s)
 
-  s.t_y = s.t_y + delta_time
+  s.animt = s.animt + delta_time
     
   -- if server_only then
     
@@ -64,7 +64,37 @@ function update_loot(s)
 end
 
 function draw_loot(s)
-  rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 14)  
+  spr(227, s.x, s.y+2)
+
+  palt(6,false)
+  palt(1,true)
+  
+  local flash
+  if s.animt%3 < 0.05 then
+    flash = true
+    all_colors_to(14)
+  end
+  
+  local a = 0.1*cos(0.6*s.animt)
+  local dy = -2+2*cos(0.4*s.animt)
+
+  if s.loot_type == 0 then -- crown
+    spr(224, s.x, s.y+dy, 1, 1, a)
+  elseif s.loot_type == 1 then -- health
+    spr(225, s.x, s.y+dy, 2, 1, a)
+  elseif s.weapon_id then -- weapon
+    local sp = weapon_const.loot_sprites[s.weapon_id]
+    spr(sp, s.x, s.y+dy, 1, 1, a)
+  else -- ???
+    rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 14)
+  end
+  
+  if flash then
+    all_colors_to()
+  end
+  
+  palt(6,true)
+  palt(1,false)
 end
 
 function be_looted_by(s, player)
