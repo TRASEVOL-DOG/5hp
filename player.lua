@@ -416,18 +416,25 @@ function draw_player(s)
     spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
     
     -- drawing rest of body
---    draw_anim(x, y-2, "player", state, animt, 0, a)
+    palt(6,true)
+    draw_anim(x, y-2, "player", state, animt, 0, a)
+    palt(0,false)
     
     if crowned_player == s.id then
       draw_player_crown(s, x, y)
     end
     
   else
-    -- drawing body
+    -- drawing body outline
     spr(142, x, y-1, 2, 2, 0)
     
     -- drawing arm + gun
     spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
+    
+    -- drawing body
+    palt(6,true)
+    spr(142, x, y-1, 2, 2, 0)
+    palt(6,false)
   end
   
   -- syncing debug
