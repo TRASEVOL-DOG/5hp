@@ -64,7 +64,7 @@ function update_loot(s)
 end
 
 function draw_loot(s)
-  rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 1)  
+  rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 14)  
 end
 
 function be_looted_by(s, player)

@@ -110,14 +110,20 @@ function _update(dt)
 end
 
 function _draw()
-  cls(2)
+  cls(10)
   camera()
   draw_map()
   
+  palt(0,false)
+  palt(6,true)
   
   apply_camera()
 
   draw_objects()
+  
+  camera()
+  draw_map_top()
+  apply_camera()
   
   draw_player_names()
   
@@ -171,7 +177,7 @@ function update_cursor(s)
 end
 
 function draw_cursor(s)
-  local sp = 130+ceil(s.sprite_t)*2
+  local sp = 256+ceil(s.sprite_t)*2
   local camx, camy = get_camera_pos()
 
   spr(sp, s.x-camx, s.y-camy, 2, 2)
@@ -203,7 +209,7 @@ end
 
 function get_camera_pos()
   local shk = cam.shkp/100
-  return cam.x+cam.shkx*shk, cam.y+cam.shky*shk
+  return round(cam.x+cam.shkx*shk), round(cam.y+cam.shky*shk)
 end
 
 function add_shake(p)
@@ -262,9 +268,10 @@ end
 
 function draw_title()
   local scrnw, scrnh = screen_size()
+  local c0,c1,c2 = 14,9,6
   
   font("big")
-  draw_text("Trasevol_Dog and Eliott present", scrnw/2, 8, 1, 1,2,3)
+  draw_text("Trasevol_Dog and Eliott present", scrnw/2, 8, 1, c0,c1,c2)
   
   spritesheet("title")
   
@@ -314,8 +321,8 @@ function draw_title()
   
   spritesheet("sprites")
   
-  draw_text("@Trasevol_Dog", scrnw-2, scrnh-26, 2, 3,2,0)
-  draw_text("@Eliott_MacR" , scrnw-2, scrnh-10, 2, 3,2,0)
+  draw_text("@Trasevol_Dog", scrnw-2, scrnh-26, 2, c0,c1,c2)
+  draw_text("@Eliott_MacR" , scrnw-2, scrnh-10, 2, c0,c1,c2)
 end
 
 function pause_menu() -- not an actual pause - access to settings & restart & main menu
@@ -326,7 +333,7 @@ end
 
 function draw_pause_background()
   local scrnw,scrnh=screen_size()
-  color(1)
+  color(6)
   for i=0,scrnh+scrnw,2 do
     line(i,0,i-scrnh,scrnh)
   end
@@ -359,12 +366,14 @@ function crown_looted()
   end
   return false
 end
+
 function indicate_crown(angle)
   local camx, camy = get_camera_pos()
-  color(1)
+  color(13)
   line(player_list[my_id].x - camx + 10 * cos(angle+.5), player_list[my_id].y - camy + 10 * sin(angle+.5), player_list[my_id].x - camx + 20 * cos(angle+.5), player_list[my_id].y - camy + 20 * sin(angle+.5))
 
 end
+
 function game_over()
   menu_back()
   menu_back()
@@ -380,6 +389,8 @@ end
 function draw_gameover()
   local scrnw, scrnh = screen_size()
   
+  local c0,c1,c2 = 14,8,6
+  
   font("big")
   
   local str = "* G A M E   O V E R *"
@@ -392,7 +403,7 @@ function draw_gameover()
     local st = str:sub(i,i)
     if st ~= ' ' then
       local yy = y + (4+2*sin(t*0.41+i*0.13))*cos(t*0.25+i*0.1)
-      draw_text(st, x, yy, 0, 0,3,3)
+      draw_text(st, x, yy, 0, c0,c1,c2)
     end
     x = x + str_width(st)
   end
@@ -404,6 +415,8 @@ function draw_gameover()
   local player = player_list[my_id]
   local last_kill = death_history.last_killer[my_id]
   
+  local c0,c1,c2 = 14,8,6
+  
   if last_kill and    last_kill.count ~= 1 then
     if last_kill.count == 21 then msg = "st" 
     elseif last_kill.count == 2 or last_kill.count == 22 then msg = "nd" 
@@ -413,9 +426,9 @@ function draw_gameover()
     msg = " for the "..last_kill.count.. msg .. " time"
   end
   if player then
-    draw_text("You got shot by ".. player.last_killer_name .. msg ..".", x, y-10, 1, 3, 1, 0)
+    draw_text("You got shot by ".. player.last_killer_name .. msg ..".", x, y-10, 1, c0,c1,c2)
   
-    draw_text("Score: "..player.score, x, y+10, 1, 3, 1, 0) -- doesn't work? where is the score stored??
+    draw_text("Score: "..player.score, x, y+10, 1, c0,c1,c2)
   end
 end
 
@@ -427,7 +440,7 @@ function draw_connection(tool_tip)
   local scrnw,scrnh = screen_size()
   local x,y = 2, 0.5*scrnh
   
-  local c0,c1,c2 = 3,1,0
+  local c0,c1,c2 = 14,9,6
   
   if client.connected then
     draw_text("Connected!", x, y-4, 0, c0,c1,c2)
@@ -448,10 +461,14 @@ end
 
 debuggg = ""
 function draw_debug()
+  if #debuggg == 0 then return end
+  
   local scrnw, scrnh = screen_size()
   
+  local c0,c1,c2 = 14,9,6
+  
   font("small")
-  draw_text("debug: "..debuggg, scrnw, scrnh-16, 2, 3)
+  draw_text("debug: "..debuggg, scrnw, scrnh-16, 2, c0,c1,c2)
 end
 
 function init_game()

@@ -412,38 +412,35 @@ function draw_player(s)
     end
   end
   
+  palt(6,false)
+  palt(1,true)
+  
   if state ~= "dead" then
     -- drawing body outline
-    draw_anim_outline(x, y-2, "player", state, animt, 0, 0, a)
+    draw_anim(x, y-2, "player", state, animt, 0, a)
     
-    -- drawing arm
-    pal(1,0)
-    spr(200, x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
-    pal(1,1)
+    -- drawing arm + gun
+    --spr(200, x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
+    spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
     
     -- drawing rest of body
-    draw_anim(x, y-2, "player", state, animt, 0, a)
+--    draw_anim(x, y-2, "player", state, animt, 0, a)
     
     if crowned_player == s.id then
       draw_player_crown(s, x, y)
     end
     
   else
-    -- drawing body outline
-    draw_spr_outline(203, x, y-1, 1, 1, 0)
-    
-    -- drawing gun
-    pal(3,0)
-    spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
-    pal(3,3)
-    
     -- drawing body
-    spr(203, x, y-1)
+    spr(142, x, y-1, 2, 2, 0)
+    
+    -- drawing arm + gun
+    spr(weapon_const.sprites[s.weapon_id], x, y-1.5, 1, 1, s.angle, false, a, 1/8, 5/8)
   end
   
   -- syncing debug
   if debug_mode then
-    all_colors_to(1)
+    all_colors_to(14)
     --if s.id == my_id then
     --  draw_anim(s.rx, s.ry-2, "player", state, s.animt * (s.v.x > 0 == a and -1 or 1), 0, 0, a)
     --else
@@ -451,6 +448,9 @@ function draw_player(s)
     --end
     all_colors_to()
   end
+  
+  palt(1,false)
+  palt(6,true)
 end
 
 function hurt_player(victim, id_attacker, bullet_type)
@@ -566,15 +566,21 @@ function draw_player_crown(s, x, y)
 end
 
 function draw_player_names()
+  local c0,c1,c2 = 14,8,6
+  local cm0,cm1,cm2 = 14,9,6 -- when your player
+  local cd0,cd1,cd2 = 8,0,6 -- when player dead
+  
   for s in group("player") do
     local x = s.x + s.diff_x
     local y = s.y + s.diff_y
   
     local str = s.name or ""
     if not s.alive and s.animt < 0 then
-      draw_text(str, x, y+6, 1, 2, 1, 0)
+      draw_text(str, x, y+6, 1, cd0,cd1,cd2)
+    elseif s.id == my_id then
+      draw_text(str, x, y+6, 1, cm0,cm1,cm2)
     else
-      draw_text(str, x, y+6, 1, 3, 1, 0)
+      draw_text(str, x, y+6, 1, c0,c1,c2)
     end
   end
 end
@@ -598,7 +604,8 @@ player_const = {
 }
 
 weapon_const = {
-  sprites       = {199 ,199 ,199     },
+  loot_sprites  = {112 ,114 ,116     },
+  sprites       = {120 ,122 ,124     },
   fire_rate     = {.1  ,.6  ,.05     },
   ammo          = {0   ,12  ,30      },
   fire_mod      = {
