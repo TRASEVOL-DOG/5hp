@@ -8,7 +8,9 @@ enemy_list = {} -- { id : enemy }
 local enemy_nextid = 1
               
 enemy_const = {
-  visible_range = 20,
+  visible_range = 40,
+  follow_range = 80,
+  follow_speed = 20,
   hit_time = .05
 }
 
@@ -99,9 +101,9 @@ end
 
 function draw_enemy(s)
   if s.hit_timer > 0 then
-    rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 3)  
+    rectfill(s.x, s.y , s.x + 8, s.y + 8, 3)  
   else
-    rectfill(s.x, s.y , s.x + s.w, s.y + s.h, 1)  
+    rectfill(s.x, s.y , s.x + 8, s.y + 8, 1)  
   end
 end
 
@@ -112,38 +114,113 @@ function hit_enemy(s)
 
 end
 
-
--- function update_movement(s)
-
-  -- if server_only then
-
-    -- MOVEMENT
-
-    -- local delta_time = delta_time
-    -- if s.delay then
-      -- delta_time = delta_time + 0.5 * delay
-    -- end
-
-    -- update_vec(s, delta_time)
-
-  -- else
-      -- we need the speed to figure out state on draw_player
-    -- s.speed = dist(s.v.x, s.v.y)
-
-  -- end
-
-  -- if not server_only then
-    -- s.diff_x = lerp(s.diff_x, 0, 20*delta_time)
-    -- s.diff_y = lerp(s.diff_y, 0, 20*delta_time)
-  -- end
-
-  -- translate vector to position according to delta (30 fps)
-  -- apply_v_to_pos(s)
-
--- end
-
 function idle(s)
+  if target_found(s) then
+    s.behave = moving
+  end
+
 end
+
+function target_found(s)
+  
+  local p_g = get_group_copy("player")
+  
+  for i, player in pairs(p_g) do
+    if player.alive and dista(s, player) < enemy_const.visible_range then
+      s.target = player.id
+      return true      
+    end
+  end
+  
+  return false
+  
+end
+
+function moving(s)
+  local target = player_list[s.target]
+  
+  if target and dista(s, target) < enemy_const.follow_range then
+    debuggg = "found"
+    s.angle = find_angle(s, target)
+    s.v = angle_to_v(s.angle)
+    update_movement_enemy(s)
+  else
+    debuggg = "goidle"
+    go_idle(s)
+  end
+  
+end
+
+function find_angle(s, t)
+  return atan2(t.x - s.x, t.y - s.y)
+end
+
+function angle_to_v(s)
+  return {x = cos(s), y = sin(s)}
+end
+
+function go_idle(s)
+  s.angle = 0
+  s.target = nil
+  s.v = {x = 0, y = 0}
+  
+  s.behave = idle
+  
+end
+
+function update_movement_enemy(s)
+
+  local speed = enemy_const.follow_speed
+    
+  -- actual move update
+  local nx = s.x + s.v.x * delta_time * speed
+  local col = check_mapcol(s,nx)
+  if col then
+    -- local tx = flr((nx + col.dir_x * s.w * 0.5) / 8)
+    -- s.x = tx * 8 + 4 - col.dir_x * (8 + s.w + 0.5) * 0.5
+    -- col = check_mapcol(s,nx,nil,true) or col
+    -- s.v.y = s.v.y - 1* col.dir_y * delta_time * speed
+    -- s.y = s.y - 1* col.dir_y * delta_time * speed * 2
+    
+    forget_target(s)
+  else
+    s.x = nx
+  end
+
+  local ny = s.y + s.v.y * delta_time * speed
+  local col = check_mapcol(s,nil,ny)
+  if col then
+    -- local ty = flr((ny + col.dir_y * s.h * 0.5) / 8)
+    -- s.y = ty * 8 + 4 - col.dir_y * (8 + s.h + 0.5) * 0.5
+    
+    -- col = check_mapcol(s,nil,ny,true) or col
+    -- s.v.x = s.v.x - 1* col.dir_x * delta_time * speed * 2
+    -- s.x = s.x - 1* col.dir_x * delta_time * speed * 2
+    
+    forget_target(s)
+  else
+    s.y = ny
+  end
+
+  
+  
+  -- s.x = s.x + s.v.x * delta_time * speed
+  -- s.y = s.y + s.v.y * delta_time * speed
+  collide_with_dest(s, enemy_const.follow_speed)
+end
+
+function forget_target(s)
+  s.target = nil
+  go_idle(s)
+end
+
+function collide_with_dest(s, acc)
+  local destroyable = collide_objgroup(s,"destroyable")
+  if destroyable and destroyable.alive then  -- Remy was here: made this use delta time (and acceleration)
+    s.v.x = s.v.x + sgn(s.x - destroyable.x) * acc * 0.5 * delta_time
+    s.v.y = s.v.y + sgn(s.y - destroyable.y) * acc * 0.5 * delta_time
+  end
+end  
 
 function kill_enemy(s)
 
@@ -284,13 +361,42 @@ end
     -- s.x, s.y = s.x - s.diff_x, s.y - s.diff_y
   -- end
 -- end
+-- function update_movement(s)
 
--- function distance( obj1, obj2 )
-  -- local x1 = obj1.x or 0
-  -- local y1 = obj1.y or 0
-  -- local x2 = obj2.x or 0
-  -- local y2 = obj2.y or 0
+  -- if server_only then
 
-  -- return dist(x1 - x2, y1 - y2)
-  
+    -- MOVEMENT
+
+    -- local delta_time = delta_time
+    -- if s.delay then
+      -- delta_time = delta_time + 0.5 * delay
+    -- end
+
+    -- update_vec(s, delta_time)
+
+  -- else
+      -- we need the speed to figure out state on draw_player
+    -- s.speed = dist(s.v.x, s.v.y)
+
+  -- end
+
+  -- if not server_only then
+    -- s.diff_x = lerp(s.diff_x, 0, 20*delta_time)
+    -- s.diff_y = lerp(s.diff_y, 0, 20*delta_time)
+  -- end
+
+  -- translate vector to position according to delta (30 fps)
+  -- apply_v_to_pos(s)
+
 -- end
+
+
+function dista( obj1, obj2 )
+  local x1 = obj1.x or 0
+  local y1 = obj1.y or 0
+  local x2 = obj2.x or 0
+  local y2 = obj2.y or 0
+
+  return dist(x1 - x2, y1 - y2)
+  
+end

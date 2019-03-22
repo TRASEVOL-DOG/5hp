@@ -254,6 +254,7 @@ function update_vec(s, delta_time)
   s.v.y = s.v.y + acc * s.dy_input
      
   collide_with_dest(s, acc)  
+  collide_with_enemy(s, acc)  
   
   cap_speed(s)
   
@@ -275,6 +276,13 @@ function collide_with_dest(s, acc)
   if destroyable and destroyable.alive then  -- Remy was here: made this use delta time (and acceleration)
     s.v.x = s.v.x + sgn(s.x - destroyable.x) * acc * 0.5
     s.v.y = s.v.y + sgn(s.y - destroyable.y) * acc * 0.5
+  end
+end
+function collide_with_enemy(s, acc)
+  local enemy = collide_objgroup(s,"enemy")
+  if enemy and enemy.alive then  -- Remy was here: made this use delta time (and acceleration)
+    s.v.x = s.v.x + sgn(s.x - enemy.x) * acc * 0.5
+    s.v.y = s.v.y + sgn(s.y - enemy.y) * acc * 0.5
   end
 end
 
