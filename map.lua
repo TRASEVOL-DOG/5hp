@@ -6,12 +6,16 @@ require("maths")
 MAP_W = 128
 MAP_H = 72
 
+WALL_HP = 5
+
 map = nil
 
 spawn_points = {}
 spawn_points_copy = {}
 cacti_spawn_points = {}
 --ground = {}
+
+wall_hp = {}
 
 local walls = {2}
 
@@ -94,26 +98,27 @@ local map_data = {[0]=
 
 function init_map()
   original_map = copy_table(map_data)
-
-  local i,j = 0, 0
-  for i = 0,  (MAP_H-1) do
-    for j = 0,  (MAP_W-1) do
-      local m = map_data[i][j]
-      if m == 8 then
-        add(spawn_points, {x = j*8+4, y = i*8+4})
-      elseif m == 9 then
---        add(cacti_spawn_points, {x = j*8+4, y = i*8+4})
-      end
-    end
-  end
-  
-  spawn_points_copy = copy_table(spawn_points_copy)
   
   local owalls = walls
   walls = {}
   for _,i in ipairs(owalls) do
     walls[i] = true
   end
+
+  local i,j = 0, 0
+  for i = 0,  (MAP_H-1) do
+    wall_hp[i] = {}
+    for j = 0,  (MAP_W-1) do
+      local m = map_data[i][j]
+      if m == 8 then
+        add(spawn_points, {x = j*8+4, y = i*8+4})
+      elseif m == 2 then
+        wall_hp[i][j] = WALL_HP
+      end
+    end
+  end
+  
+  spawn_points_copy = copy_table(spawn_points_copy)
   
   gen_mapsurf()
 end
@@ -134,6 +139,13 @@ function draw_map()
   palt(0,false)
   draw_surface(map_ground_surf, sx, sy, x, y, w, h)
   palt(0,true)
+  
+  pal(7,14)
+  for _,s in pairs(wall_flash) do
+    local xx,yy = s.x*8+4, s.y*8+4
+    spr(0,xx-x, yy-y)
+  end
+  pal(7,7)
 end
 
 function draw_map_top()
@@ -153,16 +165,164 @@ function draw_map_top()
   palt(0,false)
   draw_surface(map_wall_surf, sx, sy, x, y, w, h)
   palt(0,true)
+  
+  pal(7,14)
+  for i,s in pairs(wall_flash) do
+    local xx,yy = s.x*8+4, s.y*8+4
+    spr(0,xx-x, yy-y)
+    
+    s.t = s.t-delta_time
+    if s.t <= 0 then
+      delat(wall_flash, i)
+    end
+  end
+  pal(7,7)
 end
 
+wall_flash = {}
 
-
-function update_map_wall(x,y,exists) -- exists is true or false (destroyed)
+-- x and y have to be tile coordinates (so flr(world_x/8))
+function hurt_wall(x,y,dmg)
+  if not server_only then
+    add(wall_flash,{x=x, y=y, t=0.05})
+    return
+  end
   
+  if x==0 or y==0 or x==MAP_W-1 or y==MAP_H-1 then return end
+  
+  local hp = wall_hp[y][x]
+  if not hp then
+    castle_print("/!\\ Attempt to damage an inexistant wall!")
+    return
+  end
+  
+  hp = hp-dmg
+  
+  if hp <= 0 then
+    hp = 0
+    update_map_wall(x,y,false)
+    castle_print("destroying wall!!")
+  end
+  
+  wall_hp[y][x] = hp
+end
+
+growth_t = 0
+function grow_walls()
+  if not server_only then return end
+
+  growth_t = growth_t - delta_time
+  if growth_t > 0 then return end
+  
+  for i=1,10 do
+    local x,y = irnd(MAP_W)-1, irnd(MAP_H)-1
+    local hp = wall_hp[y][x]
+  
+    if hp and hp < WALL_HP then
+      hp = min(hp+0.5+rnd(1), WALL_HP)
+      
+      if hp == WALL_HP and map_data[y][x] == 0 then
+        update_map_wall(wall.x, wall.y, true)
+      end
+      
+      wall_hp[y][x] = hp
+    end
+  end
+  
+  growth_t = 0.1
+end
+
+-- x and y have to be tile coordinates (so flr(world_x/8))
+-- exists is true (growth) or false (destroyed)
+function update_map_wall(x,y,exists,fx)
+  if fx then
+    add(wall_flash,{x=x, y=y, t=0.05})
+  end
+  
+  map_data[y][x] = exists and 2 or 0
+  castle_print(""..map_data[y][x])
+  
+  update_walltile(x,y,true)
 end
 
 function update_walltile(x,y,recursive)
+  if server_only then return end
 
+  if recursive then
+    update_walltile(x-1,y)
+    update_walltile(x+1,y)
+    update_walltile(x,y-1)
+    update_walltile(x,y+1)
+  end
+  
+  local d_line = map_data[y]
+  local v = d_line[x]
+  
+  local xx = x*8+4
+  local yy = y*8+4
+  
+  if v == 0 then
+    if original_map[y][x] == 0 then
+      return
+    end
+    
+    draw_to(map_ground_surf)
+    spr(59+irnd(4),xx,yy)
+  elseif v == 2 then
+    local n
+    local left = (d_line[x-1] == 0)
+    local right = (d_line[x+1] == 0)
+    
+    if left and right then
+      n = 53
+    elseif left then
+      n = 51
+    elseif right then
+      n = 52
+    else
+      n = 47+irnd(3)
+    end
+    
+    draw_to(map_ground_surf)
+    spr(n,xx,yy)
+  
+  
+    draw_to(map_wall_surf)
+  
+    local k = 0
+    if x<=0       or d_line[x-1] == 2    then k = k+1 end
+    if x>=MAP_W-1 or d_line[x+1] == 2    then k = k+2 end
+    if y<=0       or map_data[y-1][x]==2 then k = k+4 end
+    if y>=MAP_H-1 or map_data[y+1][x]==2 then k = k+8 end
+
+    local s = 55+irnd(4)
+    
+    if k == 15 then
+      local i = min(x,y,MAP_W-1-x,MAP_H-1-y)
+      if i < 2 then
+        s = 30+i
+      end
+    end
+    
+    spr(s, xx, yy)
+    
+    local poss = {{0},{1},{2},{0},{1},{2},{0,1},{1,2},{2,0}}
+    local p = pick(poss)
+    pal(11,5)
+    pal(12,5)
+    pal(13,5)
+    for c in all(p) do
+      pal(11+c,14)
+    end
+    
+    spr(32+k, xx, yy)
+    
+    pal(11,11)
+    pal(12,12)
+    pal(13,13)
+  end
+  
+  draw_to()
 end
 
 function check_mapcol(s,x,y,further)
@@ -346,7 +506,7 @@ function gen_mapsurf()
         
         spr(s, xx, yy)
         
-        local poss = {{0},{1},{2},{0,1},{1,2},{2,0}}
+        local poss = {{0},{1},{2},{0},{1},{2},{0,1},{1,2},{2,0}}
         local p = pick(poss)
         pal(11,5)
         pal(12,5)

@@ -17,7 +17,7 @@ function init_network()
     server.share[4] = {} -- destroyables
     server.share[5] = {} -- loot
     server.share[6] = {} -- crowned player
-    server.share[7] = {} -- enemy player
+    server.share[7] = {} -- enemies
   else
     shot_id = 0
     client.home[4] = shot_id
@@ -66,6 +66,7 @@ function client_input(diff)
   sync_crowned_data(client.share[6])
   sync_enemy(client.share[7])
   
+  sync_map(diff[8])
 end
 
 function client_output()
@@ -315,6 +316,24 @@ function sync_crowned_data(data)
   crowned_player = data
 end
 
+function sync_map(data_diff)
+  if not data_diff then return end
+
+  for y,sd_line in pairs(data_diff) do
+    local d_line = map_data[y]
+    
+    for x,sv in pairs(sd_line) do
+      local v = d_line[x]
+      
+      if sv ~= v then
+        update_map_wall(x, y, sv == 2, true)
+      end
+    end
+  end
+end
+
+
+
 function server_input()
 --  if not server then
 --    return
@@ -475,6 +494,7 @@ function server_output()
     }
   end
   
+  server.share[8] = map_data
 end
 
 function server_new_client(id)
@@ -568,10 +588,20 @@ end
 --       [4] = looted_by,
 --       [5] = killer_id
 --     },
---   [6] = { -- crown_data
---       crowned_player,
+--   [6] = crowned_player_id,
+--   [7] = { -- enemy_data
+--     [enemy_id] = {
+--       [1]  = x,
+--       [2]  = y,
+--       [3]  = v.x,
+--       [4]  = v.y,
+--       [5]  = alive,
+--       [6]  = angle,
+--       [7]  = hp,
+--     },
 --     ...
---   }
+--   },
+--   [8] = map_data
 -- }
 
 

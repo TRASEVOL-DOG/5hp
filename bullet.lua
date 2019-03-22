@@ -146,6 +146,10 @@ function update_move_bullet(s)
     s.v.x = s.v.x *-1
     s.speed = s.speed * ( 1 - s.speed_lost_rebound )
     s.timer_despawn = s.timer_despawn * ( 1 - s.speed_lost_rebound ) -- Remy was here: made bullet lose lifetime on bounce
+    
+    local ty = flr((s.y + col.dir_y * s.h * 0.5) / 8)
+    hurt_wall(tx,ty,2)
+    
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.x = nx
@@ -159,6 +163,10 @@ function update_move_bullet(s)
     s.v.y = s.v.y *-1
     s.speed = s.speed * ( 1 - s.speed_lost_rebound )
     s.timer_despawn = s.timer_despawn * ( 1 - s.speed_lost_rebound )
+    
+    local tx = flr((s.x + col.dir_x * s.w * 0.5) / 8)
+    hurt_wall(tx,ty,2)
+    
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.y = ny
