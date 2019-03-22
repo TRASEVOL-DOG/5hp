@@ -276,10 +276,10 @@ function draw_title()
   
   spritesheet("title")
   
-  local x = 0.5 * scrnw - 8 * 9
+  local x = 0.5 * scrnw - 9 * 9
   local y = 0.25 * scrnh - 14
   
-  for i=0,8 do
+  for i=0,9 do
     local s = (i*2)%16 + flr(i*2/16)*32
     local v = t*0.25+i*0.1
     
@@ -289,7 +289,7 @@ function draw_title()
     
     draw_spr_outline(s, x, yy, 2, 2, 6, a)
     draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
-    pal(14,9)
+    pal(14,10)
     spr(s, x, yy+1, 2, 2, a)
     pal(14,14)
     spr(s, x, yy, 2, 2, a)
@@ -310,7 +310,7 @@ function draw_title()
     
     draw_spr_outline(s, x, yy, 2, 2, 6, a)
     draw_spr_outline(s, x, yy+1, 2, 2, 6, a)
-    pal(14,9)
+    pal(14,8)
     spr(s, x, yy+1, 2, 2, a)
     pal(14,14)
     spr(s, x, yy, 2, 2, a)
@@ -318,7 +318,7 @@ function draw_title()
     x = x + 18
   end
   
-  pal(3,3)
+  pal(14,14)
   
   spritesheet("sprites")
   
