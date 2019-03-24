@@ -127,7 +127,7 @@ end
 function draw_map()
   local w,h = screen_size()
   local x,y = get_camera_pos()
-  local sx,sy
+  local sx,sy = 0,0
 
   if x<0 then sx,x,w = -x,0,w-x end
   if y<0 then sy,y,h = -y,0,h-y end
@@ -143,7 +143,7 @@ function draw_map()
   pal(7,14)
   for _,s in pairs(wall_flash) do
     local xx,yy = s.x*8+4, s.y*8+4
-    spr(0,xx-x, yy-y)
+    spr(0,xx-x+sx, yy-y+sy)
   end
   pal(7,7)
 end
@@ -151,7 +151,7 @@ end
 function draw_map_top()
   local w,h = screen_size()
   local x,y = get_camera_pos()
-  local sx,sy
+  local sx,sy = 0,0
   
   y = y + 8
 
@@ -169,7 +169,7 @@ function draw_map_top()
   pal(7,14)
   for i,s in pairs(wall_flash) do
     local xx,yy = s.x*8+4, s.y*8+4
-    spr(0,xx-x, yy-y)
+    spr(0,xx-x+sx, yy-y+sy)
     
     s.t = s.t-delta_time
     if s.t <= 0 then
