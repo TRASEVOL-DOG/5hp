@@ -77,11 +77,13 @@ function create_bullet(player_id, id)
   -- check if in wall
   s.anim_state = "stopped"
   
+  local safety = 10
   local col = check_mapcol(s,s.x,s.y)
-  while col do
+  while col and safety > 0 do
     s.x = s.x - s.v.x
     s.y = s.y - s.v.y
     col = check_mapcol(s)
+    safety = safety - 1
   end
   
   s.timer_despawn = s.time_despawn
