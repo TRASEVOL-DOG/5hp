@@ -109,7 +109,6 @@ function client_output()
     client.home[9] = flr(my_player.y + my_player.diff_y)
     
     client.home[11]= my_player.weapon_id
-    client.home[12]= my_player.hp
     client.home[13]= my_player.ammo
     
   end
@@ -179,6 +178,9 @@ function sync_players(player_data)
     p.angle = p_d[6]
     p.score = p_d[7]
     p.name = p_d[8]
+    p.last_killer_id = p_d[9]
+    p.hp = p_d[10]
+    
   end
 end
 
@@ -207,7 +209,7 @@ function sync_enemy(enemy_data)
   
   for id,e_d in pairs(enemy_data) do  -- syncing players with server data
     if not enemy_list[id] then
-      create_enemy(id, e_d[1], e_d[2], e_d[3], e_d[4], e_d[5], e_d[6], e_d[7], e_d[8])
+      create_enemy(id, e_d[1], e_d[2], e_d[3], e_d[4], e_d[5], e_d[6], e_d[7])
     end
     
     local p = enemy_list[id]
@@ -245,7 +247,7 @@ function sync_bullets(bullet_data)
   
   for id,b_d in pairs(bullet_data) do  -- syncing players with server data
     if not bullet_list[id] then
-      create_bullet(b_d[5], id)
+      local b = create_bullet(b_d[5], id)
     end
     local b = bullet_list[id]
     
@@ -259,6 +261,7 @@ function sync_bullets(bullet_data)
       b.diff_y = b.diff_y + b.y - y
       b.x = x
       b.y = y
+      b.type = b_d[6]
     end
   end
 end
@@ -382,7 +385,7 @@ function server_input()
       end
       
       player.weapon_id = ho[11] or 1
-      player.hp = ho[12] or 1
+      -- player.hp = ho[12] or 1
       player.ammo = ho[13] or 1
       
     else
@@ -417,7 +420,8 @@ function server_output()
       p.angle,
       p.score,
       p.name,
-      p.last_killer_id
+      p.last_killer_id,
+      p.hp
     }
   end
   
@@ -432,7 +436,8 @@ function server_output()
     bullet_data[id] = {
       b.x, b.y,
       b.v.x, b.v.y,
-      b.from
+      b.from,
+      b.type
     }
   end
   
@@ -489,8 +494,7 @@ function server_output()
       p.v.x, p.v.y,
       p.alive,
       p.angle,
-      p.hp,
-      p.behavior,
+      p.hp
     }
   end
   

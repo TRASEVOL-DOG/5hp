@@ -25,7 +25,7 @@ function create_bullet(player_id, id)
   }
   local s = {
     from                = player_id, -- player id
-    type                = 0,
+    type                = 0, -- 0 for normal, 1 for grenade, 2 for heavy rifle
     w                   = 4,
     h                   = 4,
     animt               = 0,
@@ -109,7 +109,7 @@ function update_bullet(s)
   
 
   s.timer_despawn = s.timer_despawn - delta_time
-  if s.time_despawn > 1 then s.speed = s.speed * .90 end
+  if s.type == 1 then s.speed = s.speed * .90 end
   
   
   if( s.timer_despawn < 0 and s.anim_state ~= "killed") then 
@@ -149,7 +149,9 @@ function update_move_bullet(s)
     
     local ty = flr((s.y + col.dir_y * s.h * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    kill_bullet(s)
+    if s.type == 1 then 
+      kill_bullet(s)
+    end
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.x = nx
@@ -166,7 +168,9 @@ function update_move_bullet(s)
     
     local tx = flr((s.x + col.dir_x * s.w * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    kill_bullet(s)
+    if s.type == 1 then 
+      kill_bullet(s)
+    end
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.y = ny
@@ -183,8 +187,7 @@ function do_collisions_obj(s) -- collision with objects
   local killed = collide_objgroup(s,"player")
   if killed and killed.id ~= s.from and killed.alive then
     local killer = player_list[s.from]
-    send_player_off(killed, s.v.x, s.v.y )
-    hurt_player(killed, killer.id, s.type)
+    hurt_player(killed, killer.id, s)
     kill_bullet(s)
   end
   
@@ -193,7 +196,7 @@ function do_collisions_obj(s) -- collision with objects
   if(#enemy>0) then
     for i=1, #enemy do
       if enemy[i].alive then
-        hit_enemy(enemy[i])
+        hit_enemy(enemy[i], s)
         kill_bullet(s)
       end
     end
@@ -241,9 +244,12 @@ function draw_bullet(s)
 end
 
 function kill_bullet(s)
-  if s.time_despawn > 1 then 
+
+  s.anim_state = "killed"
+  
+  if s.type == 1 then 
     s.speed = s.speed * .95
-    create_explosion(s.x, s.y, 15+rnd(5), pick{1,2,3})
+    create_explosion(s.x, s.y, 17+rnd(5), pick{1,2,3})
     
     local tx = flr(s.x / 8) 
     local ty = flr(s.y / 8) 
@@ -274,9 +280,35 @@ function kill_bullet(s)
     hurt_wall(tx,   ty+2, 7)
     hurt_wall(tx+1, ty+2, 7)
     
+    -- local players = all_collide_objgroup(s,"destroyable")
+    -- if destroyable and destroyable.alive then  -- Remy was here: made this use delta time (and acceleration)
+      -- s.v.x = s.v.x + sgn(s.x - destroyable.x) * acc * 0.5
+      -- s.v.y = s.v.y + sgn(s.y - destroyable.y) * acc * 0.5
+    -- end
+
+   
+    local list_player = get_group_copy("player")
+    
+    if(#list_player>0) then
+      for i,p in pairs(list_player) do
+        if p.alive and dista(s, p) < weapon_const.explosion_range then
+          hit_player(p, s.from, s)
+        end
+      end
+    end
+   
+    local list_enemy = get_group_copy("enemy")
+    
+    if(#list_enemy>0) then
+      for i,p in pairs(list_enemy) do
+        if dista(s, p) < weapon_const.explosion_range then
+          hit_enemy(p, s)
+        end
+      end
+    end
+    
   end
-  
-  s.anim_state = "killed"
+
 end
 
 function deregister_bullet(s)
