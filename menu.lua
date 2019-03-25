@@ -3,6 +3,7 @@
 
 require("drawing")
 require("maths")
+local utf8 = require("utf")
 
 
 local menu_x, menu_y = 0,0
@@ -89,7 +90,7 @@ function update_menu(x,y)
   local curx,cury=mouse_pos()
   
   if menulock or curx>x-m.w/2 and curx<x+m.w/2 and cury>y-m.h/2 and cury<y+m.h/2+m.linespace then
-    local oy=y-m.h/2+8
+    local oy=y-m.h/2
     
     if not menulock then
       for o in all(m) do
@@ -255,7 +256,7 @@ function menu_textinput(text)
   if not o.txt or not menulock then return end
   
   o.txt = o.txt..text
-  if #o.txt>o.mlen then o.txt=o.txt:sub(1,o.mlen) end
+  if utf8.len(o.txt) > o.mlen then o.txt = utf8.sub(o.txt, 1, o.mlen) end
   
   o.call(o.txt)
 end
@@ -264,8 +265,9 @@ function menu_keypressed(key)
   if curmenu and menus[curmenu] and menus[curmenu].chosen then
     local o = menus[curmenu].chosen
     if o.txt and menulock then
-      if key == "backspace" then
-        o.txt = o.txt:sub(1, #o.txt-1)
+      if key == "backspace" and #o.txt > 0 then
+        local otxt = o.txt
+        o.txt = utf8.sub(o.txt, 1, utf8.len(o.txt)-1)
         o.call(o.txt)
       elseif key == "v" and (love.keyboard.isDown("rctrl") or love.keyboard.isDown("lctrl") or love.keyboard.isDown("rgui") or love.keyboard.isDown("lgui")) then
         o.txt = o.txt..love.system.getClipboardText()
