@@ -185,6 +185,11 @@ wall_flash = {}
 function hurt_wall(x,y,dmg)
   if not server_only then
     add(wall_flash,{x=x, y=y, t=0.03})
+    
+    for i=1,2 do
+      create_leaf(x*8+4, y*8+4)
+    end
+    
     return
   end
   
@@ -238,6 +243,10 @@ end
 function update_map_wall(x,y,exists,fx)
   if fx then
     add(wall_flash,{x=x, y=y, t=0.03})
+    
+    for i=1,4 do
+      create_leaf(x*8+4, y*8+4)
+    end
   end
   
   map_data[y][x] = exists and 2 or 0

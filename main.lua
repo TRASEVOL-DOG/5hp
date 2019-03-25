@@ -47,7 +47,7 @@ if CASTLE_PREFETCH then
     "assets/sfx/wind_d.ogg",
     "assets/sfx/wind_e.ogg",
     'palswap.shader',
-    "https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua"
+--    "https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua"
   })
 end
 
@@ -79,7 +79,7 @@ end
 if not USE_CASTLE_CONFIG then
   function love.load(args)
     if castle then
-      init_graphics(256, 144, ". 1HP .")
+      init_graphics(256, 144, "\\! 5HP !/")
       init_audio()
       init_shader_mgr()
       init_input_mgr()

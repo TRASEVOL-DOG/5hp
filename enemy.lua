@@ -11,9 +11,9 @@ enemy_const = {
   view_range = 47,
   hit_range = 15,
   idle_range = 7.5,
-  follow_speed = 40,
+  follow_speed = 60,
   attack_time = 1.3,
-  hit_time = .05
+  hit_time = .2
 }
 
 function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
@@ -34,6 +34,7 @@ function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
     animt               = 0,
     hit_timer           = 0,
     anim_state          = "idle",
+    face_left           = chance(50),
     dead_sfx_player     = false,
     bounce              = false,
     last_hit_bullet     = -1,
@@ -97,11 +98,14 @@ end
 
 function update_enemy(s)
   debuggg = tostring(s.hp)
+
+  s.animt = s.animt + delta_time
+  if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
+
   if server_only then
   
     -- update timers
     s.timer_attack = s.timer_attack - delta_time
-    if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
     
     -- find target
     s.target = player_around(s, enemy_const.hit_range)
@@ -126,16 +130,39 @@ function update_enemy(s)
   
   s.behave(s)
   
+  if s.hit_timer > 0 then
+    s.anim_state = "hurt"
+  elseif abs(s.v.x)+abs(s.v.y) > 0.1 then
+    s.anim_state = "run"
+    s.faceleft = s.v.x < 0
+  else
+    s.anim_state = "idle"
+  end
+  
 end
 
 function draw_enemy(s)
   -- circfill(s.x, s.y, enemy_const.view_range, 4)
   -- circfill(s.x, s.y, enemy_const.hit_range, 3)
-  if s.hit_timer > 0 then
-    rectfill(s.x - s.w / 2, s.y - s.h / 2 , s.x + s.w/2, s.y + s.h /2, 3)  
+--  if s.hit_timer > 0 then
+--    rectfill(s.x - s.w / 2, s.y - s.h / 2 , s.x + s.w/2, s.y + s.h /2, 3)  
+--  else
+--    rectfill(s.x - s.w / 2, s.y - s.h / 2 , s.x + s.w/2, s.y + s.h /2, 1)  
+--  end
+
+  palt(1,true)
+  palt(6,false)
+  
+  if s.hit_timer > 0.1 then
+    all_colors_to(14)
+    draw_anim(s.x, s.y-2, "helldog", s.anim_state, s.animt, 0, s.faceleft)
+    all_colors_to()
   else
-    rectfill(s.x - s.w / 2, s.y - s.h / 2 , s.x + s.w/2, s.y + s.h /2, 1)  
+    draw_anim(s.x, s.y-2, "helldog", s.anim_state, s.animt, 0, s.faceleft)
   end
+  
+  palt(1,false)
+  palt(6,true)
 end
 
 function hit_enemy(s, bullet)
@@ -152,7 +179,7 @@ function kill_enemy(s)
 
   if not server_only then
     for i=1,16 do
-      create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{1,2,3})
+      create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{11,8,3,0})
     end
   end
   sfx("get_hit", s.x, s.y) 
@@ -163,7 +190,7 @@ function kill_enemy(s)
 end
 
 function idle(s)
-
+  s.v.x, s.v.y = 0,0
 
 end
 

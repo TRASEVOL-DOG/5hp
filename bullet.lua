@@ -74,6 +74,8 @@ function create_bullet(player_id, id)
   s.x = player.x + player.diff_x + (player.w + s.w) * s.v.x 
   s.y = player.y + player.diff_y + (player.h + s.h) * s.v.y - 2 -- offset to line up with gun
     
+  s.angle = angle
+    
   -- check if in wall
   s.anim_state = "stopped"
   
@@ -111,7 +113,7 @@ function update_bullet(s)
   
 
   s.timer_despawn = s.timer_despawn - delta_time
-  if s.type == 1 then s.speed = s.speed * .90 end
+  if s.type == 1 then s.speed = s.speed * .85 end
   
   
   if( s.timer_despawn < 0 and s.anim_state ~= "killed") then 
@@ -149,6 +151,8 @@ function update_move_bullet(s)
     s.speed = s.speed * ( 1 - bullet_const.speed_lost_rebound )
     s.timer_despawn = s.timer_despawn * ( 1 - bullet_const.speed_lost_rebound ) -- Remy was here: made bullet lose lifetime on bounce
     
+    s.angle = atan2(s.v.x, s.v.y)
+    
     local ty = flr((s.y + col.dir_y * s.h * 0.5) / 8)
     hurt_wall(tx,ty,2)
     if s.type == 1 then 
@@ -167,6 +171,8 @@ function update_move_bullet(s)
     s.v.y = s.v.y *-1
     s.speed = s.speed * ( 1 - bullet_const.speed_lost_rebound )
     s.timer_despawn = s.timer_despawn * ( 1 - bullet_const.speed_lost_rebound )
+    
+    s.angle = atan2(s.v.x, s.v.y)
     
     local tx = flr((s.x + col.dir_x * s.w * 0.5) / 8)
     hurt_wall(tx,ty,2)
@@ -229,11 +235,13 @@ function draw_bullet(s)
   end
 
   if s.anim_state == "stopped" then
-    spr(236, x, y, 1, 1, atan2(s.v.x, s.v.y))
+    spr(236, x, y, 1, 1, s.angle)
   elseif s.anim_state == "killed" then 
-    spr(239, x, y, 1, 1, atan2(s.v.x, s.v.y))
+    spr(239, x, y, 1, 1, s.angle)
+  elseif s.type == 1 then
+    spr(235, x, y, 1, 1, s.angle)
   else
-    spr(237, x, y, 2, 1, atan2(s.v.x, s.v.y))
+    spr(237, x, y, 2, 1, s.angle)
   end
   
   all_colors_to()
@@ -251,10 +259,12 @@ function kill_bullet(s)
   
   if s.type == 1 then 
     s.speed = s.speed * .95
-    create_explosion(s.x, s.y, 17+rnd(5), pick{1,2,3})
+    create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
     
-    local tx = flr(s.x / 8) 
-    local ty = flr(s.y / 8) 
+    add_shake(8)
+    
+    local tx = flr(s.x / 8)
+    local ty = flr(s.y / 8)
     
     hurt_wall(tx-1, ty-2, 7)
     hurt_wall(tx,   ty-2, 7)

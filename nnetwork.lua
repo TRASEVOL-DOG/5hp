@@ -252,8 +252,11 @@ function sync_bullets(bullet_data)
     local b = bullet_list[id]
     
     if b then
-      b.v.x = b_d[3]
-      b.v.y = b_d[4]
+      if b.v.x ~= b_d[3] or b.v.y ~= b_d[4] then
+        b.v.x = b_d[3]
+        b.v.y = b_d[4]
+        b.angle = atan2(b.v.x, b.v.y)
+      end
       
       local x = b_d[1] + delay*b.v.x
       local y = b_d[2] + delay*b.v.y

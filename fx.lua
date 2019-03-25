@@ -9,10 +9,18 @@ require("sprite")
 
 
 
-function update_skull(s)
-  s.t=s.t+0.01*dt30f
+function update_leaf(s)
+  s.x = s.x+s.vx*dt30f
+  s.y = s.y+s.vy*dt30f
+  s.z = s.z + s.vz*dt30f
   
-  if s.t>=0.230 then
+  s.vx = lerp(s.vx, 0, 0.15 * dt30f)
+  s.vy = lerp(s.vy, 0, 0.15 * dt30f)
+  
+  s.vz = min(s.vz + 0.1*dt30f, 0.5)
+  
+  s.animt = s.animt + delta_time
+  if s.animt > 2 then
     deregister_object(s)
   end
 end
@@ -23,7 +31,6 @@ function update_floatingtxt(s)
 --    deregister_object(s)
 --  end
 end
-
 
 function update_smoke(s)
   s.x=s.x+s.vx*dt30f
@@ -58,6 +65,14 @@ end
 --  end
 --end
 
+
+function draw_leaf(s)
+  if s.animt > 1.5 and s.animt % 0.3 < 0.1 then
+    return
+  end
+
+  spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.25, s.left)
+end
 
 function draw_floatingtxt(s)
   local c = s.c
@@ -118,17 +133,43 @@ end
 
 
 
-function create_floatingtxt(x,y,amount,c)
+function create_leaf(x,y)
+  if server_only then return end
+
+  local a = rnd(1)
+  local spd = 1.25+rnd(0.75)
+  
+  local s = {
+    x = x + rnd(4)-2,
+    y = y + rnd(4)-2,
+    vx = spd*cos(a),
+    vy = spd*sin(a),
+    z = -rnd(3),
+    vz = -0.5-rnd(1),
+    animt = rnd(0.5),
+    left = chance(50),
+    a = rnd(1),
+    update = update_leaf,
+    draw = draw_leaf,
+    regs = {"to_update", "to_draw4"}
+  }
+  
+  register_object(s)
+  
+  return s
+end
+
+function create_floatingtxt(txt,x,y,c)
   if server_only then return end
 
   local s={
     x=x,
     y=y,
-    txt="+"..amount,
+    txt=txt,
     t=t,
     c=c,
-    update=update_scoretxt,
-    draw=draw_scoretxt,
+    update=update_floatingtxt,
+    draw=draw_floatingtxt,
     regs={"to_update","to_draw3"}
   }
   

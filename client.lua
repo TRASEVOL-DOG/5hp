@@ -40,7 +40,7 @@ function client.load()
   end
   castle_print("Starting client init...")
 
-  init_graphics(300, 200, ". 1HP .")--2,2)
+  init_graphics(300, 200, "\\! 5HP !/")--2,2)
   init_audio()
   init_shader_mgr()
   init_input_mgr()

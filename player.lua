@@ -403,7 +403,8 @@ end
 function draw_player(s)
 
   if s.flash then
-    all_colors_to(14) end 
+    all_colors_to(14)
+  end 
     
   -- if s.id == my_id then
     -- debuggg = tostring(s.hp) end
