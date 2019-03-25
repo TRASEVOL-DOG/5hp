@@ -111,7 +111,7 @@ function be_looted_by(s, player)
   
   s.looted_by = player.id  
   -- if crowned_player then
-  debuggg = s.id .. "                         "
+  -- debuggg = s.id .. "                         "
   -- if server_only then
     deregister_loot(s)
   -- end

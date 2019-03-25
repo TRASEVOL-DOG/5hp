@@ -21,6 +21,7 @@ function create_player(id,x,y)
   
     animt               = 0,
     anim_state          = "idle",
+    flash               = false,
     update              = update_player,
     update_movement     = update_movement,
     draw                = draw_player,
@@ -31,6 +32,7 @@ function create_player(id,x,y)
     bounce              = false,
     last_killer_name    = "accident",
     last_killer_id      = "accident",
+    last_hit_bullet     = -1,
     
     w                   = 6,
     h                   = 7,
@@ -97,6 +99,9 @@ function update_player(s)
   
   -- change anime time
   s.animt = s.animt - delta_time
+  
+  -- debuggg = s.hp .. " / 10"
+  
   
   if crowned_player == s.id and s.alive then add_score(s) end
   
@@ -396,6 +401,13 @@ function update_mov_bullet_like(s)
 end
 
 function draw_player(s)
+
+  if s.flash then
+    all_colors_to(14) end 
+    
+  -- if s.id == my_id then
+    -- debuggg = tostring(s.hp) end
+    
   local x = s.x + s.diff_x
   local y = s.y + s.diff_y
 
@@ -473,16 +485,37 @@ function draw_player(s)
     pal(9,9)
     pal(12,12)
   end
+  
+  if s.flash  then
+    all_colors_to()
+  end
+  
 end
 
-function hurt_player(victim, id_attacker, bullet_type)
-  -- visual effect damage
+function hit_player(s, id_attacker, bullet, enemy)
   
---[[
-  victim.hp = victim.hp - bullet_const.damage[bullet_type]
-  if victim.hp < 1 then kill_player (victim, id_attacker) end
---]]  
-  kill_player (victim, id_attacker)
+  if server_only then
+    if bullet and s.last_hit_bullet ~= bullet.id then
+      s.hp = s.hp - get_damage_from_type(bullet.type)
+      s.last_hit_bullet = bullet.id
+    end
+  end
+  
+  if s.hp < 1 then
+    s.hp = 0
+    local killer = bullet or enemy or { v = {x = s.x, y = s.y}}
+      
+    send_player_off(s, killer.v.x, killer.v.y )
+      
+    kill_player (s, id_attacker) 
+  end
+  
+end
+
+function get_damage_from_type(typeb)
+  local dmg = weapon_const.damage[typeb]
+  if not dmg then return 1 end
+  return weapon_const.damage[typeb]
 end
 
 function kill_player(s, id_killer)
@@ -630,15 +663,20 @@ player_const = {
 }
 
 weapon_const = {
-  loot_sprites  = {112 ,113 ,114 ,116    },
-  sprites       = {120 ,121 ,122 ,124    },
-  fire_rate     = {.1  ,.6  ,.05 ,1.3    },
-  ammo          = {0   ,12  ,30  ,5      },
-  fire_mod      = {
+  loot_sprites    = {112   , 113 , 114 , 116    },
+  sprites         = {120   , 121 , 122 , 124    },
+  fire_rate       = {.1    , .6  , .05 , 1.3    },
+  ammo            = {0     , 12  , 30  , 5      },
+  damage          = {[0]= 1, 4                  },
+  explosion_range = 20 ,
+  bullet_type     = {0     , 0   , 0   , 1      },
+  fire_mod        = { -- 1
                     function (s)
-                      create_bullet(s.id)
+                      local b = create_bullet(s.id)
+                      b.type = weapon_const.bullet_type[1]
                     end
                     ,
+                    -- 2 
                     function (s)
                       local angle = s.angle
                       local open = .05
@@ -649,6 +687,7 @@ weapon_const = {
                         s.ammo = s.ammo - 1
                         s.angle = angle - open + rnd(open*2*100)/100
                         local b = create_bullet(s.id)
+                        b.type = weapon_const.bullet_type[2]
                         b.speed = b.speed * rnd(1, 2)
                         i = i + 1
                       end        
@@ -656,6 +695,7 @@ weapon_const = {
                       s.angle = angle 
                     end
                     ,
+                    -- 3 
                     function (s)
                       s.rafale_on = true
                       local angle = s.angle
@@ -665,6 +705,7 @@ weapon_const = {
                       
                         s.angle = angle + 0.05 *  rnd(-1, 1)
                         local b = create_bullet(s.id)
+                        b.type = weapon_const.bullet_type[3]
                         s.rafale_shot = s.rafale_shot + 1
                         
                         if s.rafale_shot == 3 then 
@@ -676,13 +717,13 @@ weapon_const = {
                       end
                     end
                     ,
+                    -- 4 
                     function(s)
-                    
                       s.ammo = s.ammo - 1
                       b = create_bullet(s.id)
                       b.speed = b.speed * 2.5
                       b.time_despawn = 0.8 * 2.5
-                      
+                      b.type = weapon_const.bullet_type[4]
                     end
                   }
 }
