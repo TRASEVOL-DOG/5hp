@@ -503,7 +503,7 @@ function init_game()
         create_destroyable(nil, p.x+irnd(5)-3, p.y+irnd(5)-3)
       end
     end
-    -- create_loot(0, 0, 512, 295)
+    create_loot(0, 0, 512, 295)
     
     -- create_loot(1, 2, 512-8, 295+8, 2)
     -- create_loot(2, 2, 512+8, 295+8, 3)
