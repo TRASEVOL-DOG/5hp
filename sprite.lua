@@ -61,6 +61,13 @@ anim_info = {
       sprites = {352, 352, 352, 352, 352, 352, 352},
       w = 2,
       h = 2
+    },
+    bush = {
+      sheet = "sprites",
+      dt = 0.15,
+      sprites = {354, 356, 358},
+      w = 2,
+      h = 2
     }
   },
   

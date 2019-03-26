@@ -130,11 +130,21 @@ function update_enemy(s)
   
   s.behave(s)
   
+  
+  local ow, oh = s.w, s.h
+  s.w, s.h = 0,0
+  s.in_wall = (check_mapcol(s) ~= nil)
+  s.w, s.h = ow, oh
+  
   if s.hit_timer > 0 then
     s.anim_state = "hurt"
   elseif abs(s.v.x)+abs(s.v.y) > 0.1 then
     s.anim_state = "run"
     s.faceleft = s.v.x < 0
+    
+    if s.in_wall and s.animt%0.05 < delta_time then
+      create_leaf(s.x, s.y)
+    end
   else
     s.anim_state = "idle"
   end
@@ -163,6 +173,13 @@ function draw_enemy(s)
   
   palt(1,false)
   palt(6,true)
+end
+
+function draw_enemy_bush(s)
+  if not s.in_wall then return end
+  
+  local co = cos(s.animt*2)
+--  draw_anim(s.x, s.y-3+co, "helldog", "bush", s.animt, 0, s.faceleft)
 end
 
 function hit_enemy(s, bullet)

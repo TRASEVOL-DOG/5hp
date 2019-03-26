@@ -120,11 +120,17 @@ function _draw()
   
   apply_camera()
 
-  draw_objects()
+  draw_objects(0,3)
   
   camera()
   draw_map_top()
   apply_camera()
+  
+  for s in group("enemy") do
+    draw_enemy_bush(s)
+  end
+  
+  draw_objects(4)
   
   draw_player_names()
   

@@ -60,9 +60,12 @@ function update_objects(dt)
   end
 end
 
-function draw_objects()
-  for i=0,4 do
-    local dobjs=objs["to_draw"..i]
+function draw_objects(layer_start, layer_end)
+  layer_start = layer_start or 0
+  layer_end = layer_end or layer_start or 4
+  
+  for i = layer_start, layer_end do
+    local dobjs = objs["to_draw"..i]
     
     --sorting objects by depth
     for i=2,#dobjs do

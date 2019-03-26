@@ -6,7 +6,7 @@ require("maths")
 MAP_W = 128
 MAP_H = 72
 
-WALL_HP = 5
+WALL_HP = 3
 
 map = nil
 
@@ -244,13 +244,18 @@ function update_map_wall(x,y,exists,fx)
   if fx then
     add(wall_flash,{x=x, y=y, t=0.03})
     
+    local xx,yy = x*8+4, y*8+4
+    
     for i=1,4 do
-      create_leaf(x*8+4, y*8+4)
+      create_leaf(xx, yy)
+    end
+    
+    if not exists then
+      create_explosion(xx, yy-4, 7, 5).recursive = false
     end
   end
   
   map_data[y][x] = exists and 2 or 0
-  castle_print(""..map_data[y][x])
   
   update_walltile(x,y,true)
 end

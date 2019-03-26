@@ -71,7 +71,7 @@ function draw_leaf(s)
     return
   end
 
-  spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.25, s.left)
+  spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.5, s.left)
 end
 
 function draw_floatingtxt(s)
@@ -98,10 +98,10 @@ function draw_explosion(s)
   
   foo(s.x,s.y,r,c)
   
-  s.p=s.p+1.5*dt30f
+  s.p=s.p+2*dt30f
   
   local p = flr(s.p)
-  if p==1 and s.p%1 < 1.5*dt30f then
+  if p==1 and s.p%1 < 1.5*dt30f and s.recursive then
     if s.r>4 then
       for i=0,1 do
         local a,l=rnd(1),(0.8+rnd(0.4))*s.r
@@ -114,7 +114,7 @@ function draw_explosion(s)
       end
       
       for i=0,2 do
-        create_smoke(s.x,s.y,1)
+        create_smoke(s.x, s.y, chance(50) and s.c)
       end
     end
   end
@@ -170,7 +170,7 @@ function create_floatingtxt(txt,x,y,c)
     c=c,
     update=update_floatingtxt,
     draw=draw_floatingtxt,
-    regs={"to_update","to_draw3"}
+    regs={"to_update","to_draw4"}
   }
   
   register_object(s)
@@ -186,9 +186,10 @@ function create_explosion(x,y,r,c)
     y=y,
     r=r,
     p=0,
+    recursive = true,
     c=c or 14,
     draw=draw_explosion,
-    regs={"to_draw3"}
+    regs={"to_draw4"}
   }
   
   register_object(e)
