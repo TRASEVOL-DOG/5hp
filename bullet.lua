@@ -155,7 +155,7 @@ function update_move_bullet(s)
     
     local ty = flr((s.y + col.dir_y * s.h * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    end
+
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.x = nx
@@ -174,7 +174,7 @@ function update_move_bullet(s)
     
     local tx = flr((s.x + col.dir_x * s.w * 0.5) / 8)
     hurt_wall(tx,ty,2)
-    end
+
     sfx("bullet_wall_bounce", s.x, s.y, 0.9+rnd(0.2))
   else
     s.y = ny
