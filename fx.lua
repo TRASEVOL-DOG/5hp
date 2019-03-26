@@ -101,7 +101,7 @@ function draw_explosion(s)
   s.p=s.p+2*dt30f
   
   local p = flr(s.p)
-  if p==1 and s.p%1 < 1.5*dt30f and s.recursive then
+  if p==1 and s.p%1 < 2*dt30f and s.recursive then
     if s.r>4 then
       for i=0,1 do
         local a,l=rnd(1),(0.8+rnd(0.4))*s.r
@@ -114,7 +114,7 @@ function draw_explosion(s)
       end
       
       for i=0,2 do
-        create_smoke(s.x, s.y, chance(50) and s.c)
+        create_smoke(s.x, s.y, 1, nil, chance(50) and s.c)
       end
     end
   end
@@ -200,8 +200,8 @@ end
 function create_smoke(x,y,spd,r,c,a)
   if server_only then return nil end
 
-  local a=a or rnd(1)
-  local spd=0.75*spd+rnd(0.5*spd)
+  local a = a or rnd(1)
+  local spd = 0.75*spd+rnd(0.5*spd)
   
   local s={
     x=x,

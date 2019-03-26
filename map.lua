@@ -183,6 +183,13 @@ wall_flash = {}
 
 -- x and y have to be tile coordinates (so flr(world_x/8))
 function hurt_wall(x,y,dmg)
+  if x<=0 or y<=0 or x>=MAP_W-1 or y>=MAP_H-1 then return end
+  
+  local hp = wall_hp[y][x]
+  if not hp then
+    return
+  end
+  
   if not server_only then
     add(wall_flash,{x=x, y=y, t=0.03})
     
@@ -194,13 +201,7 @@ function hurt_wall(x,y,dmg)
   end
   
   -- if x==0 or y==0 or x==MAP_W-1 or y==MAP_H-1 then return end
-  if x<=0 or y<=0 or x>=MAP_W-1 or y>=MAP_H-1 then return end
   
-  local hp = wall_hp[y][x]
-  if not hp then
-    castle_print("/!\\ Attempt to damage an inexistant wall!")
-    return
-  end
   
   hp = hp-dmg
   
