@@ -100,7 +100,7 @@ function update_player(s)
   -- change anime time
   s.animt = s.animt - delta_time
   
-  -- debuggg = s.hp .. " / 10"
+  debuggg = s.hp .. " / 10"
   
   
   if crowned_player == s.id and s.alive then add_score(s) end

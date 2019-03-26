@@ -97,7 +97,7 @@ function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
 end
 
 function update_enemy(s)
-  debuggg = tostring(s.hp)
+  -- debuggg = tostring(s.hp)
 
   s.animt = s.animt + delta_time
   if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
