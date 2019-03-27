@@ -208,7 +208,7 @@ function hurt_wall(x,y,dmg)
   if hp <= 0 then
     hp = 0
     update_map_wall(x,y,false)
-    castle_print("destroying wall!!")
+--    castle_print("destroying wall!!")
   end
   
   wall_hp[y][x] = hp
