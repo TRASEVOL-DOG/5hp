@@ -113,7 +113,7 @@ function update_bullet(s)
   
 
   s.timer_despawn = s.timer_despawn - delta_time
-  if s.type == 1 then s.speed = s.speed * .85 end
+  if s.type == 1 then s.speed = s.speed * .95 end
   
   
   if( s.timer_despawn < 0 and s.anim_state ~= "killed") then 
@@ -223,8 +223,8 @@ function draw_bullet(s)
   local y = s.y + s.diff_y - 1
   
   if s.from == my_id then
-    pal(13,12)
-    pal(11,9)
+--    pal(13,12)
+--    pal(11,9)
   else
     pal(13,11)
     pal(11,8)
@@ -240,7 +240,8 @@ function draw_bullet(s)
     spr(237, x, y, 2, 1, s.angle)
   end
   
-  all_colors_to()
+  pal(13,13)
+  pal(11,11)
   
   if debug_mode then
     all_colors_to(14)

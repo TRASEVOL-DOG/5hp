@@ -21,6 +21,7 @@ function create_player(id,x,y)
   
     animt               = 0,
     anim_state          = "idle",
+    hit_timer           = 0,
     flash               = false,
     update              = update_player,
     update_movement     = update_movement,
@@ -85,8 +86,9 @@ function create_player(id,x,y)
   if my_id == s.id then sfx("startplay", s.x, s.y) end
   
   if not server_only then
+    local cs = s.id == my_id and {14,12,9} or {14,11,7}
     for i=1,16 do
-      create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{1,2,3})
+      create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick(cs))
     end
   end
   
@@ -99,7 +101,8 @@ function update_player(s)
   
   -- change anime time
   s.animt = s.animt - delta_time
-  
+  if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
+ 
   debuggg = s.hp .. " / 10"
   
   
@@ -401,8 +404,9 @@ function update_mov_bullet_like(s)
 end
 
 function draw_player(s)
-
-  if s.flash then
+  
+  local flash = s.hit_timer > 0.1
+  if flash then
     all_colors_to(14)
   end 
     
@@ -417,7 +421,9 @@ function draw_player(s)
   local animt = s.animt * (s.v.x > 0 == a and 1 or -1)
   
   if s.alive then
-    if s.speed > 0.5 then
+    if s.hit_timer > 0 then
+      state = "hurt"
+    elseif s.speed > 0.5 then
       state = "run"
     end
   else
@@ -430,7 +436,7 @@ function draw_player(s)
   
   palt(6,false)
   palt(1,true)
-  pal(7,s.skin)
+  pal(7,flash and 14 or s.skin)
   
   if s.id ~= my_id then
     pal(9,8)
@@ -487,7 +493,7 @@ function draw_player(s)
     pal(12,12)
   end
   
-  if s.flash  then
+  if flash  then
     all_colors_to()
   end
   
@@ -511,6 +517,7 @@ function hit_player(s, id_attacker, bullet, enemy)
     kill_player (s, id_attacker) 
   end
   
+  s.hit_timer = player_const.hit_time
 end
 
 function get_damage_from_type(typeb)
@@ -660,10 +667,12 @@ player_const = {
   time_fire           = .1, -- max cooldown (seconds)  for bullet fire
   max_speed           = 7.0,
   deceleration        = 4.5,
-  acceleration        = 8
+  acceleration        = 8,
+  hit_time = .15
 }
 
 weapon_const = {
+  names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle"},
   loot_sprites    = {112   , 113 , 114 , 116    },
   sprites         = {120   , 121 , 122 , 124    },
   fire_rate       = {.1    , .6  , .05 , 1.3    },

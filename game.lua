@@ -138,6 +138,8 @@ function _draw()
   
   camera()
   
+  draw_hp_ammo()
+  
   local menu = querry_menu()
   
   if not menu or menu == "gameover" then
@@ -346,6 +348,68 @@ function draw_pause_background()
   end
 end
 
+function draw_hp_ammo()
+  local my_player = player_list[my_id]
+  
+  if my_player then
+    palt(1, true)
+    palt(6, false)
+    palt(0, false)
+  
+    local flash = my_player.hit_timer > 0.1
+    if flash then
+      all_colors_to(14)
+    end
+    
+    local k = my_player.hp/2
+    
+    local y = 2
+    local x = 2
+    for i = 1,5 do
+      local sp
+      if k<i then
+        if k+1 > i then
+          sp = 388
+        else
+          sp = 384
+        end
+      else
+        sp = 386
+      end
+    
+      spr(sp, x+8, y+8, 2, 2)
+      x = x + 16
+    end
+
+    if flash then
+      all_colors_to()
+    end
+    
+    y = y + 16
+    x = 2
+    
+    spr(390, x+8, y+8, 2, 2)
+    
+    x = x + 16
+    local wep = my_player.weapon_id
+    local ammo = my_player.ammo
+    if ammo == 0 then
+      spr(392, x+8, y+8, 2, 2)
+    else
+      font("big")
+      draw_text(""..ammo, x+4, y+8, 0, 14, 11, 6)
+    end
+    
+    x = 4
+    y = y + 16
+    font("small")
+    draw_text(weapon_const.names[wep], x, y+2, 0, 14, 11, 6)
+    
+    palt(1, false)
+    palt(6, true)
+  end
+end
+
 function draw_crown_indicator()
   if my_id then
     if player_list[my_id] then
@@ -498,12 +562,15 @@ end
 function init_game()
 
   if server_only then
-    for _,p in pairs(cacti_spawn_points) do
-      if chance(90) then
-        create_destroyable(nil, p.x+irnd(5)-3, p.y+irnd(5)-3)
+    for _,p in pairs(flower_spawn_points) do
+      if chance(85) then
+        create_destroyable(nil, p.x+irnd(3)-2, p.y+irnd(3)-2)
       end
     end
-    create_loot(0, 0, 512, 295)
+    
+    if crown_spawn then
+      create_loot(0, 0, crown_spawn.x, crown_spawn.y)
+    end
     
     -- create_loot(1, 2, 512-8, 295+8, 2)
     -- create_loot(2, 2, 512+8, 295+8, 3)
