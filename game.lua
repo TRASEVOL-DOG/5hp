@@ -563,8 +563,8 @@ function init_game()
 
   if server_only then
     for _,p in pairs(flower_spawn_points) do
-      if chance(90) then
---        create_destroyable(nil, p.x+irnd(5)-3, p.y+irnd(5)-3)
+      if chance(85) then
+        create_destroyable(nil, p.x+irnd(3)-2, p.y+irnd(3)-2)
       end
     end
     
