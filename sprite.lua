@@ -62,6 +62,13 @@ anim_info = {
       w = 2,
       h = 2
     },
+    attack = {
+      sheet = "sprites",
+      dt = 1.3/28,
+      sprites = {328, 228, 228, 228, 228, 228, 228,228, 228, 228, 228, 228, 228, 228},
+      w = 2,
+      h = 2
+    },
     bush = {
       sheet = "sprites",
       dt = 0.15,

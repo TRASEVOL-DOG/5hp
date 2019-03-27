@@ -10,7 +10,7 @@ local enemy_nextid = 1
 enemy_const = {
   view_range = 47,
   hit_range = 15,
-  idle_range = 7.5,
+  idle_range = 11,
   follow_speed = 60,
   attack_time = 1.3,
   hit_time = .2
@@ -136,8 +136,10 @@ function update_enemy(s)
   s.in_wall = (check_mapcol(s) ~= nil)
   s.w, s.h = ow, oh
   
-  if s.hit_timer > 0 then
+  if s.hit_timer > 0 then 
     s.anim_state = "hurt"
+  -- elseif s.attacking then
+    -- s.anim_state = "attack"
   elseif abs(s.v.x)+abs(s.v.y) > 0.1 then
     s.anim_state = "run"
     s.faceleft = s.v.x < 0
@@ -168,7 +170,9 @@ function draw_enemy(s)
     draw_anim(s.x, s.y-2, "helldog", s.anim_state, s.animt, 0, s.faceleft)
     all_colors_to()
   else
+    
     draw_anim(s.x, s.y-2, "helldog", s.anim_state, s.animt, 0, s.faceleft)
+    
   end
   
   palt(1,false)
@@ -250,28 +254,21 @@ function follow(s)
   local view_range = view_range or enemy_const.view_range
   local p = player_list[s.target] 
   if p then
-  local dist = dista(s, p) 
+    local dist = dista(s, p) 
+    -- s.attacking = false
     if dist < view_range and dist > enemy_const.idle_range then
       s.angle = pos_to_angle(s ,p)
       update_v(s)
       update_pos(s)
-  end
+    -- else 
+      -- s.attacking = true
+    end
   else
     s.behave = idle
   end
     
   
 end
-
--- function get_x_y(o1, o2)
-
-  -- local x1 = o1.x or 0
-  -- local y1 = o1.y or 0
-  -- local x2 = o2.x or 0
-  -- local y2 = o2.y or 0
-  
-  -- return x1, y1, x2, y2
--- end
 
 function dista(o1, o2)
   local x1 = o1.x or 0

@@ -191,7 +191,7 @@ function do_collisions_obj(s) -- collision with objects
   local killed = collide_objgroup(s,"player")
   if killed and killed.id ~= s.from and killed.alive then
     local killer = player_list[s.from]
-    hurt_player(killed, killer.id, s)
+    hit_player(killed, killer.id, s)
     kill_bullet(s)
   end
   

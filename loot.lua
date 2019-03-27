@@ -135,3 +135,27 @@ function deregister_loot(s)
   
   deregister_object(s)
 end
+
+
+------ loot spawn point code, it should be server only
+
+-- function check_if_looted() -- will go through every spawn point
+
+
+-- when map created, create loot for every spawn point
+-- when loot looted, adds timer to list of spawnpoints to be respawned, the timer shall be a bit random
+
+--have a function that will go through a list of spp and give them all
+
+
+
+
+
+
+-- retrieve all spawn points, spawn loot on each
+
+-- when loot is destroyed, begin countdown
+
+-- when countdown enhd, spawn loot
+
+
