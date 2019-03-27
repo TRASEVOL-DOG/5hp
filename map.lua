@@ -119,9 +119,9 @@ function init_map()
       if m == 8 then
         add(spawn_points, {x = j*8+4, y = i*8+4})
       elseif m == 1 then
-        add(weapon_spawn_points, {x = j*8+4, y = i*8+4})
+        add(weapon_spawn_points, {x = j*8+4, y = i*8-1})
       elseif m == 3 then
-        add(hp_spawn_points, {x = j*8+4, y = i*8+4})
+        add(hp_spawn_points, {x = j*8+4, y = i*8-1})
       elseif m == 9 then
         add(flower_spawn_points, {x = j*8+4, y = i*8+4})
       elseif m == 2 then
@@ -131,10 +131,13 @@ function init_map()
   end
   
   spawn_points_copy = copy_table(spawn_points_copy)
+
+  crown_spawn = {x = MAP_W/2 * 8, y = MAP_H/2 * 8}
   
   gen_mapsurf()
   
-  crown_spawn = {x = MAP_W/2 * 8, y = MAP_H/2 * 8}
+  crown_spawn.y = crown_spawn.y - 3
+  
 end
 
 
@@ -424,8 +427,8 @@ function gen_mapsurf()
       local n = 0
 
       if v == 2 then
-        local left = (d_line[x-1] == 0)
-        local right = (d_line[x+1] == 0)
+        local left = (d_line[x-1] ~= 2)
+        local right = (d_line[x+1] ~= 2)
         
         if left and right then
           n = 53
@@ -436,6 +439,12 @@ function gen_mapsurf()
         else
           n = 47+irnd(3)
         end
+      elseif v == 1 then
+        n = 241
+      elseif v == 3 then
+        n = 240
+      elseif v == 9 then
+        n = 227 + irnd(3)
       else
         if chance(0.5) then
           n = 15
@@ -457,16 +466,16 @@ function gen_mapsurf()
     for x = 0,MAP_W-1 do
       local v = d_line[x]
 
-      if v == 2 then
+      if v == 2 or v == 9 then
         local left,right,up,down
         
-        local left  = (x>0       and d_line[x-1] ~= 2)
-        local right = (x<MAP_W-1 and d_line[x+1] ~= 2)
-        local up    = (y>0       and map_data[y-1][x]~=2)
-        local down  = (y<MAP_H-1 and map_data[y+1][x]~=2)
+        local left  = (x>0       and d_line[x-1] ~= 2    and d_line[x-1] ~= 9)
+        local right = (x<MAP_W-1 and d_line[x+1] ~= 2    and d_line[x+1] ~= 9)
+        local up    = (y>0       and map_data[y-1][x]~=2 and map_data[y-1][x]~=9)
+        local down  = (y<MAP_H-1 and map_data[y+1][x]~=2 and map_data[y+1][x]~=9)
         
-        local downleft  = (y<MAP_H-1 and x>0       and map_data[y+1][x-1]~=2)
-        local downright = (y<MAP_H-1 and x<MAP_W-1 and map_data[y+1][x+1]~=2)
+        local downleft  = (y<MAP_H-1 and x>0       and map_data[y+1][x-1]~=2 and map_data[y+1][x-1]~=9)
+        local downright = (y<MAP_H-1 and x<MAP_W-1 and map_data[y+1][x+1]~=2 and map_data[y+1][x+1]~=9)
         
         local xx = x*8+4
         local yy = y*8+4
@@ -500,14 +509,26 @@ function gen_mapsurf()
         end
         
         if down then
-          if downleft and downright then
-            spr(26+irnd(3), xx, yy+8)
-          elseif downleft then
-            spr(24, xx, yy+8)
-          elseif downright then
-            spr(25, xx, yy+8)
+          if v == 2 then
+            if downleft and downright then
+              spr(26+irnd(3), xx, yy+8)
+            elseif downleft then
+              spr(24, xx, yy+8)
+            elseif downright then
+              spr(25, xx, yy+8)
+            else
+              spr(79, xx, yy+8)
+            end
           else
-            spr(79, xx, yy+8)
+            if downleft and downright then
+              spr(245+irnd(2), xx, yy+8)
+            elseif downleft then
+              spr(244, xx, yy+8)
+            elseif downright then
+              spr(245, xx, yy+8)
+            else
+              spr(231, xx, yy+8)
+            end
           end
         end
       end
@@ -564,7 +585,10 @@ function gen_mapsurf()
   pal(12,12)
   pal(13,13)
 
-
+  if crown_spawn then
+    draw_to(map_ground_surf)
+    spr(242, crown_spawn.x, crown_spawn.y)
+  end
   
   draw_to()
   palt(0,true)
