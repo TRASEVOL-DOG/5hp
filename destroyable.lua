@@ -2,6 +2,8 @@
 destroyable_list = {} -- { id : destroyable }
 local destroyable_nextid = 1
 
+flower_colors = {12,8,13,8,13,12}
+
 function create_destroyable(id, x, y)
   local s = {
     w                   = 6,  -- Remy was here: moved w and h and lowered them both
@@ -15,10 +17,12 @@ function create_destroyable(id, x, y)
     white_frame         = 0,
     white_skin          = 0,
     skin                = 0,
+    typ                 = 0,
     faceleft            = chance(50)
   }
   
-  s.skin = 420 + (irnd(6)-1)*2
+  s.typ = irnd(6)
+  s.skin = 420 + (s.typ-1)*2
   
   -- setting position
   if x and y then  -- position is provided by server
@@ -71,10 +75,10 @@ function draw_destroyable(s)
 
   if s.white_frame > 0 then
     all_colors_to(14)
-    spr(s.white_skin, s.x, s.y-2, 2, 2, 0, s.faceleft)
+    spr(s.white_skin, s.x, s.y-1, 2, 2, 0, s.faceleft)
     all_colors_to()
   else
-    spr(s.skin, s.x, s.y-2, 2, 2, 0, s.faceleft)
+    spr(s.skin, s.x, s.y-1, 2, 2, 0, s.faceleft)
   end
   
   palt(1,false)
@@ -91,6 +95,12 @@ function kill_destroyable(s, killer_id)
     s.t_respawn = 10 + rnd(5)
     s.killer = killer_id
     
+    local c = flower_colors[s.typ]
+    local k = 4+irnd(3)
+    for i=1,k do
+      create_leaf(s.x, s.y, c, c_drk[c])
+    end
+    
     if killer_id then
       local b = bullet_list[killer_id]
       if b then
@@ -105,7 +115,7 @@ end
 function respawn_destroyable(s)
   if not s.alive then
     s.alive = true
-    s.skin = 420 + (irnd(6)-1)*2
+    s.skin = 420 + (s.typ-1)*2
     s.killer = nil
     s.white_frame = 0.1
     s.white_skin = s.skin

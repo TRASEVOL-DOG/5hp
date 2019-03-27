@@ -71,7 +71,17 @@ function draw_leaf(s)
     return
   end
 
-  spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.5, s.left)
+  if s.ca then
+    pal(10, s.ca)
+    pal(2, s.cb)
+    pal(1, c_drk[s.cb])
+    spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.5, s.left)
+    pal(10,10)
+    pal(2,2)
+    pal(1,1)
+  else
+    spr(54+flr(s.animt * 10)%2, s.x, s.y+s.z, 1, 1, s.a+s.animt*0.5, s.left)
+  end
 end
 
 function draw_floatingtxt(s)
@@ -133,7 +143,7 @@ end
 
 
 
-function create_leaf(x,y)
+function create_leaf(x,y,ca,cb)
   if server_only then return end
 
   local a = rnd(1)
@@ -149,6 +159,8 @@ function create_leaf(x,y)
     animt = rnd(0.5),
     left = chance(50),
     a = rnd(1),
+    ca = ca,
+    cb = cb,
     update = update_leaf,
     draw = draw_leaf,
     regs = {"to_update", "to_draw4"}
