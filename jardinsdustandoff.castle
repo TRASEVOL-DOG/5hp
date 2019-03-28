@@ -1,0 +1,17 @@
+---
+main: main.lua
+title: Jardins Du Standoff
+owner: trasevol-dog
+primaryColor: 5c7a56
+coverImage: https://raw.githubusercontent.com/trasevol-dog/5hp/master/logo-500.png
+multiplayer:
+  enabled: true
+description: |
+ 🌿 💀 👑 Up to 16 dandies trying to keep the crown on their head. Be the better one. 👑 💀 🌿
+ 
+ Controls:
+ - W,A,S,D or the arrow keys to move.
+ - mouse to aim 
+ - left click to shoot
+ 
+ - in main menu, R to generate a new name
