@@ -84,7 +84,10 @@ function create_player(id,x,y)
   
   
   register_object(s)
-  if my_id == s.id then sfx("startplay", s.x, s.y) end
+  if my_id == s.id then 
+    sfx("startplay", s.x, s.y) 
+    death_message = ""
+  end
   
   if not server_only then
     local cs = s.id == my_id and {14,12,9} or {14,11,7}
@@ -785,5 +788,3 @@ weapon_const = {
                     end
                   }
 }
-
-
