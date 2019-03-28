@@ -25,10 +25,6 @@ client.connect = client_connect
 client.disconnect = client_disconnect
 
 
-function client.connect() -- Called on connect from server
-    castle_print("Client connected!")
-end
-
 
 -- Client gets all Love events
 

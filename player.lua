@@ -39,8 +39,9 @@ function create_player(id,x,y)
     h                   = 7,
     
     timer_fire          = 0, -- cooldown (seconds) left for bullet fire
-    weapon_id           = 1,
-    ammo                = 0,
+    weapon_id           = 2,--0,
+    ammo                = 999,--0,
+    bullet_sfx          = 1,
     rafale_on           = false,
     rafale_shot         = 0, -- keep tracks of how many the bullets the player shot this rafale
     
@@ -348,8 +349,8 @@ function check_firing(s)
     
       fire(s)
       
-      add_shake()
-    elseif s.weapon_id ~= 5 or s.weapon_id ~= 6 then
+--      add_shake()
+    elseif s.weapon_id ~= 3 and s.weapon_id ~= 6 then
       sfx("cant_shoot", s.x, s.y)
     end
   end
@@ -673,6 +674,7 @@ function set_default_weapon(s)
   s.rafale_on = false
   s.rafale_shot = 0
   s.timer_fire = weapon_const.fire_rate[1]
+  s.bullet_sfx = weapon_const.sfx_vol[1]
 end
 
 player_const = {
@@ -688,30 +690,36 @@ weapon_const = {
   names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle", "Mini Gun"},
   loot_sprites    = {112   , 113 , 114 , 116 , 115 , 117    },
   sprites         = {120   , 121 , 122 , 124 , 123 , 125    },
-  fire_rate       = {.1    , .6  , .1  , 1.3 , .3  , .13    },
+  fire_rate       = {.2    , .6  , .1  , 1.3 , .3  , .13    },
   ammo            = {0     , 36  , 60  , 15  , 60  , 70     },
   damage          = {1     , 4   , 2    },
+  sfx_vol         = {1     , 1   , 0.75 , 1   , 1   , 0.75    },
   explosion_range =  20 ,
   bullet_type     = {1     , 1   , 1   , 2   , 3   , 1      },
   fire_mod        = { -- 1
                     function (s)
                       local b = create_bullet(s.id)
                       b.type = weapon_const.bullet_type[1]
+                      
+                      add_shake(2)
                     end
                     ,
                     -- 2 
                     function (s)
                       local angle = s.angle
-                      local open = .05
-                      local m = min ( 4, s.ammo)
+                      local open = .06
+                      local m = min ( 5, s.ammo)
                       local i = 0
+                      s.ammo = s.ammo - 1
+                      
+                      add_shake(8)
                       
                       while i < m do
-                        s.ammo = s.ammo - 1
-                        s.angle = angle - open + rnd(open*2*100)/100
+                        --s.angle = angle - open + rnd(open*2)
+                        s.angle = angle + lerp(-open, open, (i+rnd(1)-0.5)/(m-1))
                         local b = create_bullet(s.id)
                         b.type = weapon_const.bullet_type[2]
-                        b.speed = b.speed * rnd(1, 2)
+                        b.speed = b.speed * (0.5+rnd(0.5))
                         i = i + 1
                       end        
                       
@@ -723,6 +731,7 @@ weapon_const = {
                       s.rafale_on = true
                       local angle = s.angle
                       s.ammo = s.ammo - 1
+                      add_shake(3)
                       
                       if s.rafale_shot < 3 then
                       
@@ -739,6 +748,7 @@ weapon_const = {
                         
                         s.angle = angle 
                       end
+                      
                     end
                     ,
                     -- 4 
@@ -748,6 +758,8 @@ weapon_const = {
                       b.speed = b.speed * 2.5
                       b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[4]
+                      
+                      add_shake(4)
                     end
                     ,
                     -- 5 
@@ -758,9 +770,11 @@ weapon_const = {
                       -- b.speed = b.speed * .5
                       b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[5]
+                      
+                      add_shake(4)
                     end
                     ,
-                    -- 5 
+                    -- 6 
                     function(s)
                       s.rafale_on = true
                       s.ammo = s.ammo - 1
@@ -768,6 +782,8 @@ weapon_const = {
                       -- b.speed = b.speed * .5
                       -- b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[6]
+                      
+                      add_shake(2)
                     end
                   }
 }

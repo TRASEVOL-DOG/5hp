@@ -133,6 +133,7 @@ function arm_player(s, player)
   set_default_weapon(player)
   player.weapon_id = weapon
   player.ammo = weapon_const.ammo[weapon]
+  player.bullet_sfx = weapon_const.sfx_vol[weapon]
 end
 
 function deregister_loot(s)

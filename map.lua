@@ -272,6 +272,7 @@ function update_map_wall(x,y,exists,fx)
     
     if not exists then
       create_explosion(xx, yy-4, 7, 5).recursive = false
+      sfx("cactus_hit", xx, yy-4, 0.9+rnd(0.2), 0.66)
     end
   end
   

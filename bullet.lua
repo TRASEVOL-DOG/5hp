@@ -92,9 +92,9 @@ function create_bullet(player_id, id)
   register_object(s)
   
   if s.from == my_id then 
-    sfx("shoot", s.x, s.y, 0.95+rnd(0.1)) 
+    sfx("shoot", s.x, s.y, 0.9+rnd(0.2), player.bullet_sfx * 100) 
   else
-    sfx("enemy_shoot", s.x, s.y)
+    sfx("enemy_shoot", s.x, s.y, 0.9+rnd(0.2), player.bullet_sfx * 100)
   end
   
   return s
