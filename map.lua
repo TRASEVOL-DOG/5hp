@@ -119,9 +119,9 @@ function init_map()
       if m == 8 then
         add(spawn_points, {x = j*8+4, y = i*8+4})
       elseif m == 1 then
-        add(weapon_spawn_points, {x = j*8+4, y = i*8-1})
+        add(weapon_spawn_points, {x = j*8+4, y = i*8+2})
       elseif m == 3 then
-        add(hp_spawn_points, {x = j*8+4, y = i*8-1})
+        add(hp_spawn_points, {x = j*8+4, y = i*8+2})
       elseif m == 9 then
         add(flower_spawn_points, {x = j*8+4, y = i*8+4})
       elseif m == 2 then

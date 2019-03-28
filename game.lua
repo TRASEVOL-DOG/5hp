@@ -356,6 +356,7 @@ function draw_pause_background()
   end
 end
 
+hp_disp = 0
 function draw_hp_ammo()
   local my_player = player_list[my_id]
   
@@ -369,11 +370,17 @@ function draw_hp_ammo()
       all_colors_to(14)
     end
     
-    local k = my_player.hp/2
+    if hp_disp > my_player.hp then
+      hp_disp = my_player.hp
+    elseif hp_disp < my_player.hp then
+      hp_disp = min(hp_disp + delta_time*10, my_player.hp)
+    end
+    
+    local k = flr(hp_disp)/2
     
     local y = 2
     local x = 2
-    for i = 1,max(10/2, k) do
+    for i = 1,max(10/2, ceil(hp_disp)/2) do
       local sp
       if k<i then
         if k+1 > i then
@@ -384,13 +391,21 @@ function draw_hp_ammo()
       else
         sp = 386
       end
+      
       if i > 5 then
-        all_colors_to(14)
+        sp = sp+4
+        local n = round(cos(t*2))
+        pal(12,lighter(12,n))
+        pal(9 ,lighter(9 ,n))
+        pal(4 ,lighter(4 ,n))
         spr(sp, x+8, y+8, 2, 2)
-        all_colors_to()
+        pal(12,12)
+        pal(9 ,9 )
+        pal(4 ,4 )
       else
         spr(sp, x+8, y+8, 2, 2)
       end
+      
       x = x + 16
     end
 
@@ -401,13 +416,13 @@ function draw_hp_ammo()
     y = y + 16
     x = 2
     
-    spr(390, x+8, y+8, 2, 2)
+    spr(394, x+8, y+8, 2, 2)
     
     x = x + 16
     local wep = my_player.weapon_id
     local ammo = my_player.ammo
     if ammo == 0 then
-      spr(392, x+8, y+8, 2, 2)
+      spr(396, x+8, y+8, 2, 2)
     else
       font("big")
       draw_text(""..ammo, x+4, y+8, 0, 14, 11, 6)

@@ -108,7 +108,7 @@ function update_player(s)
   
   if crowned_player == s.id and s.alive then add_score(s) end
   
-  if s.hp > 11 then s.hp = s.hp - delta_time/2 end -- slow decrease of health according to time if above the 10 maximum
+  if s.hp > 11 then s.hp = s.hp - delta_time end -- slow decrease of health according to time if above the 10 maximum
   
   if s.id == my_id and s.server_death and s.animt < -1.5 and querry_menu() == nil and not (restarting or not connected) then
     game_over()
@@ -682,8 +682,8 @@ player_const = {
 
 weapon_const = {
   names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle", "Mini Gun"},
-  loot_sprites    = {112   , 113 , 114 , 116 , 115 , 115    },
-  sprites         = {120   , 121 , 122 , 124 , 123 , 123    },
+  loot_sprites    = {112   , 113 , 114 , 116 , 115 , 117    },
+  sprites         = {120   , 121 , 122 , 124 , 123 , 125    },
   fire_rate       = {.1    , .6  , .1  , 1.3 , .3  , .13    },
   ammo            = {0     , 36  , 60  , 15  , 60  , 70     },
   damage          = {1     , 4   , 2    },
