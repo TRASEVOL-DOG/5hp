@@ -27,7 +27,7 @@ function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
     v                   = { x = vx or 0, y = vy or 0 },-- movement vector 
     alive               = alive or true,
     angle               = angle or 0,
-    hp                  = hp or 5,
+    hp                  = hp or 2,
     behavior            = behavior or "idle",
     target              = nil,
     
