@@ -508,7 +508,6 @@ function hit_player(s, id_attacker, bullet, enemy)
   
   if server_only then
     if bullet and s.last_hit_bullet ~= bullet.id then
-      castle_print(get_damage_from_type(bullet.type))
       s.hp = s.hp - get_damage_from_type(bullet.type)
       s.last_hit_bullet = bullet.id
     elseif not bullet then
