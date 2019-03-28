@@ -735,7 +735,6 @@ function check_enemy_respawn()
   end
 end
 
-
 --function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
 
 function generate_name() return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Bush", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant"} end
