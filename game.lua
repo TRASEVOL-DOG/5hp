@@ -716,10 +716,12 @@ function check_enemy_respawn()
       local x
       local y
       repeat
-        x = rnd(MAP_W or 0)
-        y = rnd(MAP_H or 0)
-      until( get_maptile(x,y) == 2 )
-      
+      x = irnd(MAP_W)
+      y = irnd(MAP_H)
+      until(  get_maptile(x,  y  ) == 2 and 
+              get_maptile(x-1,y  ) == 2 and 
+              get_maptile(x,  y-1) == 2 and 
+              get_maptile(x-1,y-1) == 2     )
       create_enemy(enemy_nextid, x, y)
       
       local id = lr.current_index
