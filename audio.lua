@@ -44,7 +44,9 @@ function init_audio()
    wind_b             = "wind_b.ogg",
    wind_c             = "wind_c.ogg",
    wind_d             = "wind_d.ogg",
-   wind_e             = "wind_e.ogg"
+   wind_e             = "wind_e.ogg",
+   explosion          = "explosion.ogg",
+   hurt               = "hurt.ogg"
   }
   
   musics={}

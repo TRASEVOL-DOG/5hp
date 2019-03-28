@@ -257,6 +257,7 @@ function kill_bullet(s)
   if s.type == 2 then 
     s.speed = s.speed * .95
     create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
+    sfx("explosion", s.x, s.y)
     
     add_shake(8)
     
