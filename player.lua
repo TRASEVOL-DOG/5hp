@@ -639,9 +639,13 @@ function draw_player_crown(s, x, y)
 end
 
 function draw_player_names()
-  local c0,c1,c2 = 14,8,6
-  local cm0,cm1,cm2 = 14,9,6 -- when your player
-  local cd0,cd1,cd2 = 8,0,6 -- when player dead
+--  local c0,c1,c2 = 14,8,6
+--  local cm0,cm1,cm2 = 14,9,6 -- when your player
+--  local cd0,cd1,cd2 = 8,0,6 -- when player dead
+  
+  local c0,c1,c2 = 14, 3
+  local cm0,cm1,cm2 = 14,1 -- when your player
+  local cd0,cd1,cd2 = 3,6 -- when player dead
   
   for s in group("player") do
     local x = s.x + s.diff_x

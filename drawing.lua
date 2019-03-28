@@ -218,15 +218,17 @@ end
 function super_print(str,x,y,c0,c1,c2,w)
   local c0 = c0 or 14
   local c1 = c1 or graphics.textdrk[c0]
-  local c2 = c2 or 0
+
 --  local w  = w or graphics.curfont:getWidth(str)
 
-  print(str,x,y+2,c2)
-  print(str,x+1,y+1,c2)
-  print(str,x-1,y+1,c2)
-  print(str,x+1,y,c2)
-  print(str,x-1,y,c2)
-  print(str,x,y-1,c2)
+  if c2 then
+    print(str,x,y+2,c2)
+    print(str,x+1,y+1,c2)
+    print(str,x-1,y+1,c2)
+    print(str,x+1,y,c2)
+    print(str,x-1,y,c2)
+    print(str,x,y-1,c2)
+  end
   
   print(str,x,y+1,c1)
   

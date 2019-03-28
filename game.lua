@@ -67,8 +67,8 @@ function _update(dt)
 
   wind_timer = wind_timer - delta_time
   if wind_timer < 0 then
-    sfx(pick({"wind_a","wind_b","wind_c","wind_d","wind_e"}), nil, nil, 0.8+rnd(0.4), 20+rnd(30))
-    wind_timer = 2.5+rnd(1.5)
+    sfx(pick({"wind_a","wind_b","wind_c","wind_d","wind_e"}), nil, nil, 0.7+rnd(0.4), 5+rnd(10))
+    wind_timer = 1.5+rnd(1)
   end
 
 --  if btnp(6) then
@@ -615,7 +615,7 @@ function define_menus()
   local menus={
     mainmenu={
       {"Play", function() menu_back() connecting = true end},
-      {"Player Name", function(str) my_name = str end, "text_field", 9, my_name},
+      {"Player Name", function(str) my_name = str end, "text_field", 11, my_name},
       {"Settings", function() menu("settings") end},
 --      {"Join the Castle Discord!", function() love.system.openURL("https://discordapp.com/invite/4C7yEEC") end}
     },
@@ -685,7 +685,10 @@ function check_loot_respawn()
   end
 end
 
-function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
+--function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
+
+function generate_name() return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Bush", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant"} end
+
 my_name = generate_name()
 
 
