@@ -39,8 +39,8 @@ function create_player(id,x,y)
     h                   = 7,
     
     timer_fire          = 0, -- cooldown (seconds) left for bullet fire
-    weapon_id           = 2,--0,
-    ammo                = 999,--0,
+    weapon_id           = 0,
+    ammo                = 0,
     bullet_sfx          = 1,
     rafale_on           = false,
     rafale_shot         = 0, -- keep tracks of how many the bullets the player shot this rafale
