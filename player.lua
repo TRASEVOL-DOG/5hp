@@ -108,8 +108,13 @@ function update_player(s)
   
   if crowned_player == s.id and s.alive then add_score(s) end
   
-  if s.hp > 11 then s.hp = s.hp - delta_time/2 end -- slow decrease of health according to time if above the 10 maximum
-  
+  if s.hp > 10 then 
+    if s.hp - delta_time/2 < 10 then 
+      s.hp = 10
+    else
+      s.hp = s.hp - delta_time/8  -- slow decrease of health according to time if above the 10 maximum
+    end
+  end
   if s.id == my_id and s.server_death and s.animt < -1.5 and querry_menu() == nil and not (restarting or not connected) then
     game_over()
   end

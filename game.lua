@@ -369,28 +369,37 @@ function draw_hp_ammo()
       all_colors_to(14)
     end
     
-    local k = my_player.hp/2
+    local hearts = flr(my_player.hp * 2)/4
     
     local y = 2
     local x = 2
-    for i = 1,max(10/2, k) do
+    debuggg = tostring(flr(my_player.hp * 10) / 10)
+    for i = 1,max(5, flr(hearts - .05) + .5) do
       local sp
-      if k<i then
-        if k+1 > i then
-          sp = 388
+      if hearts<i then
+        if hearts+1 > i then
+          if i < 6 then
+            sp = 388
+          else
+            sp = 396
+          end
         else
-          sp = 384
+            sp = 384
         end
       else
-        sp = 386
+        if i < 6 then
+          sp = 386
+        else
+          sp = 394
+        end
       end
-      if i > 5 then
-        all_colors_to(14)
+      -- if i > 5 then
+        -- all_colors_to(14)
+        -- spr(sp, x+8, y+8, 2, 2)
+        -- all_colors_to()
+      -- else
         spr(sp, x+8, y+8, 2, 2)
-        all_colors_to()
-      else
-        spr(sp, x+8, y+8, 2, 2)
-      end
+      -- end
       x = x + 16
     end
 

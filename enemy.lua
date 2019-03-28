@@ -13,7 +13,7 @@ enemy_const = {
   idle_range = 11,
   follow_speed = 60,
   attack_time = 1.3,
-  hit_time = .2
+  hit_time = .6
 }
 
 function create_enemy(id, x, y, vx, vy, alive, angle, hp, behavior)
