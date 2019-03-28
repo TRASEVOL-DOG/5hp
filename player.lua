@@ -525,6 +525,7 @@ function hit_player(s, id_attacker, bullet, enemy)
     kill_player (s, id_attacker) 
   end
   
+  sfx("hurt", s.x, s.y, 0.8+rnd(0.2), 50)
   s.hit_timer = player_const.hit_time
 end
 
