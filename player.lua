@@ -508,9 +508,10 @@ function hit_player(s, id_attacker, bullet, enemy)
   
   if server_only then
     if bullet and s.last_hit_bullet ~= bullet.id then
+      castle_print(get_damage_from_type(bullet.type))
       s.hp = s.hp - get_damage_from_type(bullet.type)
       s.last_hit_bullet = bullet.id
-    else
+    elseif not bullet then
       s.hp = s.hp - 1
     end
   end
@@ -767,7 +768,6 @@ weapon_const = {
                       s.rafale_on = true
                       s.ammo = s.ammo - 1
                       b = create_bullet(s.id)
-                      -- b.speed = b.speed * .5
                       b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[5]
                       
@@ -779,8 +779,6 @@ weapon_const = {
                       s.rafale_on = true
                       s.ammo = s.ammo - 1
                       b = create_bullet(s.id)
-                      -- b.speed = b.speed * .5
-                      -- b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[6]
                       
                       add_shake(2)
