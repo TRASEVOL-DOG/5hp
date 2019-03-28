@@ -602,13 +602,7 @@ function init_game()
       create_loot(0, 0, crown_spawn.x, crown_spawn.y)
     end
     
-    -- create_loot(1, 2, 512-8, 295+8, 2)
-    -- create_loot(2, 2, 512+8, 295+8, 3)
     create_loot(2, 2, 512+8, 295+8, 4)
-    
-    -- create_loot(3, 1, 512, 295+16)
-    
-    -- create_enemy(0, 522, 305)
   end
   
 end
