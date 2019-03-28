@@ -25,7 +25,7 @@ function create_bullet(player_id, id)
   }
   local s = {
     from                = player_id, -- player id
-    type                = 0, -- 0 for normal, 1 for grenade, 2 for heavy rifle
+    type                = 1, -- 1 for normal, 2 for grenade, 3 for heavy rifle
     w                   = 4,
     h                   = 4,
     animt               = 0,
@@ -113,7 +113,7 @@ function update_bullet(s)
   
 
   s.timer_despawn = s.timer_despawn - delta_time
-  if s.type == 1 then s.speed = s.speed * .95 end
+  if s.type == 2 then s.speed = s.speed * .95 end
   
   
   if( s.timer_despawn < 0 and s.anim_state ~= "killed") then 
@@ -234,7 +234,7 @@ function draw_bullet(s)
     spr(236, x, y, 1, 1, s.angle)
   elseif s.anim_state == "killed" then 
     spr(239, x, y, 1, 1, s.angle)
-  elseif s.type == 1 then
+  elseif s.type == 2 then
     spr(235, x, y, 1, 1, s.angle)
   else
     spr(237, x, y, 2, 1, s.angle)
@@ -254,7 +254,7 @@ function kill_bullet(s)
 
   s.anim_state = "killed"
   
-  if s.type == 1 then 
+  if s.type == 2 then 
     s.speed = s.speed * .95
     create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
     

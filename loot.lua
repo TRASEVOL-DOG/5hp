@@ -102,29 +102,35 @@ function be_looted_by(s, player)
     
   -- 0 for Crown, 1 for Health, 2 for weapon
   
-  -- if s.loot_type = 0 then crown_player(player)
-  -- elseif s.loot_type = 1 then heal_player(player)
-  -- else
-  if s.loot_type == 2 then arm_player(s, player) end
+  if s.loot_type == 0 then crown_player(s, player)
+  elseif s.loot_type == 1 and server_only then heal_player(player)
+  elseif s.loot_type == 2 then arm_player(s, player) 
+  end
   
-  if s.loot_type == 0 then crown_player(s, player) end
   
-  s.looted_by = player.id  
-  -- if crowned_player then
-  -- debuggg = s.id .. "                         "
-  -- if server_only then
-    deregister_loot(s)
-  -- end
+  s.looted_by = player.id 
+
+  --loot_respawner
+  if server_only then
+    local id = lr.current_index
+    for _ in pairs(lr.timers) do id = id + 1 end
+    lr.timers[id] = os.clock() + 3
+    lr.pos[id]    = {x = s.x, y = s.y}
+    lr.type[id]   = s.loot_type 
+  end
+  deregister_loot(s)
 end
 
 function crown_player(s, player) 
-  -- last_pickup_crown = love.time.getTime()
   crowned_player = player.id
 end
--- function heal_player(player) player.hp = player.hp + 5 end
+function heal_player(player)
+  player.hp = player.hp + 5 
+end
 
 function arm_player(s, player) 
   local weapon = s.weapon_id
+  set_default_weapon(player)
   player.weapon_id = weapon
   player.ammo = weapon_const.ammo[weapon]
 end
@@ -135,27 +141,3 @@ function deregister_loot(s)
   
   deregister_object(s)
 end
-
-
------- loot spawn point code, it should be server only
-
--- function check_if_looted() -- will go through every spawn point
-
-
--- when map created, create loot for every spawn point
--- when loot looted, adds timer to list of spawnpoints to be respawned, the timer shall be a bit random
-
---have a function that will go through a list of spp and give them all
-
-
-
-
-
-
--- retrieve all spawn points, spawn loot on each
-
--- when loot is destroyed, begin countdown
-
--- when countdown enhd, spawn loot
-
-

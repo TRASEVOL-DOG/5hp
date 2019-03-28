@@ -103,12 +103,12 @@ function update_player(s)
   s.animt = s.animt - delta_time
   if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
  
-  debuggg = s.hp .. " / 10"
+  -- debuggg = s.hp .. " / 10"
   
   
   if crowned_player == s.id and s.alive then add_score(s) end
   
-  if s.hp > 11 then s.hp = s.hp - dt/2 end -- slow decrease of health according to time if above the 10 maximum
+  if s.hp > 11 then s.hp = s.hp - delta_time/2 end -- slow decrease of health according to time if above the 10 maximum
   
   if s.id == my_id and s.server_death and s.animt < -1.5 and querry_menu() == nil and not (restarting or not connected) then
     game_over()
@@ -505,6 +505,8 @@ function hit_player(s, id_attacker, bullet, enemy)
     if bullet and s.last_hit_bullet ~= bullet.id then
       s.hp = s.hp - get_damage_from_type(bullet.type)
       s.last_hit_bullet = bullet.id
+    else
+      s.hp = s.hp - 1
     end
   end
   
@@ -660,6 +662,8 @@ end
 function set_default_weapon(s)
   s.weapon_id = 1
   s.ammo = 0
+  s.rafale_on = false
+  s.rafale_shot = 0
 end
 
 player_const = {
@@ -673,13 +677,13 @@ player_const = {
 
 weapon_const = {
   names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle"},
-  loot_sprites    = {112   , 113 , 114 , 116    },
-  sprites         = {120   , 121 , 122 , 124    },
-  fire_rate       = {.1    , .6  , .05 , 1.3    },
-  ammo            = {0     , 12  , 30  , 5      },
-  damage          = {[0]= 1, 4                  },
-  explosion_range = 20 ,
-  bullet_type     = {0     , 0   , 0   , 1      },
+  loot_sprites    = {112   , 113 , 114 , 116 , 116    },
+  sprites         = {120   , 121 , 122 , 124 , 124    },
+  fire_rate       = {.1    , .6  , .05 , 1.3 , 1.3    },
+  ammo            = {0     , 12  , 30  , 5   , 5      },
+  damage          = {1     , 4                  },
+  explosion_range =  20 ,
+  bullet_type     = {1     , 1   , 1   , 2   , 2      },
   fire_mod        = { -- 1
                     function (s)
                       local b = create_bullet(s.id)
@@ -728,6 +732,15 @@ weapon_const = {
                     end
                     ,
                     -- 4 
+                    function(s)
+                      s.ammo = s.ammo - 1
+                      b = create_bullet(s.id)
+                      b.speed = b.speed * 2.5
+                      b.time_despawn = 0.8 * 2.5
+                      b.type = weapon_const.bullet_type[4]
+                    end
+                    ,
+                    -- 5 
                     function(s)
                       s.ammo = s.ammo - 1
                       b = create_bullet(s.id)

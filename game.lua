@@ -57,6 +57,9 @@ function _init()
   if not server_only then
     main_menu()
   end
+  if server_only then
+    init_loot_spawns()
+  end
 end
 
 wind_timer = 0
@@ -108,6 +111,11 @@ function _update(dt)
   update_menu()
   
   update_network()
+  
+  if server_only then
+    check_loot_respawn()
+  end
+  
 end
 
 function _draw()
@@ -365,7 +373,7 @@ function draw_hp_ammo()
     
     local y = 2
     local x = 2
-    for i = 1,5 do
+    for i = 1,max(10/2, k) do
       local sp
       if k<i then
         if k+1 > i then
@@ -376,8 +384,13 @@ function draw_hp_ammo()
       else
         sp = 386
       end
-    
-      spr(sp, x+8, y+8, 2, 2)
+      if i > 5 then
+        all_colors_to(14)
+        spr(sp, x+8, y+8, 2, 2)
+        all_colors_to()
+      else
+        spr(sp, x+8, y+8, 2, 2)
+      end
       x = x + 16
     end
 
@@ -627,6 +640,35 @@ function define_menus()
   return menus
 end
 
+--loot_respawner
+lr = { current_index = 1, timers = {} , pos = {}, type = {} }
+
+function init_loot_spawns()
+  for i, sp in pairs(weapon_spawn_points) do
+    create_loot(nil, 2, sp.x, sp.y, 2 + irnd(3))
+  end
+  for i, sp in pairs(hp_spawn_points) do
+    create_loot(nil, 1, sp.x, sp.y)
+  end
+end
+
+function check_loot_respawn()
+  
+  if lr.timers[lr.current_index] and lr.pos[lr.current_index] and lr.type[lr.current_index] then
+    local t = os.clock()
+    local diff = t - lr.timers[lr.current_index]
+    if diff > 0 then
+      
+      create_loot(nil, lr.type[lr.current_index], lr.pos[lr.current_index].x, lr.pos[lr.current_index].y, 2 + irnd(3)) 
+      
+      local id = lr.current_index
+      lr.timers[id] = nil
+      lr.pos[id]    = nil
+      lr.type[id]   = nil 
+      lr.current_index = lr.current_index + 1
+    end
+  end
+end
 
 function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
 my_name = generate_name()
