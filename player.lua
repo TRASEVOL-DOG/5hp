@@ -225,7 +225,7 @@ function get_inputs(s)
       loot_crown(s)
     end
     
-    if s.weapon_id == 5 then -- heavy rifle
+    if s.weapon_id == 5 or s.weapon_id == 6 then -- heavy rifle or mini gun
       if mouse_btnr(0) then s.rafale_on = false end
     end
     
@@ -349,7 +349,7 @@ function check_firing(s)
       fire(s)
       
       add_shake()
-    elseif s.weapon_id ~= 5 then
+    elseif s.weapon_id ~= 5 or s.weapon_id ~= 6 then
       sfx("cant_shoot", s.x, s.y)
     end
   end
@@ -681,14 +681,14 @@ player_const = {
 }
 
 weapon_const = {
-  names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle"},
-  loot_sprites    = {112   , 113 , 114 , 116 , 115    },
-  sprites         = {120   , 121 , 122 , 124 , 123    },
-  fire_rate       = {.1    , .6  , .1  , 1.3 , .3     },
-  ammo            = {0     , 36  , 60  , 15  , 60     },
-  damage          = {1     , 4   , 2                  },
+  names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle", "Mini Gun"},
+  loot_sprites    = {112   , 113 , 114 , 116 , 115 , 115    },
+  sprites         = {120   , 121 , 122 , 124 , 123 , 123    },
+  fire_rate       = {.1    , .6  , .1  , 1.3 , .3  , .13    },
+  ammo            = {0     , 36  , 60  , 15  , 60  , 70     },
+  damage          = {1     , 4   , 2    },
   explosion_range =  20 ,
-  bullet_type     = {1     , 1   , 1   , 2   , 3      },
+  bullet_type     = {1     , 1   , 1   , 2   , 3   , 1      },
   fire_mod        = { -- 1
                     function (s)
                       local b = create_bullet(s.id)
@@ -754,6 +754,16 @@ weapon_const = {
                       -- b.speed = b.speed * .5
                       b.time_despawn = 0.8 * 2.5
                       b.type = weapon_const.bullet_type[5]
+                    end
+                    ,
+                    -- 5 
+                    function(s)
+                      s.rafale_on = true
+                      s.ammo = s.ammo - 1
+                      b = create_bullet(s.id)
+                      -- b.speed = b.speed * .5
+                      -- b.time_despawn = 0.8 * 2.5
+                      b.type = weapon_const.bullet_type[6]
                     end
                   }
 }

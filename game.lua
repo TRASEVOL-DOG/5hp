@@ -645,7 +645,7 @@ lr = { current_index = 1, timers = {} , pos = {}, type = {} }
 
 function init_loot_spawns()
   for i, sp in pairs(weapon_spawn_points) do
-    create_loot(nil, 2, sp.x, sp.y, 3 ) --2 + irnd(3))
+    create_loot(nil, 2, sp.x, sp.y, 6 ) --2 + irnd(3))
   end
   for i, sp in pairs(hp_spawn_points) do
     create_loot(nil, 1, sp.x, sp.y)
