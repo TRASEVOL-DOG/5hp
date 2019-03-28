@@ -59,6 +59,7 @@ function _init()
   end
   if server_only then
     init_loot_spawns()
+    init_enemy_spawns()
   end
 end
 
@@ -67,8 +68,8 @@ function _update(dt)
 
   wind_timer = wind_timer - delta_time
   if wind_timer < 0 then
-    sfx(pick({"wind_a","wind_b","wind_c","wind_d","wind_e"}), nil, nil, 0.8+rnd(0.4), 20+rnd(30))
-    wind_timer = 2.5+rnd(1.5)
+    sfx(pick({"wind_a","wind_b","wind_c","wind_d","wind_e"}), nil, nil, 0.7+rnd(0.4), 5+rnd(10))
+    wind_timer = 1.5+rnd(1)
   end
 
 --  if btnp(6) then
@@ -114,6 +115,7 @@ function _update(dt)
   
   if server_only then
     check_loot_respawn()
+    check_enemy_respawn()
   end
   
 end
@@ -356,6 +358,7 @@ function draw_pause_background()
   end
 end
 
+hp_disp = 0
 function draw_hp_ammo()
   local my_player = player_list[my_id]
   
@@ -369,37 +372,42 @@ function draw_hp_ammo()
       all_colors_to(14)
     end
     
-    local hearts = flr(my_player.hp * 2)/4
+    if hp_disp > my_player.hp then
+      hp_disp = my_player.hp
+    elseif hp_disp < my_player.hp then
+      hp_disp = min(hp_disp + delta_time*10, my_player.hp)
+    end
+    
+    local k = flr(hp_disp)/2
     
     local y = 2
     local x = 2
-    debuggg = tostring(flr(my_player.hp * 10) / 10)
-    for i = 1,max(5, flr(hearts - .05) + .5) do
+    for i = 1,max(10/2, ceil(hp_disp)/2) do
       local sp
-      if hearts<i then
-        if hearts+1 > i then
-          if i < 6 then
-            sp = 388
-          else
-            sp = 396
-          end
+      if k<i then
+        if k+1 > i then
+          sp = 388
         else
-            sp = 384
+          sp = 384
         end
       else
-        if i < 6 then
-          sp = 386
-        else
-          sp = 394
-        end
+        sp = 386
       end
-      -- if i > 5 then
-        -- all_colors_to(14)
-        -- spr(sp, x+8, y+8, 2, 2)
-        -- all_colors_to()
-      -- else
+      
+      if i > 5 then
+        sp = sp+4
+        local n = round(cos(t*2))
+        pal(12,lighter(12,n))
+        pal(9 ,lighter(9 ,n))
+        pal(4 ,lighter(4 ,n))
         spr(sp, x+8, y+8, 2, 2)
-      -- end
+        pal(12,12)
+        pal(9 ,9 )
+        pal(4 ,4 )
+      else
+        spr(sp, x+8, y+8, 2, 2)
+      end
+      
       x = x + 16
     end
 
@@ -410,13 +418,13 @@ function draw_hp_ammo()
     y = y + 16
     x = 2
     
-    spr(390, x+8, y+8, 2, 2)
+    spr(394, x+8, y+8, 2, 2)
     
     x = x + 16
     local wep = my_player.weapon_id
     local ammo = my_player.ammo
     if ammo == 0 then
-      spr(392, x+8, y+8, 2, 2)
+      spr(396, x+8, y+8, 2, 2)
     else
       font("big")
       draw_text(""..ammo, x+4, y+8, 0, 14, 11, 6)
@@ -600,7 +608,7 @@ function init_game()
     
     -- create_loot(3, 1, 512, 295+16)
     
-    create_enemy(0, 522, 305)
+    -- create_enemy(0, 522, 305)
   end
   
 end
@@ -609,7 +617,7 @@ function define_menus()
   local menus={
     mainmenu={
       {"Play", function() menu_back() connecting = true end},
-      {"Player Name", function(str) my_name = str end, "text_field", 9, my_name},
+      {"Player Name", function(str) my_name = str end, "text_field", 11, my_name},
       {"Settings", function() menu("settings") end},
 --      {"Join the Castle Discord!", function() love.system.openURL("https://discordapp.com/invite/4C7yEEC") end}
     },
@@ -679,7 +687,59 @@ function check_loot_respawn()
   end
 end
 
-function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
+-----------------------------------
+
+--enemy_respawner
+
+enemy_respawner = { current_index = 1, timers = {}}
+
+function init_enemy_spawns()
+
+  for i = 1, 15 do
+  
+    local x
+    local y
+    repeat
+      x = irnd(MAP_W)
+      y = irnd(MAP_H)
+    until(  get_maptile(x,  y  ) == 2 and 
+            get_maptile(x-1,y  ) == 2 and 
+            get_maptile(x,  y-1) == 2 and 
+            get_maptile(x-1,y-1) == 2     )
+            
+    create_enemy(enemy_nextid, x * 8, y * 8 - 4)
+  
+  end
+  
+end
+
+function check_enemy_respawn()
+  
+  if lr.timers[lr.current_index] then
+    local t = os.clock()
+    local diff = t - lr.timers[lr.current_index]
+    if diff > 0 then
+      local x
+      local y
+      repeat
+        x = rnd(MAP_W or 0)
+        y = rnd(MAP_H or 0)
+      until( get_maptile(x,y) == 2 )
+      
+      create_enemy(enemy_nextid, x, y)
+      
+      local id = lr.current_index
+      lr.timers[lr.current_index] = nil
+      lr.current_index = lr.current_index + 1
+    end
+  end
+end
+
+
+--function generate_name() return pick{"Roll","Miss","Skul","Cool","Nice","Cute","Good","Ever","Rain","Dead","Bone","Lazy","Fast","Slow","Shot","Coin","Rage","Flat","Love","Meat","Sexy","Warm","Moon","Fate","Heat","High","Hell","Lead","Gold","Bull","Wolf","Game","Gunn","Play","Cuts","Stab","Kink","King","Funk","Bite","Beat","Evil","Ride","Rude","Star","Sand","Badd","Snek","Hate","Work","Load","Coal","Hard","Soap","Sire","Fire","Fear","Road","Pain","Junk"}.." "..pick{"Boii","Boys","Miss","Cops","Skul","Thug","Cats","Puss","Dogs","Pups","Bird","Cows","Rats","Suns","Bone","Burn","Shot","Gunz","Coin","Rage","Love","Meat","Hero","Hawk","Moon","Fate","Heat","Hell","Lead","Gold","Food","Hand","Limb","Bull","Wolf","Game","Gunn","Cuts","Stab","Kink","King","Toad","Punk","Pack","Digg","Beer","Wind","Bear","Wall","Trip","Fool","Soul","Evil","Star","Sand","Snek","Hats","Work","Load","Coal","Hugz","Joke","Papa","Mama","Mood","Fire","Fear","Cook","Rope","Mark","Pain","Junk"} end
+
+function generate_name() return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Bush", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant"} end
+
 my_name = generate_name()
 
 

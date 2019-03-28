@@ -108,13 +108,8 @@ function update_player(s)
   
   if crowned_player == s.id and s.alive then add_score(s) end
   
-  if s.hp > 10 then 
-    if s.hp - delta_time/2 < 10 then 
-      s.hp = 10
-    else
-      s.hp = s.hp - delta_time/8  -- slow decrease of health according to time if above the 10 maximum
-    end
-  end
+  if s.hp > 11 then s.hp = s.hp - delta_time end -- slow decrease of health according to time if above the 10 maximum
+  
   if s.id == my_id and s.server_death and s.animt < -1.5 and querry_menu() == nil and not (restarting or not connected) then
     game_over()
   end
@@ -644,9 +639,13 @@ function draw_player_crown(s, x, y)
 end
 
 function draw_player_names()
-  local c0,c1,c2 = 14,8,6
-  local cm0,cm1,cm2 = 14,9,6 -- when your player
-  local cd0,cd1,cd2 = 8,0,6 -- when player dead
+--  local c0,c1,c2 = 14,8,6
+--  local cm0,cm1,cm2 = 14,9,6 -- when your player
+--  local cd0,cd1,cd2 = 8,0,6 -- when player dead
+  
+  local c0,c1,c2 = 14, 3
+  local cm0,cm1,cm2 = 14,1 -- when your player
+  local cd0,cd1,cd2 = 3,6 -- when player dead
   
   for s in group("player") do
     local x = s.x + s.diff_x
@@ -687,8 +686,8 @@ player_const = {
 
 weapon_const = {
   names           = {"Pistol", "Shotgun", "Assault Rifle", "Grenade Launcher", "Heavy Rifle", "Mini Gun"},
-  loot_sprites    = {112   , 113 , 114 , 116 , 115 , 115    },
-  sprites         = {120   , 121 , 122 , 124 , 123 , 123    },
+  loot_sprites    = {112   , 113 , 114 , 116 , 115 , 117    },
+  sprites         = {120   , 121 , 122 , 124 , 123 , 125    },
   fire_rate       = {.1    , .6  , .1  , 1.3 , .3  , .13    },
   ammo            = {0     , 36  , 60  , 15  , 60  , 70     },
   damage          = {1     , 4   , 2    },
