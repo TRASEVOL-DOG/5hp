@@ -12,7 +12,7 @@ enemy_const = {
   hit_range = 15,
   idle_range = 11,
   follow_speed = 60,
-  attack_time = 1.3,
+  attack_time = .5,
   hit_time = .2
 }
 
@@ -102,7 +102,7 @@ function update_enemy(s)
   s.animt = s.animt + delta_time
   if s.hit_timer > 0 then s.hit_timer = s.hit_timer - delta_time end
 
-  if server_only then
+  -- if server_only then
   
     -- update timers
     s.timer_attack = s.timer_attack - delta_time
@@ -121,7 +121,7 @@ function update_enemy(s)
         s.target = nil
       end
     end
-  end
+  -- end
   
   s.target = player_around(s)
   if s.target then
