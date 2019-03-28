@@ -670,7 +670,7 @@ function check_loot_respawn()
     local diff = t - lr.timers[lr.current_index]
     if diff > 0 then
       
-      create_loot(nil, lr.type[lr.current_index], lr.pos[lr.current_index].x, lr.pos[lr.current_index].y, 2 + irnd(3)) 
+      create_loot(nil, lr.type[lr.current_index], lr.pos[lr.current_index].x, lr.pos[lr.current_index].y, 1 + irnd(5)) 
       
       local id = lr.current_index
       lr.timers[id] = nil
