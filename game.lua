@@ -503,7 +503,7 @@ function game_over()
   menu("gameover")
   in_pause = false
 end
-
+death_message = ""
 function draw_gameover()
   local scrnw, scrnh = screen_size()
   
@@ -535,16 +535,9 @@ function draw_gameover()
   
   local c0,c1,c2 = 14,8,6
   
-  if last_kill and    last_kill.count ~= 1 then
-    if last_kill.count == 21 then msg = "st" 
-    elseif last_kill.count == 2 or last_kill.count == 22 then msg = "nd" 
-    elseif last_kill.count == 3 or last_kill.count == 23 then msg = "rd"
-    else msg = last_kill.count + "th" 
-    end
-    msg = " for the "..last_kill.count.. msg .. " time"
-  end
   if player then
-    draw_text("You got shot by ".. player.last_killer_name .. msg ..".", x, y-10, 1, c0,c1,c2)
+    if death_message == "" then death_message = pick_death_message() end
+    draw_text(death_message, x, y-10, 1, c0,c1,c2)
   
     draw_text("Score: "..player.score, x, y+10, 1, c0,c1,c2)
   end
@@ -739,3 +732,38 @@ my_name = generate_name()
 
 
 function chance(a) return rnd(100)<a end
+function pick_death_message() return pick{
+
+"You did not last long.",
+"Being a king was not an easy thing.",
+"Could have, should have, would have.",
+"You had to use your gun.",
+"It's okay. Don't be sad.",
+"Life is not fair.",
+"You almost got it !",
+"Step by step, go easy.",
+"Those damned dogs, but so cute.",
+"Again and again and again.",
+"DO NOT PANIC !",
+"Why are we still here ? Just to suffer ?",
+"No pain no game.",
+"Welcome to the overworld !",
+"You can do better !",
+"Work it harder, make it better.",
+"'Remember to put quotes here' - Trasevol_Dog",
+"'Eliott don't write that.'",
+"It lasted longer than expected, bravo.",
+"Le fric, c'est chic.",
+"print( 'wow' )",
+"It's been a while !",
+"Tout plein de twists !",
+"You won't win, not with that hat-titude.",
+"You've been hat-cked.",
+"It's okay to die, once in a while.",
+"It gets funnier every time.",
+"Why did you cross the road ?",
+"The hard way.",
+"You were Hattacked.",
+"You lost your hat."
+}
+end
