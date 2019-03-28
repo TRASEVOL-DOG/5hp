@@ -114,7 +114,7 @@ function be_looted_by(s, player)
   if server_only then
     local id = lr.current_index
     for _ in pairs(lr.timers) do id = id + 1 end
-    lr.timers[id] = os.clock() + 3
+    lr.timers[id] = os.clock() + 20 + rnd(20)
     lr.pos[id]    = {x = s.x, y = s.y}
     lr.type[id]   = s.loot_type 
   end
