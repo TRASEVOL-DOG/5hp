@@ -39,7 +39,7 @@ function create_player(id,x,y)
     h                   = 7,
     
     timer_fire          = 0, -- cooldown (seconds) left for bullet fire
-    weapon_id           = 0,
+    weapon_id           = 1,
     ammo                = 0,
     bullet_sfx          = 1,
     rafale_on           = false,
