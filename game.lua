@@ -735,9 +735,9 @@ function chance(a) return rnd(100)<a end
 function pick_death_message() return pick{
 
 "You did not last long.",
-"Being a king was not an easy thing.",
+"Being a ruler was not an easy thing.",
 "Could have, should have, would have.",
-"You had to use your gun.",
+"You had to use your gun, you know ?",
 "It's okay. Don't be sad.",
 "Life is not fair.",
 "You almost got it !",
@@ -750,7 +750,7 @@ function pick_death_message() return pick{
 "Welcome to the overworld !",
 "You can do better !",
 "Work it harder, make it better.",
-"'Remember to put quotes here' - Trasevol_Dog",
+"'Remember to put quotes here'- Trasevol_Dog"
 "'Eliott don't write that.'",
 "It lasted longer than expected, bravo.",
 "Le fric, c'est chic.",
@@ -764,6 +764,7 @@ function pick_death_message() return pick{
 "Why did you cross the road ?",
 "The hard way.",
 "You were Hattacked.",
-"You lost your hat."
+"You lost your hat.",
+"Do you love bullets ?"
 }
 end
