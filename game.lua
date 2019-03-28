@@ -715,7 +715,7 @@ function check_enemy_respawn()
               get_maptile(x-1,y  ) == 2 and 
               get_maptile(x,  y-1) == 2 and 
               get_maptile(x-1,y-1) == 2     )
-      create_enemy(enemy_nextid, x, y)
+      create_enemy(enemy_nextid, x * 8, y * 8 - 4)
       
       local id = lr.current_index
       lr.timers[lr.current_index] = nil
