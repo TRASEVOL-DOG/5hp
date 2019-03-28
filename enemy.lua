@@ -202,7 +202,12 @@ function kill_enemy(s)
     for i=1,16 do
       create_smoke(s.x, s.y, 0.75, 1+rnd(1.5), pick{11,8,3,0})
     end
+  else
+    local id = lr.current_index
+    for _ in pairs(lr.timers) do id = id + 1 end
+    lr.timers[id] = os.clock() + 15 + rnd(15)
   end
+  
   sfx("get_hit", s.x, s.y) 
   
   enemy_list[s.id] = nil

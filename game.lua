@@ -59,6 +59,7 @@ function _init()
   end
   if server_only then
     init_loot_spawns()
+    init_enemy_spawns()
   end
 end
 
@@ -114,6 +115,7 @@ function _update(dt)
   
   if server_only then
     check_loot_respawn()
+    check_enemy_respawn()
   end
   
 end
@@ -600,13 +602,7 @@ function init_game()
       create_loot(0, 0, crown_spawn.x, crown_spawn.y)
     end
     
-    -- create_loot(1, 2, 512-8, 295+8, 2)
-    -- create_loot(2, 2, 512+8, 295+8, 3)
     create_loot(2, 2, 512+8, 295+8, 4)
-    
-    -- create_loot(3, 1, 512, 295+16)
-    
-    create_enemy(0, 522, 305)
   end
   
 end
@@ -680,6 +676,54 @@ function check_loot_respawn()
       lr.timers[id] = nil
       lr.pos[id]    = nil
       lr.type[id]   = nil 
+      lr.current_index = lr.current_index + 1
+    end
+  end
+end
+
+-----------------------------------
+
+--enemy_respawner
+
+enemy_respawner = { current_index = 1, timers = {}}
+
+function init_enemy_spawns()
+
+  for i = 1, 15 do
+  
+    local x
+    local y
+    repeat
+      x = irnd(MAP_W)
+      y = irnd(MAP_H)
+    until(  get_maptile(x,  y  ) == 2 and 
+            get_maptile(x-1,y  ) == 2 and 
+            get_maptile(x,  y-1) == 2 and 
+            get_maptile(x-1,y-1) == 2     )
+            
+    create_enemy(enemy_nextid, x * 8, y * 8 - 4)
+  
+  end
+  
+end
+
+function check_enemy_respawn()
+  
+  if lr.timers[lr.current_index] then
+    local t = os.clock()
+    local diff = t - lr.timers[lr.current_index]
+    if diff > 0 then
+      local x
+      local y
+      repeat
+        x = rnd(MAP_W or 0)
+        y = rnd(MAP_H or 0)
+      until( get_maptile(x,y) == 2 )
+      
+      create_enemy(enemy_nextid, x, y)
+      
+      local id = lr.current_index
+      lr.timers[lr.current_index] = nil
       lr.current_index = lr.current_index + 1
     end
   end
