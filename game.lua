@@ -231,13 +231,13 @@ function get_camera_pos()
   return round(cam.x+cam.shkx*shk), round(cam.y+cam.shky*shk)
 end
 
-function add_shake(p)
+function add_shake(powr)
   if server_only then return end
 
-  p = p or 3
+  local powr = powr or 3
   local a = rnd(1)
-  cam.shkx = p*cos(a)
-  cam.shky = p*sin(a)
+  cam.shkx = powr*cos(a)
+  cam.shky = powr*sin(a)
 end
 
 function update_camera(s)

@@ -66,7 +66,7 @@ function draw_leaderboard()
   local sx, sy = screen_size()
   local l_t = " Leaderboard "
   local l_w = str_width(l_t)
-  local lb_w = str_width(" ") + leaderboard.width
+  local lb_w = str_width("  ") + leaderboard.width
   local y = 8
     
   local size = #leaderboard.list
@@ -78,13 +78,23 @@ function draw_leaderboard()
     
     draw_text_oultined("\"Tab\" to expand", sx - str_width("\"Tab\" to expand"),  y + 3 + (size+1)*9, 0)
   else
-    rectfill(sx - l_w - 2, y + 1, sx - 1 , y + 12 , 6)
-    rectfill(sx - l_w - 1, y + 2, sx - 2 , y + 11 , 1)
-    draw_text_oultined(l_t, sx - l_w, y - 2, 0)
     
-    rectfill(sx - lb_w - 2, y + 13     , sx - 1 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0))    , 6)
-    rectfill(sx - lb_w - 1, y + 13 + 1 , sx - 2 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0)) - 1, 1)
-    sx = sx - 4
+    --rectfill(sx - l_w - 2, y + 1, sx - 1 , y + 12 , 6)
+    --rectfill(sx - l_w - 1, y + 2, sx - 2 , y + 11 , 1)
+    
+    palt(2,true)
+    palt(6,false)
+    local w = max(l_w, lb_w)
+    draw_frame(448, sx - w - 8, y - 4, sx - 1, y + 14 + (size+1) * (9 + (leaderboard.is_large and 1 or 0)), true)
+    palt(6,true)
+    palt(2,false)
+    
+    
+    draw_text_oultined(l_t, sx - w + (w-l_w)/2 - 2, y - 1, 0)
+    
+    --rectfill(sx - lb_w - 2, y + 13     , sx - 1 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0))    , 6)
+    --rectfill(sx - lb_w - 1, y + 13 + 1 , sx - 2 , y + 10 + (size+1) * (9 + (leaderboard.is_large and 1 or 0)) - 1, 1)
+    sx = sx - 8
     
     
   end
@@ -210,7 +220,7 @@ end
 
 function draw_text_oultined(str, x, y, c1, me)
   y = y + 5
-  if c1 then draw_text(str, x, y, 0, 14,9,6) else draw_text(str, x, y, 0, 12,4,6) end
+  if c1 then draw_text(str, x, y, 0, 14,9,not leaderboard.is_large and 6) else draw_text(str, x, y, 0, 12,4,not leaderboard.is_large and 6) end
 end
 
 function get_length_leaderboard()
