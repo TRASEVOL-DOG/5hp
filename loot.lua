@@ -125,7 +125,7 @@ function crown_player(s, player)
   crowned_player = player.id
 end
 function heal_player(player)
-  player.hp = player.hp + 5 
+  player.hp = min(player.hp + 5, 20) 
 end
 
 function arm_player(s, player) 
