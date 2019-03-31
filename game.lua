@@ -658,7 +658,13 @@ end
 
 function check_loot_respawn()
   
-  if lr.timers[lr.current_index] and lr.pos[lr.current_index] and lr.type[lr.current_index] then
+  -- castle_print(lr.current_index)
+  -- castle_print(lr.timers[lr.current_index])
+  -- castle_print(lr.timers[lr.current_index + 1])
+  
+  lr.current_index = get_random_index(lr.timers) 
+  
+  if lr.current_index and lr.timers[lr.current_index] and lr.pos[lr.current_index] and lr.type[lr.current_index] then
     local t = os.clock()
     local diff = t - lr.timers[lr.current_index]
     if diff > 0 then
@@ -669,11 +675,24 @@ function check_loot_respawn()
       lr.timers[id] = nil
       lr.pos[id]    = nil
       lr.type[id]   = nil 
-      lr.current_index = lr.current_index + 1
+      -- lr.current_index = lr.current_index + 1
     end
   end
+  
+  -- if lr.timers[lr.current_index] == nil and #lr.timers > 0 then 
+    -- lr.current_index = get_random_index(lr.timers) 
+  -- end
+  
+  
 end
 
+function get_random_index(tab)
+
+  for i, p in pairs(tab) do
+    return i
+  end
+   
+end
 -----------------------------------
 
 --enemy_respawner
@@ -682,7 +701,7 @@ enemy_respawner = { current_index = 1, timers = {}}
 
 function init_enemy_spawns()
 
-  for i = 1, 15 do
+  for i = 1, 7 do
   
     local x
     local y

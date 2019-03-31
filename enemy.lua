@@ -205,7 +205,7 @@ function kill_enemy(s)
   else
     local id = lr.current_index
     for _ in pairs(lr.timers) do id = id + 1 end
-    lr.timers[id] = os.clock() + 15 + rnd(15)
+    lr.timers[id] = os.clock() + 35 + rnd(15)
   end
   
   sfx("get_hit", s.x, s.y) 
