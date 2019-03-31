@@ -42,6 +42,9 @@ function create_loot(id, type, x, y, weapon_id)
     loot_list[s.id] = s
   end
   
+  if player_list[my_id] and not crowned_player then
+    timer_killed_ruler = os.clock()
+  end
   register_object(s)
   return s
 end
@@ -116,7 +119,6 @@ function be_looted_by(s, player)
   if server_only and s.loot_type ~= 0 then
     local id = os.clock()
     lr.timers[id] = os.clock() + 5 + rnd(5)
-    -- lr.timers[id] = os.clock() + 3
     lr.pos[id]    = {x = s.x, y = s.y}
     lr.type[id]   = s.loot_type
   end
@@ -124,6 +126,10 @@ function be_looted_by(s, player)
 end
 
 function crown_player(s, player) 
+  local p = player_list[my_id]
+  if p and (p.id ~= player.id) then
+    timer_new_ruler = os.clock()
+  end
   crowned_player = player.id
 end
 

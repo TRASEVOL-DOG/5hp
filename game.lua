@@ -26,6 +26,9 @@ require("leaderboard")
 score = 0
 show_connection_status = false
 crowned_player = nil
+timer_intro = nil
+timer_new_ruler = nil
+timer_killed_ruler = nil
 
 function _init()
   eventpump()
@@ -118,6 +121,8 @@ function _update(dt)
     check_enemy_respawn()
   end
   
+
+  
 end
 
 function _draw()
@@ -149,6 +154,10 @@ function _draw()
   camera()
   
   draw_hp_ammo()
+  
+  if timer_intro and timer_intro + 5 > os.clock() then draw_intro() else drawing_msg = false end
+  if timer_new_ruler and timer_new_ruler + 3 > os.clock() then draw_new_ruler() else drawing_msg = false end
+  if timer_killed_ruler and timer_killed_ruler + 3 > os.clock() then draw_killed_ruler() else drawing_msg = false end
   
   local menu = querry_menu()
   
@@ -503,6 +512,7 @@ function game_over()
   menu("gameover")
   in_pause = false
 end
+
 death_message = ""
 function draw_gameover()
   local scrnw, scrnh = screen_size()
@@ -541,6 +551,64 @@ function draw_gameover()
   
     draw_text("Score: "..player.score, x, y+10, 1, c0,c1,c2)
   end
+end
+
+function draw_intro()
+  if drawing_msg then return end
+  
+  drawing_msg = true
+  local scrnw, scrnh = screen_size()
+  
+  local c0,c1,c2 = 14,8,6
+  
+  font("big")
+  
+  local str = "FIND THE CROWN, KILL IF YOU MUST."
+  local w = str_width(str)
+  
+  local x = scrnw/2-w/2
+  local y = 0.18  * scrnh
+  
+  draw_text(str, x, y, 0, c0,c1,c2)
+  
+  local x = 0.5 * scrnw
+  local y = 0.8 * scrnh
+  draw_text("Follow the golden triangle.", x, y+10, 1, c0,c1,c2)
+  
+  font("small")
+  
+end
+
+function draw_new_ruler()
+  if drawing_msg then return end
+  
+  drawing_msg = true
+  local scrnw, scrnh = screen_size()
+  
+  local c0,c1,c2 = 14,8,6
+  
+  -- font("big")
+  font("small")
+  
+  local str = "A new ruler was born."
+  local w = str_width(str)
+  local x = scrnw/2-w/2
+  draw_text(str, x, scrnh-16, 0, c0,c1,c2)
+end
+
+function draw_killed_ruler()
+  if drawing_msg then return end
+  
+  local scrnw, scrnh = screen_size()
+  
+  local c0,c1,c2 = 14,8,6
+  
+  font("small")
+  
+  local str = "The ruler was killed, now is your chance to shine."
+  local w = str_width(str)
+  local x = scrnw/2-w/2
+  draw_text(str, x, scrnh-16, 0, c0,c1,c2)
 end
 
 
@@ -645,7 +713,7 @@ function define_menus()
 end
 
 --loot_respawner
-lr = { current_index = 1, timers = {} , pos = {}, type = {} }
+lr = { timers = {} , pos = {}, type = {} }
 
 function init_loot_spawns()
   for i, sp in pairs(weapon_spawn_points) do
@@ -658,32 +726,20 @@ end
 
 function check_loot_respawn()
   
-  -- castle_print(lr.current_index)
-  -- castle_print(lr.timers[lr.current_index])
-  -- castle_print(lr.timers[lr.current_index + 1])
+  local id = get_random_index(lr.timers) 
   
-  lr.current_index = get_random_index(lr.timers) 
+  if id and lr.timers[id] and lr.pos[id] and lr.type[id] then
   
-  if lr.current_index and lr.timers[lr.current_index] and lr.pos[lr.current_index] and lr.type[lr.current_index] then
-    local t = os.clock()
-    local diff = t - lr.timers[lr.current_index]
-    if diff > 0 then
+    if os.clock() - lr.timers[id] > 0 then
       
-      create_loot(nil, lr.type[lr.current_index], lr.pos[lr.current_index].x, lr.pos[lr.current_index].y, 1 + irnd(5)) 
+      create_loot(nil, lr.type[id], lr.pos[id].x, lr.pos[id].y, 1 + irnd(5)) 
       
-      local id = lr.current_index
       lr.timers[id] = nil
       lr.pos[id]    = nil
       lr.type[id]   = nil 
-      -- lr.current_index = lr.current_index + 1
+      
     end
-  end
-  
-  -- if lr.timers[lr.current_index] == nil and #lr.timers > 0 then 
-    -- lr.current_index = get_random_index(lr.timers) 
-  -- end
-  
-  
+  end  
 end
 
 function get_random_index(tab)
@@ -697,7 +753,7 @@ end
 
 --enemy_respawner
 
-enemy_respawner = { current_index = 1, timers = {}}
+enemy_respawner = { timers = {} }
 
 function init_enemy_spawns()
 
@@ -721,10 +777,11 @@ end
 
 function check_enemy_respawn()
   
-  if lr.timers[lr.current_index] then
-    local t = os.clock()
-    local diff = t - lr.timers[lr.current_index]
-    if diff > 0 then
+  local id = get_random_index(enemy_respawner.timers)
+  
+  if id and enemy_respawner.timers[id] then
+  
+    if os.clock() - enemy_respawner.timers[id] > 0 then
       local x
       local y
       repeat
@@ -736,9 +793,7 @@ function check_enemy_respawn()
               get_maptile(x-1,y-1) == 2     )
       create_enemy(enemy_nextid, x * 8, y * 8 - 4)
       
-      local id = lr.current_index
-      lr.timers[lr.current_index] = nil
-      lr.current_index = lr.current_index + 1
+      enemy_respawner.timers[id] = nil
     end
   end
 end

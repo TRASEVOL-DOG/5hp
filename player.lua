@@ -71,7 +71,6 @@ function create_player(id,x,y)
   
   player_list[s.id or 0] = s
   
-  
   if x and y then
     s.x = x
     s.y = y
@@ -85,6 +84,7 @@ function create_player(id,x,y)
   
   register_object(s)
   if my_id == s.id then 
+    if not timer_intro then timer_intro = os.clock() end
     sfx("startplay", s.x, s.y) 
     death_message = ""
   end
