@@ -2,7 +2,7 @@
 main: main.lua
 title: Jardins Du Standoff
 owner: trasevol-dog
-primaryColor: 5c7a56
+primaryColor: 80ac40
 coverImage: https://raw.githubusercontent.com/trasevol-dog/5hp/master/logo-500.png
 multiplayer:
   enabled: true
