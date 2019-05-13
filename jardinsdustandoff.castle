@@ -4,6 +4,7 @@ title: Jardins Du Standoff
 owner: trasevol-dog
 primaryColor: 80ac40
 coverImage: https://raw.githubusercontent.com/trasevol-dog/5hp/master/logo-500.png
+dimensions: full
 multiplayer:
   enabled: true
 description: |
