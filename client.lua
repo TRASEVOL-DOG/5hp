@@ -26,7 +26,7 @@ function client.load()
   
   screen_resizeable(true, 2, on_resize)
 
-  set_frame_waiting(30)
+  set_frame_waiting(60)
   
   -- palette is Equpix15
   use_palette({0x523c4e, 0x2a2a3a, 0x3e5442, 0x84545c, 0x38607c, 0x5c7a56, 0x101024, 0xb27e56, 0xd44e52, 0x55a894, 0x80ac40, 0xec8a4b, 0x8bd0ba, 0xffcc68, 0xfff8c0})

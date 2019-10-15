@@ -36,6 +36,10 @@ function _init()
 end
 
 function _update()
+  if btnp("mouse_lb") then
+    add_shake(8)
+  end
+
   update_objects()
 
   update_network()
