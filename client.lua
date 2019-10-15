@@ -28,7 +28,8 @@ function client.load()
 
   set_frame_waiting(30)
   
-  use_palette(palettes.equpix15)
+  -- palette is Equpix15
+  use_palette({0x523c4e, 0x2a2a3a, 0x3e5442, 0x84545c, 0x38607c, 0x5c7a56, 0x101024, 0xb27e56, 0xd44e52, 0x55a894, 0x80ac40, 0xec8a4b, 0x8bd0ba, 0xffcc68, 0xfff8c0})
 
   set_background_color(0)
   
@@ -51,20 +52,16 @@ function load_assets()
   load_font("assets/Miserable.ttf", 16, "small", true)
   load_font("assets/Worthy.ttf", 16, "big", true)
   
-  load_png("sprites", "assets/spritesheet.png")
+  load_png("sprites", "assets/spritesheet.png", nil, true)
   load_png("title", "assets/title.png")
 end
 
 function define_controls()
-  register_btn("mx", 0, input_id("mouse_position", "x"))
-  register_btn("my", 0, input_id("mouse_position", "y"))
-  register_btn("dmx", 0, input_id("mouse_position", "dx"))
-  register_btn("dmy", 0, input_id("mouse_position", "dy"))
-  register_btn("mlb", 0, input_id("mouse_button", "lb"))
-  register_btn("mrb", 0, input_id("mouse_button", "rb"))
-  
-  register_btn("scy", 0, input_id("mouse_button", "scroll_y"))
-  
+  register_btn("mouse_x", 0, input_id("mouse_position", "x"))
+  register_btn("mouse_y", 0, input_id("mouse_position", "y"))
+  register_btn("mouse_lb", 0, input_id("mouse_button", "lb"))
+  register_btn("mouse_rb", 0, input_id("mouse_button", "rb"))
+
   register_btn("ctrl", 0, {input_id("keyboard", "lctrl"),
                            input_id("keyboard", "rctrl")})
   
