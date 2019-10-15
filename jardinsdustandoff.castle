@@ -1,5 +1,5 @@
 ---
-main: main.lua
+main: client.lua
 title: Jardins Du Standoff
 owner: trasevol-dog
 primaryColor: 80ac40
@@ -7,6 +7,7 @@ coverImage: https://raw.githubusercontent.com/trasevol-dog/5hp/master/logo-500.p
 dimensions: full
 multiplayer:
   enabled: true
+  serverMain: server.lua
 description: |
  🌿 💀 👑 Up to 16 dandies trying to keep the crown on their head. Be the better one. 👑 💀 🌿
  

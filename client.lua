@@ -1,143 +1,83 @@
-if castle then
-  cs = require("https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua")
-else
-  cs = require("cs")
-end
-client = cs.client
-
-if USE_CASTLE_CONFIG then
-  client.useCastleConfig()
-else
-  function start_client()
-    client.enabled = true
-    client.start('127.0.0.1:22122') -- IP address ('127.0.0.1' is same computer) and port of server
-    
-    love.update, love.draw = client.update, client.draw
-    love.resize, love.textinput, love.keypressed, love.keyreleased, love.mousepressed, love.mousereleased = client.resize, client.textinput, client.keypressed, client.keyreleased, client.mousepressed, client.mousereleased
-    
-    client.load()
-    ROLE = client
-  end
+if CASTLE_PREFETCH then
+  CASTLE_PREFETCH({
+--    "https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua",
+--    "nnetwork.lua",
+    "game.lua",
+    "object.lua",
+    "anim.lua",
+    "sugarcoat/sugarcoat.lua",
+  })
 end
 
-client.changed = client_input
-client.connect = client_connect
-client.disconnect = client_disconnect
+require("sugarcoat/sugarcoat")
+local oassert = assert
+sugar.utility.using_package(sugar.S, true)
+assert = oassert
+
+require("nnetwork")
+start_client()
+
+require("game")
 
 
-
--- Client gets all Love events
-
-local client_init = false
+--client = love
 function client.load()
-  if client_init then
-    castle_print("Attempt to 2nd client init?")
-    return
-  end
-  castle_print("Starting client init...")
+  init_sugar("Jardins du Standoff", 300, 200, 3)
+  
+  screen_resizeable(true, 2, on_resize)
 
-  init_graphics(300, 200, "\\! 5HP !/")--2,2)
-  init_audio()
-  init_shader_mgr()
-  init_input_mgr()
-  font("small")
-  pal()
+  set_frame_waiting(30)
+  
+  use_palette(palettes.equpix15)
 
-  predraw()
+  set_background_color(0)
+  
+  define_controls()
+  load_assets()
+  
   _init()
-  afterdraw()
-  
-  love.keyboard.setKeyRepeat(true)
-  love.keyboard.setTextInput(false)
-  
-  client_init = true
-  castle_print("Client init done!")
 end
-local client_load_sav = client.load
 
-delta_time = 0
-dt30f = 0
-function client.update(dt)
---  dt = dt or love.timer.getDelta()
---  if not castle then
---    love.timer.sleep(1/30-dt)
---    dt = 1/30
---  end
-
-  if not client_init then
-    castle_print("Client.update being called before client.load...")
---    castle_print("Calling client.load from update.")
-    --client.load = client_load_sav
-    --network.async(function() client.load() end)
---    client.load()
-    return
-  end
-  
-  if ROLE then client.preupdate() end
-
-  delta_time = dt
-  dt30f = dt*30
- 
-  _update(dt)
-  update_input_mgr()
-  
-  if ROLE then client.postupdate() end
-  
-  love.graphics.setCanvas()
+function client.update()
+  _update()
 end
 
 function client.draw()
-  if not client_init then
-    castle_print("no init.")
-    return
-  end
-
-  predraw()
   _draw()
-  afterdraw()
-  
-  love.graphics.setCanvas()
 end
 
 
-function client.resize(ww,hh)
-  local scale = min(flr(ww/graphics.scrn_setw), flr(hh/graphics.scrn_seth))
-  local scx, scy = scale, scale
+function load_assets()
+  load_font("assets/Miserable.ttf", 16, "small", true)
+  load_font("assets/Worthy.ttf", 16, "big", true)
   
-  local w, h = ceil(ww/scx), ceil(hh/scy)
-  render_canvas = love.graphics.newCanvas(w, h)
-  render_canvas:setFilter("nearest","nearest")
+  load_png("sprites", "assets/spritesheet.png")
+  load_png("title", "assets/title.png")
+end
+
+function define_controls()
+  register_btn("mx", 0, input_id("mouse_position", "x"))
+  register_btn("my", 0, input_id("mouse_position", "y"))
+  register_btn("dmx", 0, input_id("mouse_position", "dx"))
+  register_btn("dmy", 0, input_id("mouse_position", "dy"))
+  register_btn("mlb", 0, input_id("mouse_button", "lb"))
+  register_btn("mrb", 0, input_id("mouse_button", "rb"))
   
-  graphics.scrn_scalex = scx
-  graphics.scrn_scaley = scy
+  register_btn("scy", 0, input_id("mouse_button", "scroll_y"))
   
-  graphics.wind_w = ww
-  graphics.wind_h = hh
-  graphics.scrn_w = w
-  graphics.scrn_h = h
+  register_btn("ctrl", 0, {input_id("keyboard", "lctrl"),
+                           input_id("keyboard", "rctrl")})
   
-  if _on_resize then
-    _on_resize()
+  local keyboard_keys = {"backspace", "a", "c", "v", "z", "y", "g", "h", "left", "right", "up", "down"}
+  for k in all(keyboard_keys) do
+    register_btn(k, 0, input_id("keyboard", k))
   end
 end
 
-function client.textinput(text)
-  menu_textinput(text)
+function on_resize()
+  local winw, winh = window_size()
+  
+  local scale = min(flr(winw/300), flr(winh/200))
+  
+  screen_resizeable(true, scale, on_resize)
 end
-
-function client.keypressed(key)
-  input_keypressed(key)
-end
-
-function client.keyreleased(key)
-  input_keyreleased(key)
-end
-
-function client.mousepressed(x,y,k,istouch)
-  input_mousepressed(x,y,k,istouch)
-end
-
-function client.mousereleased(x,y,k,istouch)
-  input_mousereleased(x,y,k,istouch)
-end
-

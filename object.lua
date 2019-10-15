@@ -1,7 +1,5 @@
--- BLAST FLOCK source files
--- by TRASEVOL_DOG (https://trasevol.dog/)
 
-require("ttable")
+
 objs = {}
 function init_object_mgr(...)
   objs={
@@ -24,7 +22,7 @@ end
 function collide_objgroup(obj,groupname)
   for obj2 in group(groupname) do
     if obj2~=obj then
-      local bl=collide_objobj(obj,obj2)
+      local bl = collide_objobj(obj,obj2)
       if bl then
         return obj2
       end
@@ -37,7 +35,7 @@ end
 function all_collide_objgroup(obj,groupname)
  local list={}
  for obj2 in group(groupname) do
-  if obj2~=obj and collide_objobj(obj,obj2) then
+  if obj2 ~= obj and collide_objobj(obj,obj2) then
    add(list,obj2)
   end
  end
@@ -45,15 +43,15 @@ function all_collide_objgroup(obj,groupname)
  return list
 end
 
-function collide_objobj(obj1,obj2)
-  return (abs(obj1.x-obj2.x)<(obj1.w+obj2.w)/2
-      and abs(obj1.y-obj2.y)<(obj1.h+obj2.h)/2)
+function collide_objobj(obj1, obj2)
+  return (abs(obj1.x-obj2.x) < (obj1.w+obj2.w)/2
+      and abs(obj1.y-obj2.y) < (obj1.h+obj2.h)/2)
 end
 
 
 --object managing
 function update_objects(dt)
-  local uobjs=objs.to_update
+  local uobjs = objs.to_update
   
   for obj in all(uobjs) do
     obj:update(dt)
@@ -61,10 +59,12 @@ function update_objects(dt)
 end
 
 function draw_objects(layer_start, layer_end)
-  layer_start = layer_start or 0
   layer_end = layer_end or layer_start or 4
+  layer_start = layer_start or 0
   
   for i = layer_start, layer_end do
+    DRAWING_LAYER = i
+  
     local dobjs = objs["to_draw"..i]
     
     --sorting objects by depth
@@ -117,7 +117,7 @@ function group_del(group,o)
 end
 
 function clear_group(group)
-  objs[group]={}
+  objs[group] = {}
 end
 
 function clear_all_groups()
