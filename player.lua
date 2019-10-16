@@ -12,7 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = nil,
+    weapon = create_weapon("ar"),
     
     name  = "",
     hp    = 10,
@@ -62,7 +62,12 @@ function update_player(s)
   
   
   -- shooty shoot-shoot
+  update_weapon(s)
   
+  if btnp("mouse_lb") or s.weapon.to_shoot then
+    s.weapon.to_shoot = false
+    shoot(s)
+  end
   
   
   -- update state

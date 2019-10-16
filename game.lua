@@ -4,6 +4,7 @@ require("anim")
 
 require("map")
 require("player")
+require("weapons")
 
 
 c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
