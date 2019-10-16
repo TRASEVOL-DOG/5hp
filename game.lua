@@ -34,8 +34,6 @@ function _init()
   init_map()
   
   init_game()
-  
-  
 end
 
 function _update()

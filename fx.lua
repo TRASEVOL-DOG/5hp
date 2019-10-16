@@ -1,7 +1,5 @@
 
 
-
-
 do -- leaf
 
   function create_leaf(x, y, ca, cb)
@@ -190,3 +188,4 @@ do -- explosion
   end
 
 end
+

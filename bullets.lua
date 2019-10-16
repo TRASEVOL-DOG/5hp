@@ -159,7 +159,6 @@ function bullet_movement(s)
     ny = ty - diry * (4.25 + 1)
   end
   
-  
   -- apply new positions
   s.x = nx
   s.y = ny

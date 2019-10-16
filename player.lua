@@ -56,6 +56,7 @@ function update_player(s)
   if s.hit_timer > 0 then
     s.hit_timer = s.hit_timer - dt()
   end
+  
 
   -- do input
   
@@ -86,10 +87,6 @@ function update_player(s)
   else
     s.state = "idle"
   end
-  
---  if abs(s.vx) > 0 then
---    s.faceleft = (s.vx < 0)
---  end
   
   s.faceleft = (s.angle-0.25)%1 < 0.5
 end

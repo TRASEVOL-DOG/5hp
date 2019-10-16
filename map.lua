@@ -138,7 +138,7 @@ function hurt_wall(x,y,dmg)
       create_leaf(x*8+4, y*8+4)
     end
     
-    --return
+    --return -- uncomment when server sync is there
   end
   
   hp = hp-dmg
@@ -146,7 +146,7 @@ function hurt_wall(x,y,dmg)
   if hp <= 0 then
     hp = 0
     --update_map_wall(x, y, false)
-    update_map_wall(x, y, false, true)
+    update_map_wall(x, y, false, true) -- switch back when server sync is there
   end
   
   wall_hp[y][x] = hp
