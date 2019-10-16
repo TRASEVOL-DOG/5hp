@@ -5,6 +5,7 @@ require("anim")
 require("map")
 require("player")
 require("weapons")
+require("bullets")
 
 
 c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
@@ -74,7 +75,7 @@ end
 
 function init_game()
 
-  cam.follow = create_player(nil, 256, 256)
+  cam.follow = create_player(nil, 0, 0)
   
 end
 

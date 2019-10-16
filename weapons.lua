@@ -11,7 +11,6 @@ function update_weapon(p) -- p for player
 end
 
 function shoot(p) -- p for player
-  log("shooting with " .. p.weapon.name)
   weapons[p.weapon.name].shoot(p)
 end
 
@@ -33,7 +32,9 @@ do -- Weapons --
                       end
                       
     ,shoot  =         function(p)
-                        local w = p.weapon                      
+                        local w = p.weapon     
+                        local params = {angle = atan2(cursor.x - p.x - p.w/2, cursor.y - p.y + p.h/2)}
+                        create_bullet(nil, nil, params)
                       end
   }
   

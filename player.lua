@@ -12,7 +12,8 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("ar"),
+    -- weapon = create_weapon("ar"),
+    weapon = create_weapon("gun"),
     
     name  = "",
     hp    = 10,
@@ -92,3 +93,4 @@ function draw_player(s)
   palt(6, true)
   palt(1, false)
 end
+
