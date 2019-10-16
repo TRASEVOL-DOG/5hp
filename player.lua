@@ -13,7 +13,9 @@ function create_player(id, x, y)
     h  = 7,
     
     -- weapon = create_weapon("ar"),
-    weapon = create_weapon("gun"),
+    weapon    = create_weapon("gun"),
+    hit_timer = 0,
+    angle     = 0,
     
     name  = "",
     hp    = 10,
@@ -24,7 +26,12 @@ function create_player(id, x, y)
     
     update = update_player,
     draw   = draw_player,
-    regs   = {"to_update", "to_draw0", "player"}
+    regs   = {"to_update", "to_draw0", "player"},
+    
+    dx_input = 0,
+    dy_input = 0,
+    diff_x   = 0,
+    diff_y   = 0
   }
 
   if not id then
@@ -45,18 +52,25 @@ end
 
 function update_player(s)
   s.animt = s.animt + dt()
+  
+  if s.hit_timer > 0 then
+    s.hit_timer = s.hit_timer - dt()
+  end
 
-  -- do movement
-  -- TMP - gotta make better later
+  -- do input
   
   s.dx_input = btnv("right") - btnv("left")
   s.dy_input = btnv("down") - btnv("up")
+  s.angle = atan2(cursor.x - s.x, cursor.y - s.y)
+ 
+ 
+  -- do movement
   
   player_movement(s)
 
   
-  
   -- shooty shoot-shoot
+  
   update_weapon(s)
   
   if btnp("mouse_lb") or s.weapon.to_shoot then
@@ -73,18 +87,49 @@ function update_player(s)
     s.state = "idle"
   end
   
-  if abs(s.vx) > 0 then
-    s.faceleft = (s.vx < 0)
-  end
+--  if abs(s.vx) > 0 then
+--    s.faceleft = (s.vx < 0)
+--  end
+  
+  s.faceleft = (s.angle-0.25)%1 < 0.5
 end
 
 function draw_player(s)
+  local x = s.x + s.diff_x
+  local y = s.y + s.diff_y
+
   palt(6, false)
   palt(1, true)
   
-  draw_anim(s.x, s.y-2, "player", s.state, s.animt, s.faceleft)
+  local flash = s.hit_timer > 0.1
+  if flash then
+    all_colors_to(14)
+  end
   
+  local spi, dy
+  if state == "dead" then
+    spi = 142
+    dy = -1
+  else
+    spi = anim_sprite("player", s.state, s.animt)
+    dy = -2
+  end
+  
+  -- draw body outline
+  spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
+  
+  -- draw weapon arm
+  aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+  
+  -- draw body
   palt(6, true)
+  spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
+
+  
+  if flash then
+    all_colors_to()
+  end
+
   palt(1, false)
 end
 

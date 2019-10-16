@@ -30,6 +30,14 @@ function draw_anim_rotated(x,y,object,state,t,r,flipx,flipy)
   aspr(info.sprites[step], x, y, r, w, h, 0.5, 0.5, flipx and -1 or 1, flipy and -1 or 1)
 end
 
+function anim_sprite(object, state, t)
+  local state = state or "only"
+  local info  = anim_info[object][state]
+  local step  = flr(t/info.dt)%#info.sprites+1
+  
+  return info.sprites[step]
+end
+
 function draw_self(s)
   draw_anim(s.x, s.y, s.name, s.state, s.animt, s.faceleft)
 end

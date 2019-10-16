@@ -4,7 +4,7 @@ _bullet_def_val = { -- act as default values
   speed = 200,
   life = .5,
   type = 1,
-  dist_spawn = 6,
+  dist_spawn = 8,
   nb_frame_spawn = 3,
   nb_frame_death = 3,
 }

@@ -22,7 +22,7 @@ do -- Weapons --
   -- Gun 
   weapons.gun = {
     get_attributes =  function()
-                        local att = {name = "gun"}  
+                        local att = {name = "gun", arm_sprite = 120}  
                         return att
                       end
                       
@@ -33,7 +33,7 @@ do -- Weapons --
                       
     ,shoot  =         function(p)
                         local w = p.weapon     
-                        local params = {angle = atan2(cursor.x - p.x - p.w/2, cursor.y - p.y + p.h/2)}
+                        local params = {angle = p.angle}
                         create_bullet(nil, nil, params)
                       end
   }
@@ -41,7 +41,7 @@ do -- Weapons --
   -- Assault rifle
   weapons.ar = {
     get_attributes =  function()
-                        local att = {name = "ar"}  
+                        local att = {name = "ar", arm_sprite = 122}  
                         return att
                       end
                       

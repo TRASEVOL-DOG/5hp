@@ -207,6 +207,18 @@ do -- utility stuff
     return rnd(2*n)-n
   end
   
+  function all_colors_to(c)
+    if c then
+      for i = 0, 14 do
+        pal(i, c)
+      end
+    else
+      for i = 0, 14 do
+        pal(i, i)
+      end
+    end
+  end
+  
   local _sfx = sfx
   function sfx(id, x, y, pitch, volume)
     local camx, camy = get_camera_pos()
