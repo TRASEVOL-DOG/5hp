@@ -2,22 +2,37 @@
 
 local map_data
 local map_w, map_h
+local map_index
 
 local map_ground_surf
 local map_wall_surf
 
+local wall_hp = {}
 local wall_flash = {}
 
 local walls = {[2] = true}
+local wall_hpmax = 3
 
 
 
 function init_map()
-  map_data = copy_table(maps[1], true)
+  map_index = 1
+  map_data = copy_table(maps[map_index], true)
   map_w = #map_data[0]
   map_h = #map_data
   
   gen_mapsurf()
+  
+  for y = 0, map_h-1 do
+    wall_hp[y] = {}
+    for x = 0, map_w-1 do
+      local m = map_data[y][x]
+      
+      if m == 2 then
+        wall_hp[y][x] = wall_hpmax
+      end
+    end
+  end
 end
 
 function draw_map()
@@ -53,7 +68,7 @@ function draw_map_top()
     local xx,yy = s.x*8, s.y*8
     spr(0, xx-x, yy-y)
     
-    s.t = s.t-delta_time
+    s.t = s.t - dt()
     if s.t <= 0 then
       del_at(wall_flash, i)
     end
@@ -63,7 +78,7 @@ end
 
 
 
-function check_mapcol(s, x, y)
+function check_mapcol(s, x, y, w, h)
   local sx = x or s.x
   local sy = y or s.y
  
@@ -71,8 +86,8 @@ function check_mapcol(s, x, y)
   nirs=dirs
   
   local dd = 0.5
-  local w  = s.w
-  local h  = s.h
+  local w  = w or s.w
+  local h  = h or s.h
   
   local res, b = {0,0}
  
@@ -100,6 +115,184 @@ function get_maptile(x,y)
   if not map_data[y] then return nil end
   return map_data[y][x]
 end
+
+
+
+-- x and y have to be tile coordinates ( flr(world_x/8) )
+function hurt_wall(x,y,dmg)
+  if x <= 0 or y <= 0 or x >= map_w-1 or y >= map_h-1 then return end
+  
+  local hp = wall_hp[y][x]
+  if not hp then
+    return
+  end
+  
+  if not IS_SERVER then
+    add(wall_flash, {
+      x = x,
+      y = y,
+      t = 0.03
+    })
+    
+    for i=1,2 do
+      create_leaf(x*8+4, y*8+4)
+    end
+    
+    --return
+  end
+  
+  hp = hp-dmg
+  
+  if hp <= 0 then
+    hp = 0
+    --update_map_wall(x, y, false)
+    update_map_wall(x, y, false, true)
+  end
+  
+  wall_hp[y][x] = hp
+end
+
+
+local growth_t = 0
+function grow_walls()
+  if not IS_SERVER then return end
+
+  growth_t = growth_t - dt()
+  if growth_t > 0 then return end
+  
+  for i = 1, 16 do
+    local x, y = irnd(map_w), irnd(map_h)
+    local hp = wall_hp[y][x]
+  
+    if hp and hp < wall_hpmax then
+      hp = min(hp + 0.5 + rnd(1), wall_hpmax)
+      
+      if hp == wall_hpmax and map_data[y][x] == 0 then
+        update_map_wall(x, y, true)
+      end
+      
+      wall_hp[y][x] = hp
+    end
+  end
+  
+  growth_t = 0.03
+end
+
+
+function update_map_wall(x, y, exists, fx)
+  if fx then
+    add(wall_flash, {
+      x = x,
+      y = y,
+      t=0.03
+    })
+    
+    local xx, yy = x*8+4, y*8+4
+    
+    for i=1,4 do
+      create_leaf(xx, yy)
+    end
+    
+    if not exists then
+      log("destroy walll")
+      create_explosion(xx, yy-4, 7, 5).recursive = chance(10)
+      sfx("cactus_hit", xx, yy-4, 0.9+rnd(0.2), 0.66)
+    end
+  end
+  
+  map_data[y][x] = exists and 2 or 0
+  
+  update_walltile(x, y, true)
+end
+
+function update_walltile(x, y, recursive)
+  if IS_SERVER then return end
+
+  if recursive then
+    update_walltile(x-1, y)
+    update_walltile(x+1, y)
+    update_walltile(x, y-1)
+    update_walltile(x, y+1)
+  end
+  
+  local d_line = map_data[y]
+  local v = d_line[x]
+  
+  local xx = x * 8
+  local yy = y * 8
+  
+  palt(6, true)
+  palt(1, false)
+  
+  if v == 0 then
+    if maps[map_index][y][x] == 0 then
+      return
+    end
+    
+    target(map_ground_surf)
+    spr(60 + irnd(4), xx, yy)
+    
+    target(map_wall_surf)
+    pal(7, 6)
+    spr(0, xx, yy)
+    pal(7, 7)
+  elseif v == 2 then
+    local n
+    local left = (d_line[x-1] == 0)
+    local right = (d_line[x+1] == 0)
+    
+    if left and right then
+      n = 53
+    elseif left then
+      n = 51
+    elseif right then
+      n = 52
+    else
+      n = 48 + irnd(3)
+    end
+    
+    target(map_ground_surf)
+    spr(n, xx, yy)
+  
+    target(map_wall_surf)
+  
+    local k = 0
+    if x <= 0       or d_line[x-1] == 2    then k = k+1 end
+    if x >= map_w-1 or d_line[x+1] == 2    then k = k+2 end
+    if y <= 0       or map_data[y-1][x]==2 then k = k+4 end
+    if y >= map_h-1 or map_data[y+1][x]==2 then k = k+8 end
+
+    local s = 56 + irnd(4)
+    
+    if k == 15 then
+      local i = min(x, y, map_w-1-x, map_h-1-y)
+      if i < 2 then
+        s = 30 + i
+      end
+    end
+    
+    spr(s, xx, yy)
+    
+    local poss = {{0},{1},{2},{0},{1},{2},{0,1},{1,2},{2,0}}
+    local p = pick(poss)
+    pal(11, 5)
+    pal(12, 5)
+    pal(13, 5)
+    for c in all(p) do
+      pal(11+c,14)
+    end
+    
+    spr(32+k, xx, yy)
+    
+    pal(11, 11)
+    pal(12, 12)
+    pal(13, 13)
+  end
+  
+  target()
+end
+
+
 
 
 

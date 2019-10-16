@@ -135,6 +135,7 @@ function player_movement(s)
     s.vx = s.vx - 600 * col.dir_x * dt()
   end
   
+  -- apply new positions
   s.x = nx
   s.y = ny
 end

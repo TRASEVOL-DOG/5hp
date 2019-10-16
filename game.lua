@@ -6,6 +6,7 @@ require("map")
 require("player")
 require("weapons")
 require("bullets")
+require("fx")
 
 
 c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
@@ -41,6 +42,8 @@ function _update()
   if btnp("mouse_lb") then
     add_shake(8)
   end
+  
+  grow_walls()
 
   update_objects()
 
@@ -200,6 +203,18 @@ do -- utility stuff
     return rnd(100) < n
   end
 
+  function give_or_take(n) -- returns random number between -n and n
+    return rnd(2*n)-n
+  end
+  
+  local _sfx = sfx
+  function sfx(id, x, y, pitch, volume)
+    local camx, camy = get_camera_pos()
+    x = x - camx
+    y = y - camy
+    
+    _sfx(id, dist(x, y), atan2(x, y), pitch)
+  end
 end
 
 

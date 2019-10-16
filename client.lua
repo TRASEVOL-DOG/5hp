@@ -54,6 +54,34 @@ function load_assets()
   
   load_png("sprites", "assets/spritesheet.png", nil, true)
   load_png("title", "assets/title.png")
+  
+  local sfx_list={
+    menu_select        = "select.ogg",
+    menu_confirm       = "confirm.ogg",
+    menu_slider        = "sliderset.ogg",
+    tab                = "tab.ogg",
+    shoot              = "shoot.ogg",
+    enemy_shoot        = "enemy_shoot.ogg",
+    cant_shoot         = "cant_shoot.ogg",
+    steps              = "step.ogg",
+    get_hit            = "get_hit.ogg",
+    get_hit_player     = "get_hit_player.ogg",
+    gameover           = "gameover.ogg",
+    startplay          = "startplay.ogg",
+    cactus_hit         = "cactus_hit.ogg",
+    bullet_wall_bounce = "bullet_bounce.ogg",
+    wind_a             = "wind_a.ogg",
+    wind_b             = "wind_b.ogg",
+    wind_c             = "wind_c.ogg",
+    wind_d             = "wind_d.ogg",
+    wind_e             = "wind_e.ogg",
+    explosion          = "explosion.ogg",
+    hurt               = "hurt.ogg"
+  }
+  
+  for k, f in pairs(sfx_list) do
+    load_sfx("assets/sfx/"..f, k, 1)
+  end
 end
 
 function define_controls()
