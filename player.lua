@@ -49,17 +49,11 @@ function update_player(s)
   -- do movement
   -- TMP - gotta make better later
   
-  local acc = 600 * dt()
-  if btn("left")  then s.vx = s.vx - acc end
-  if btn("right") then s.vx = s.vx + acc end
-  if btn("up")    then s.vy = s.vy - acc end
-  if btn("down")  then s.vy = s.vy + acc end
+  s.dx_input = btnv("right") - btnv("left")
+  s.dy_input = btnv("down") - btnv("up")
   
-  s.x = s.x + s.vx * dt()
-  s.y = s.y + s.vy * dt()
-  
-  s.vx = s.vx * 0.6
-  s.vy = s.vy * 0.6
+  player_movement(s)
+
   
   
   -- shooty shoot-shoot
@@ -88,9 +82,59 @@ function draw_player(s)
   palt(6, false)
   palt(1, true)
   
-  draw_anim(s.x, s.y, "player", s.state, s.animt, s.faceleft)
+  draw_anim(s.x, s.y-2, "player", s.state, s.animt, s.faceleft)
   
   palt(6, true)
   palt(1, false)
 end
 
+
+
+function player_movement(s)
+  -- deceleration
+  local dec = 450 * dt()
+  local speed = dist(s.vx, s.vy)
+  if speed > 0 then
+    local nspeed = max(speed - dec, 0)
+    s.vx = s.vx / speed * nspeed
+    s.vy = s.vy / speed * nspeed
+  end
+  
+  -- acceleration
+  local acc = 800 * dt()
+  s.vx = s.vx + s.dx_input * acc
+  s.vy = s.vy + s.dy_input * acc
+  
+  -- speed capping
+  local speed, max_speed = dist(s.vx, s.vy), 70
+  if speed > max_speed then
+    s.vx = s.vx / speed * max_speed
+    s.vy = s.vy / speed * max_speed
+  end
+  
+  -- position prevision
+  local nx = s.x + s.vx * dt()
+  local ny = s.y + s.vy * dt()
+  
+  -- collision check
+  local col = check_mapcol(s, nx, s.y)
+  if col then
+    local cx = nx + col.dir_x * s.w/2
+    local tx = cx - cx % 8 + 4
+    nx = tx - col.dir_x * (4.25 + s.w/2)
+    
+    s.vy = s.vy - 600 * col.dir_y * dt()
+  end
+  
+  local col = check_mapcol(s, s.x, ny)
+  if col then
+    local cy = ny + col.dir_y * s.h/2
+    local ty = cy - cy % 8 + 4
+    ny = ty - col.dir_y * (4.25 + s.h/2)
+    
+    s.vx = s.vx - 600 * col.dir_x * dt()
+  end
+  
+  s.x = nx
+  s.y = ny
+end

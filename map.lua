@@ -1,19 +1,24 @@
 
 
 local map_data
+local map_w, map_h
 
 local map_ground_surf
 local map_wall_surf
 
 local wall_flash = {}
 
+local walls = {[2] = true}
+
+
 
 function init_map()
   map_data = copy_table(maps[1], true)
+  map_w = #map_data[0]
+  map_h = #map_data
   
   gen_mapsurf()
 end
-
 
 function draw_map()
   local w,h = screen_size()
@@ -57,11 +62,49 @@ function draw_map_top()
 end
 
 
+
+function check_mapcol(s, x, y)
+  local sx = x or s.x
+  local sy = y or s.y
+ 
+  local dirs = {{-1,-1},{1,-1},{-1,1},{1,1}}
+  nirs=dirs
+  
+  local dd = 0.5
+  local w  = s.w
+  local h  = s.h
+  
+  local res, b = {0,0}
+ 
+  for k,d in pairs(dirs) do
+    local x = sx+w*dd*d[1]
+    local y = sy+h*dd*d[2]
+    
+    local tx = flr(x/8)
+    local ty = flr(y/8)
+    
+    if tx < 0 or tx >= map_w or ty < 0 or ty >= map_h or walls[map_data[ty][tx]] then
+      res[1] = res[1] + d[1]
+      res[2] = res[2] + d[2]
+      b = true
+    end
+  end
+  
+  if res[1] ~= 0 then res[1] = sgn(res[1]) end
+  if res[2] ~= 0 then res[2] = sgn(res[2]) end
+  
+  return b and {dir_x = res[1], dir_y = res[2]}
+end
+
+function get_maptile(x,y)
+  if not map_data[y] then return nil end
+  return map_data[y][x]
+end
+
+
+
 function gen_mapsurf()
   if IS_SERVER then return end
-  
-  local map_h = #map_data
-  local map_w = #map_data[0]
   
   map_ground_surf = map_ground_surf or new_surface(map_w*8, map_h*8)
   map_wall_surf = map_wall_surf or new_surface(map_w*8, map_h*8)

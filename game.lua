@@ -75,7 +75,7 @@ end
 
 function init_game()
 
-  cam.follow = create_player(nil, 0, 0)
+  cam.follow = create_player(nil, 64, 64)
   
 end
 
@@ -98,7 +98,8 @@ do -- cursor
   function draw_cursor(s)
     local sp = 256+ceil(s.animt)*2
     local camx, camy = get_camera_pos()
-    local x, y = round(s.x-camx), round(s.y-camy)
+    --local x, y = ceil(s.x-camx), ceil(s.y-camy)
+    local x, y = s.x-camx, s.y-camy
     
     palt(6, false)
     palt(1, true)
@@ -193,7 +194,6 @@ end
 
 
 
-
 do -- utility stuff
   
   function chance(n)
@@ -201,6 +201,8 @@ do -- utility stuff
   end
 
 end
+
+
 
 function get_anims()
   return {
