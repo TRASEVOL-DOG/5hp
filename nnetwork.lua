@@ -13,9 +13,9 @@ do -- General init and update
   
   function init_network()
     if IS_SERVER then
-      init_server()
+      server_init()
     else
-      init_client()
+      client_init()
     end
   end
   
@@ -219,7 +219,7 @@ do -- server
   function server_out_players()
     local data_list = server.share[2]
     
-    for id, _ in pairs(data_list)
+    for id, _ in pairs(data_list) do
       if not player_list[id] then
         player_data[id] = nil
       end
