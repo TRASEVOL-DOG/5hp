@@ -64,7 +64,7 @@ do -- client
   
     client_sync_players()
     
-    
+--    client_sync_bullets()
   end
   
   function client_output()
@@ -157,6 +157,21 @@ do -- client
       p.name = d[13]
     end
   end
+
+  function client_sync_bullets()
+    local data = client.share[3]
+    if not data then return end
+    
+    for id, d in pairs(data) do
+      local b = bullets[id]
+      
+      if not b then
+        --b = create_bullet(d[5], id, ????)
+      end
+      
+      
+    end
+  end
 end
 
 
@@ -207,6 +222,7 @@ do -- server
     end
     
     server_out_players()
+--    server_out_bullets()
   end
   
   function server_new_client(id)
@@ -250,6 +266,26 @@ do -- server
     end
   end
 
+  function server_out_bullets()
+    local data_list = server.share[3]
+    
+    for id, _ in pairs(data_list) do
+      if not bullets[id] then
+        data_list[id] = nil
+      end
+    end
+    
+    for id, s in pairs(bullets) do
+      data_list[id] = {
+        s.x, s.y,
+        s.vx, s.vy,
+        s.from,
+        s.type
+      }
+    end
+    
+    
+  end
 end
 
 
@@ -298,8 +334,8 @@ end
     [id] = {
       [1] = x,
       [2] = y,
-      [3] = v.x,
-      [4] = v.y,
+      [3] = vx,
+      [4] = vy,
       [5] = from_player_id,
       [6] = type
     },
