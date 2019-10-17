@@ -12,8 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    -- weapon = create_weapon("ar"),
-    weapon    = create_weapon("gun"),
+    weapon = create_weapon("gl"),
     hit_timer = 0,
     angle     = 0,
     
@@ -74,11 +73,9 @@ function update_player(s)
   
   update_weapon(s)
   
-  if btnp("mouse_lb") or s.weapon.to_shoot then
-    s.weapon.to_shoot = false
+  if do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
     shoot(s)
-  end
-  
+  end  
   
   -- update state
   
