@@ -41,6 +41,10 @@ function _update()
     add_shake(8)
   end
   
+  if my_id then
+    cam.follow = player_list[my_id]
+  end
+  
   grow_walls()
 
   update_objects()
@@ -76,7 +80,7 @@ end
 
 function init_game()
 
-  cam.follow = create_player(nil, 64, 64)
+--  cam.follow = create_player(nil, 64, 64)
   
 end
 

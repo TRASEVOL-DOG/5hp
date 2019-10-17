@@ -19,6 +19,7 @@ function create_player(id, x, y)
     
     name  = "",
     hp    = 10,
+    dead  = false,
     animt = 0,
     state = "idle",
     faceleft = chance(50),
@@ -74,11 +75,18 @@ function update_player(s)
   
   update_weapon(s)
   
-  if btnp("mouse_lb") or s.weapon.to_shoot then
-    s.weapon.to_shoot = false
-    shoot(s)
+  if s.id == my_id then
+    if btnp("mouse_lb") or s.weapon.to_shoot then
+      client_shoot()
+      s.weapon.to_shoot = false
+      shoot(s)
+    end
+  else
+    if s.weapon.to_shoot then
+      s.weapon.to_shoot = false
+      shoot(s)
+    end
   end
-  
   
   -- update state
   
@@ -180,4 +188,27 @@ function player_movement(s)
   -- apply new positions
   s.x = nx
   s.y = ny
+end
+
+
+function resurrect_player(s)
+  s.dead = false
+end
+
+function kill_player(s, killer_id)
+  s.dead = killer_id or true
+  
+  s.animt = 0.49
+  
+  if s.id == my_id then
+    add_shake(5)
+    sfx("get_hit_player", s.x, s.y)
+  else
+    sfx("get_hit", s.x, s.y)
+  end
+end
+
+function forget_player(s)
+  deregister_object(s)
+  player_list[s.id or -1] = nil
 end
