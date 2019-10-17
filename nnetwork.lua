@@ -77,14 +77,11 @@ do -- client
       client.home[4] = my_player.dx_input
       client.home[5] = my_player.dy_input
       client.home[6] = my_player.angle
+      client.home[8] = my_player.shoot_held
       
-      client.home[8] = my_name
+      client.home[9] = my_name
     end
     
-  end
-  
-  function client_shoot()
-    client.home[7] = (client.home[7] or 0) + 1
   end
   
   function client_connect()
@@ -97,6 +94,11 @@ do -- client
     disconnected = true
     
     log("Disconnected from server!")
+  end
+  
+  
+  function client_shoot()
+    client.home[7] = (client.home[7] or 0) + 1
   end
   
   
@@ -184,12 +186,14 @@ do -- server
     player.dy_input = ho[5] or 0
     player.angle = ho[6] or 0
     
+    player.shoot_held = ho[8]
+    
     if ho[7] and ho[7] > shot_ids[id] then
-      shoot(player)
+      player.shoot_trigger = true
       shot_ids[id] = ho[7]
     end
     
-    player.name = ho[12] or ""
+    player.name = ho[9] or ""
   end
   
   function server_output()
@@ -252,7 +256,8 @@ end
     [5] = player_dy_input,
     [6] = player_angle,
     [7] = player_shoot_id,
-    [8] = player_name,
+    [8] = player_shoot_held,
+    [9] = player_name,
   }
   
   

@@ -12,8 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    -- weapon = create_weapon("ar"),
-    weapon    = create_weapon("gun"),
+    weapon = create_weapon("gl"),
     hit_timer = 0,
     angle     = 0,
     
@@ -29,6 +28,8 @@ function create_player(id, x, y)
     draw   = draw_player,
     regs   = {"to_update", "to_draw0", "player"},
     
+    shoot_trigger = false,
+    shoot_held    = false,
     dx_input = 0,
     dy_input = 0,
     diff_x   = 0,
@@ -74,19 +75,22 @@ function update_player(s)
   -- shooty shoot-shoot
   
   update_weapon(s)
+
   
   if s.id == my_id then
-    if btnp("mouse_lb") or s.weapon.to_shoot then
+    s.shoot_trigger = btnp("mouse_lb")
+    s.shoot_held    = btn("mouse_lb")
+    
+    if btnp("mouse_lb") then
       client_shoot()
-      s.weapon.to_shoot = false
-      shoot(s)
-    end
-  else
-    if s.weapon.to_shoot then
-      s.weapon.to_shoot = false
-      shoot(s)
     end
   end
+  
+  if do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
+    shoot(s)
+  end
+  
+  s.shoot_trigger = false
   
   -- update state
   

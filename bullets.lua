@@ -1,12 +1,18 @@
 bullets = {}
 
 _bullet_def_val = { -- act as default values
+  type = 1, 
+  damage = 1,
   speed = 200,
   life = .5,
-  type = 1,
   dist_spawn = 8,
   nb_frame_spawn = 3,
   nb_frame_death = 3,
+  sfx_vol = 1,
+  
+  resistance = 0,
+  spd_loss_col = 0.75,
+  life_loss_col = 0.75,
 }
 
 _types = { -- bullet types
@@ -18,6 +24,15 @@ _types = { -- bullet types
             killed  = { s = 239, w = 1, h = 1}
            },
     wall_dmg = 2
+  },
+  { w = 8, 
+    h = 8, 
+    spr = { 
+            moving  = { s = 236, w = 1, h = 1}, 
+            stopped = { s = 236, w = 1, h = 1}, 
+            killed  = { s = 236, w = 1, h = 1}
+           },
+    wall_dmg = 4
   }
 }
 
@@ -31,12 +46,14 @@ function create_bullet(player_id, id, params)
   local player = player_list[player_id]
   if not player then return end
   
-  local type = params.type or _bullet_def_val.type
-  local w     = _types[type].w
-  local h     = _types[type].h
+  local type   = params.type or _bullet_def_val.type
+  local damage = params.damage or _bullet_def_val.damage
+  local w      = _types[type].w
+  local h      = _types[type].h
   
-  local speed = params.speed or _bullet_def_val.speed   
-  local angle = params.angle or ( v_to_angle(player.vx, player.vy) - .015 + rnd(.03) )
+  local speed      = (params.speed or _bullet_def_val.speed) * (params.spd_mult or 1)   
+  local resistance = (params.resistance or _bullet_def_val.resistance)   
+  local angle      = params.angle or ( v_to_angle(player.vx, player.vy) - .015 + rnd(.03) )
   
   local co    = cos(angle)
   local si    = sin(angle)       
@@ -49,10 +66,13 @@ function create_bullet(player_id, id, params)
   local life  = params.life or _bullet_def_val.life -- remaining life (despawns at 0)
   local nb_frame_spawn = params.nb_frame_spawn or _bullet_def_val.nb_frame_spawn
   
+  local sfx_vol = params.sfx_vol or _bullet_def_val.sfx_vol
+  
   local s = {
-    id = bullet_nextid,
-    from = player_id,
-    type = type,
+    id     = bullet_nextid,
+    from   = player_id,
+    type   = type,
+    damage = damage,
     
     x  = x,
     y  = y,
@@ -65,6 +85,7 @@ function create_bullet(player_id, id, params)
     h  = h,
     
     speed = speed,
+    resistance = resistance,
     life = life,
     
     state = "stopped",
@@ -118,17 +139,17 @@ end
 function bullet_movement(s)
 
   -- position prevision
-  local nx = s.x + s.vx * dt()
-  local ny = s.y + s.vy * dt()
+  local nx = s.x + s.vx * (1-s.resistance) * dt()
+  local ny = s.y + s.vy * (1-s.resistance) * dt()
   
   -- collision check
   local dirx, diry = sgn(s.vx), sgn(s.vy)
   local col = check_mapcol(s, nx, s.y, 2, 2)
   if col then
-    s.vx = -s.vx * 0.75
-    s.vy = s.vy * 0.75
+    s.vx = -s.vx * _bullet_def_val.spd_loss_col
+    s.vy = s.vy * _bullet_def_val.spd_loss_col
     s.angle = -(s.angle - 0.25) + 0.25
-    s.life = s.life * 0.75
+    s.life = s.life * _bullet_def_val.life_loss_col
     
     hurt_wall(
       flr((nx + col.dir_x)/8),
@@ -143,10 +164,10 @@ function bullet_movement(s)
   
   local col = check_mapcol(s, s.x, ny, 2, 2)
   if col then
-    s.vx = s.vx * 0.75
-    s.vy = -s.vy * 0.75
+    s.vx = s.vx * _bullet_def_val.spd_loss_col
+    s.vy = -s.vy * _bullet_def_val.spd_loss_col
     s.angle = - s.angle
-    s.life = s.life * 0.75
+    s.life = s.life * _bullet_def_val.life_loss_col
     
     hurt_wall(
       flr((s.x + col.dir_x)/8),
