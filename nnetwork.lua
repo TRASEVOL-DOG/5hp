@@ -114,25 +114,32 @@ do -- client
     end
     
     for id, d in pairs(data) do
-      if id == my_id then goto skip_sync end
-    
       local p = player_list[id]
       
       if not p then
-        castle_print("New player: id #"..id)
+        log("New player: id #"..id)
         p = create_player(id, d[1], d[2])
       end
       
-      local nx = d[1] + delay * d[3]
-      local ny = d[2] + delay * d[4]
-      
-      p.diff_x = p.diff_x + p.x - nx
-      p.diff_y = p.diff_y + p.y - ny
-      
-      p.x = x
-      p.y = y
-      
-      p.angle = d[7]
+      if id ~= my_id then
+        local nx = d[1] + delay * d[3]
+        local ny = d[2] + delay * d[4]
+        
+        p.diff_x = p.diff_x + p.x - nx
+        p.diff_y = p.diff_y + p.y - ny
+        
+        p.x = nx
+        p.y = ny
+        
+        p.vx = d[3]
+        p.vy = d[4]
+        p.dx_input = d[5]
+        p.dy_input = d[6]
+        
+        p.angle = d[7]
+        p.shoot_trigger = d[14]
+        p.shoot_hold = d[15]
+      end
       
       if not p.weapon or p.weapon.name ~= d[8] then
         p.weapon = create_weapon(d[8])
@@ -148,8 +155,6 @@ do -- client
       p.hp = d[9]
       p.score = d[12]
       p.name = d[13]
-      
-      ::skip_sync::
     end
   end
 end
@@ -221,24 +226,26 @@ do -- server
     
     for id, _ in pairs(data_list) do
       if not player_list[id] then
-        player_data[id] = nil
+        data_list[id] = nil
       end
     end
     
     for id, p in pairs(player_list) do
-      player_data[id] = {
+      data_list[id] = {
         p.x, p.y,
-        player.vx,
-        player.vy,
-        player.dx_input,
-        player.dy_input,
-        player.angle,
-        player.weapon.name,
-        player.hp,
-        player.ammo,
-        player.dead,
-        player.score,
-        player.name
+        p.vx,
+        p.vy,
+        p.dx_input,
+        p.dy_input,
+        p.angle,
+        p.weapon.name,
+        p.hp,
+        p.ammo,
+        p.dead,
+        p.score,
+        p.name,
+        p.shoot_trigger,
+        p.shoot_hold
       }
     end
   end
@@ -280,7 +287,9 @@ end
         [10] = ammo,
         [11] = dead,
         [12] = score,
-        [13] = name
+        [13] = name,
+        [14] = shoot_trigger,
+        [15] = shoot_hold
       }
     },
     ...

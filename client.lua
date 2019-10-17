@@ -40,7 +40,11 @@ function client.load()
 end
 
 function client.update()
+  if ROLE then client.preupdate(dt()) end
+    
   _update()
+  
+  if ROLE then client.postupdate(dt()) end
 end
 
 function client.draw()

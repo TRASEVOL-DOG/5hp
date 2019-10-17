@@ -26,7 +26,7 @@ function _init()
   
   if not IS_SERVER then
     cursor = create_cursor()
-    cam = create_camera(256, 256)
+    cam = create_camera(0, 0)
   end
   
   init_anims(get_anims())
@@ -37,8 +37,8 @@ function _init()
 end
 
 function _update()
-  if btnp("mouse_lb") then
-    add_shake(8)
+  if not IS_SERVER and btnp("mouse_lb") then
+    add_shake(4)
   end
   
   if my_id then

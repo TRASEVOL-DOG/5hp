@@ -43,8 +43,9 @@ function create_player(id, x, y)
   player_list[s.id or 0] = s
   
   if not x then
-    local q = get_spawn()
-    s.x, s.y = q.x, q.y
+--    local q = get_spawn()
+--    s.x, s.y = q.x, q.y
+    s.x, s.y = 64, 64
   end
   
   register_object(s)
@@ -62,14 +63,18 @@ function update_player(s)
 
   -- do input
   
-  s.dx_input = btnv("right") - btnv("left")
-  s.dy_input = btnv("down") - btnv("up")
-  s.angle = atan2(cursor.x - s.x, cursor.y - s.y)
- 
+  if s.id == my_id then
+    s.dx_input = btnv("right") - btnv("left")
+    s.dy_input = btnv("down") - btnv("up")
+    s.angle = atan2(cursor.x - s.x, cursor.y - s.y)
+  end
+  
  
   -- do movement
   
   player_movement(s)
+  s.diff_x = lerp(s.diff_x, 0, dt())
+  s.diff_y = lerp(s.diff_y, 0, dt())
 
   
   -- shooty shoot-shoot
