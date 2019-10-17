@@ -149,7 +149,7 @@ do -- camera
   end
   
   function add_shake(powr)
-    if server_only then return end
+    if IS_SERVER then return end
   
     local powr = powr or 3
     local a = rnd(1)

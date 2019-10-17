@@ -12,7 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("gl"),
+    weapon = create_weapon("gun"),
     hit_timer = 0,
     angle     = 0,
     

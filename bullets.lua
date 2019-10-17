@@ -40,9 +40,6 @@ _types = { -- bullet types
 local bullet_nextid = 1
 
 function create_bullet(player_id, id, params)
-
-  player_id = 0
-  
   local player = player_list[player_id]
   if not player then return end
   

@@ -52,7 +52,7 @@ do -- Weapons --
                         local w = p.weapon     
                         w.t_last_shot = t()
                         local params = {angle = p.angle}
-                        create_bullet(nil, nil, params)
+                        create_bullet(p.id, nil, params)
                       end
   }
   
@@ -89,7 +89,7 @@ do -- Weapons --
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
                         local params = {angle = p.angle, sfx_vol = sfx_vol}
-                        create_bullet(nil, nil, params)
+                        create_bullet(p.id, nil, params)
                       end
   }  
   
@@ -122,7 +122,7 @@ do -- Weapons --
                         while i < m do
                           local angle = p.angle - spread/2 + rnd(1) * spread 
                           local params = {angle = angle, spd_mult = (0.5+rnd(0.5))}
-                          local b = create_bullet(nil, nil, params)
+                          local b = create_bullet(p.id, nil, params)
                           
                           w.ammo = w.ammo - 1
                           i = i + 1
@@ -154,7 +154,7 @@ do -- Weapons --
                         local w = p.weapon     
                         w.t_last_shot = t()
                         local params = {angle = p.angle, type = w.type, resistance = w.resistance}
-                        create_bullet(nil, nil, params)
+                        create_bullet(p.id, nil, params)
                       end
   }
   

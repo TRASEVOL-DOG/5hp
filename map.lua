@@ -145,8 +145,7 @@ function hurt_wall(x,y,dmg)
   
   if hp <= 0 then
     hp = 0
-    --update_map_wall(x, y, false)
-    update_map_wall(x, y, false, true) -- switch back when server sync is there
+    update_map_wall(x, y, false)
   end
   
   wall_hp[y][x] = hp
