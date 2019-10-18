@@ -32,7 +32,7 @@ do -- Weapons --
   -- Gun 
   weapons.gun = {
     get_attributes =  function()
-                        local att = {name = "gun", arm_sprite = 120, fire_rate = .3 , }  
+                        local att = {name = "gun", arm_sprite = 120, _g_type = 1, _b_type = 1, fire_rate = .3 }  
                         return att
                       end
                       
@@ -51,15 +51,14 @@ do -- Weapons --
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
-                        local params = {angle = p.angle}
-                        create_bullet(p.id, nil, params)
+                        create_bullet(p.id, nil, nil, 1, p.angle )
                       end
   }
   
   -- Assault rifle
   weapons.ar = {
     get_attributes =  function()
-                        local att = {name = "ar", ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122, sfx_vol = .75}  
+                        local att = {name = "ar", _g_type = 1, _b_type = 2, ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122}  
                         return att
                       end
                       
@@ -88,15 +87,14 @@ do -- Weapons --
                         local w = p.weapon  
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
-                        local params = {angle = p.angle, sfx_vol = sfx_vol}
-                        create_bullet(p.id, nil, params)
+                        create_bullet(p.id, nil, w._b_type, w._g_type, p.angle)
                       end
   }  
   
   -- Shotgun
   weapons.shotgun = {
     get_attributes =  function()
-                        local att = {name = "shotgun", ammo = 35, fire_rate = .6, arm_sprite = 121}  
+                        local att = {name = "shotgun", _b_type = 1, _g_type = 1, ammo = 35, fire_rate = .6, arm_sprite = 121}  
                         return att
                       end
                       
@@ -121,8 +119,8 @@ do -- Weapons --
                         
                         while i < m do
                           local angle = p.angle - spread/2 + rnd(1) * spread 
-                          local params = {angle = angle, spd_mult = (0.5+rnd(0.5))}
-                          local b = create_bullet(p.id, nil, params)
+                          local spd_mult = (0.5+rnd(0.5))
+                          create_bullet(p.id, nil, 1, 1, angle, spd_mult)
                           
                           w.ammo = w.ammo - 1
                           i = i + 1
@@ -130,12 +128,12 @@ do -- Weapons --
                         
                         
                       end
-  }  
+  }
   
   -- Grenade Launcher 
   weapons.gl = {
     get_attributes =  function()
-                        local att = {name = "gl", arm_sprite = 124, fire_rate = 1.3 , ammo = 15, type = 2, resistance = .90 }  
+                        local att = {name = "gl", _b_type = 3, _g_type = 2, arm_sprite = 124, fire_rate = 1.3 , ammo = 15 }  
                         return att
                       end
                       
@@ -153,8 +151,8 @@ do -- Weapons --
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
-                        local params = {angle = p.angle, type = w.type, resistance = w.resistance}
-                        create_bullet(p.id, nil, params)
+                        local params = {type = w.type}
+                        create_bullet(p.id, nil, w._b_type, w._g_type, p.angle, nil)
                       end
   }
   
