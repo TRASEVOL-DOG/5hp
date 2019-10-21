@@ -1,4 +1,5 @@
 bullets = {}
+local dead_bullets = {}
 
 _bullet_def_val = { -- act as default values
   type = 1, 
@@ -48,6 +49,8 @@ _b_types = {
 local bullet_nextid = 1
 
 function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resistance)
+  if id and dead_bullets[id] then return end
+
   local player = player_list[player_id]
   if not player then return end
   
@@ -117,6 +120,10 @@ function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resista
   end
   
   if s.id then
+    if bullets[s.id] then
+      deregister_object(bullets[s.id])
+    end
+    
     bullets[s.id] = s
     bullet_nextid = max(bullet_nextid, s.id) + 1
   end
@@ -250,6 +257,7 @@ function deregister_bullet(s)
   
   if s.id then
     bullets[s.id] = nil
+    dead_bullets[s.id] = true
   end
 end
 

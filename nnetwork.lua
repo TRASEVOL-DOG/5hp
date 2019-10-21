@@ -183,6 +183,7 @@ do -- client
         if not found then
           local b_type, g_type = d[6] % 32, flr(d[6] / 32)
           b = create_bullet(d[5], id, b_type, g_type, atan2(d[3], d[4]))
+          if not b then goto skip_sync end
         end
       end
       
@@ -197,6 +198,8 @@ do -- client
       
       b.x = nx
       b.y = ny
+      
+      ::skip_sync::
     end
   end
   
