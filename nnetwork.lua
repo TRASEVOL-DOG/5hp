@@ -64,6 +64,8 @@ do -- client
   
     client_sync_players()
     client_sync_bullets()
+    
+    client_sync_map(diff[7])
   end
   
   function client_output()
@@ -197,6 +199,23 @@ do -- client
       b.y = ny
     end
   end
+  
+  function client_sync_map(diff)
+    if not diff then return end
+    
+    for y, d_line in pairs(diff) do
+      local m_line = map_data[y]
+      
+      for x, d_v in pairs(d_line) do
+        local m_v = m_line[x]
+        
+        if d_v ~= m_v then
+          update_map_wall(x, y, d_v == 2, true)
+        end
+      end
+    end
+  end
+  
 end
 
 
@@ -248,6 +267,8 @@ do -- server
     
     server_out_players()
     server_out_bullets()
+    
+    server.share[7] = map_data
   end
   
   function server_new_client(id)

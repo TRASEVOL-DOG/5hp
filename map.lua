@@ -1,6 +1,7 @@
 
 
-local map_data
+map_data = nil
+
 local map_w, map_h
 local map_index
 
@@ -138,7 +139,7 @@ function hurt_wall(x,y,dmg)
       create_leaf(x*8+4, y*8+4)
     end
     
-    --return -- uncomment when server sync is there
+    return
   end
   
   hp = hp-dmg
