@@ -74,7 +74,7 @@ function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resista
   local nb_frame_spawn = params.nb_frame_spawn or _bullet_def_val.nb_frame_spawn
   
   local s = {
-    id       = bullet_nextid,
+    id       = id,
     from     = player_id,
     _g_type  = _g_type,
     _b_type  = _b_type,
@@ -101,19 +101,25 @@ function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resista
     
     update = update_bullet,
     draw   = draw_bullet,
-    regs   = {"to_update", "to_draw0", "bullet"}
+    regs   = {"to_update", "to_draw0", "bullet"},
+    
+    diff_x = 0,
+    diff_y = 0
   }
   
   while check_mapcol(s, s.x, s.y, 2, 2) do
     s.x = s.x - co
     s.y = s.y - si
   end
-   
-  if s.id then
-    bullets[s.id] = s
+  
+  if IS_SERVER then
+    s.id = bullet_nextid
   end
   
-  bullet_nextid = bullet_nextid + 1
+  if s.id then
+    bullets[s.id] = s
+    bullet_nextid = max(bullet_nextid, s.id) + 1
+  end
   
   register_object(s)
   return s
@@ -241,7 +247,10 @@ end
 
 function deregister_bullet(s)
   deregister_object(s)
-  bullets[s.id] = nil
+  
+  if s.id then
+    bullets[s.id] = nil
+  end
 end
 
 function draw_bullet(s) 

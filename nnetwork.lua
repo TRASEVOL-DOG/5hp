@@ -63,8 +63,7 @@ do -- client
   
   
     client_sync_players()
-    
---    client_sync_bullets()
+    client_sync_bullets()
   end
   
   function client_output()
@@ -166,10 +165,36 @@ do -- client
       local b = bullets[id]
       
       if not b then
-        --b = create_bullet(d[5], id, ????)
+        local found
+        if d[5] == my_id then
+          for bu in group("bullet") do
+            if bu.from == my_id and not bu.id then
+              bu.id = id
+              bullets[id] = bu
+              b = bu
+              
+              found = true
+            end
+          end
+        end
+      
+        if not found then
+          local b_type, g_type = d[6] % 32, flr(d[6] / 32)
+          b = create_bullet(d[5], id, b_type, g_type, atan2(d[3], d[4]))
+        end
       end
       
+      b.vx = d[3]
+      b.vy = d[4]
       
+      local nx = d[1] + delay * d[3]
+      local ny = d[2] + delay * d[4]
+      
+      b.diff_x = b.diff_x + b.x - nx
+      b.diff_y = b.diff_y + b.y - ny
+      
+      b.x = nx
+      b.y = ny
     end
   end
 end
@@ -222,7 +247,7 @@ do -- server
     end
     
     server_out_players()
---    server_out_bullets()
+    server_out_bullets()
   end
   
   function server_new_client(id)
@@ -280,7 +305,7 @@ do -- server
         s.x, s.y,
         s.vx, s.vy,
         s.from,
-        s.type
+        s._g_type * 32 + s._b_type
       }
     end
     
@@ -337,7 +362,7 @@ end
       [3] = vx,
       [4] = vy,
       [5] = from_player_id,
-      [6] = type
+      [6] = type_graphics * 32 + type_behavior
     },
     ...
   },
