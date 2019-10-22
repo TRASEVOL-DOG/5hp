@@ -147,6 +147,8 @@ function check_mapcol(s, x, y, w, h)
 end
 
 function get_maptile(x,y)
+  x, y = flr(x), flr(y)
+
   if not map_data[y] then return nil end
   return map_data[y][x]
 end

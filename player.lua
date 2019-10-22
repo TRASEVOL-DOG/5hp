@@ -199,6 +199,10 @@ function player_movement(s)
   s.y = ny
 end
 
+function hit_player(s, b)
+  -- todo
+end
+
 
 function resurrect_player(s)
   s.dead = false
