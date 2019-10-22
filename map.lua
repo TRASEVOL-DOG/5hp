@@ -15,6 +15,7 @@ local walls = {[2] = true}
 local wall_hpmax = 3
 
 local player_spawns = {}
+local player_spawns_n = 0
 
 
 function init_map()
@@ -33,27 +34,37 @@ function init_map()
     wall_hp[y] = {}
     for x = 0, map_w-1 do
       local m = map_data[y][x]
-      
-      local p = {
-        x = x*8+4,
-        y = y*8+4
-      }
-      
+
       if m == 2 then
         wall_hp[y][x] = wall_hpmax
-      elseif m == 8 then
-        add(player_spawns, p)
-      elseif m == 1 then
-        add(weapon_spawns, p)
-      elseif m == 3 then
-        add(heal_spawns, p)
-      elseif m == 9 then
-        add(flower_spawns, p)
       end
     end
   end
   
   if IS_SERVER then
+    for y = 0, map_h-1 do
+      for x = 0, map_w-1 do
+        local m = map_data[y][x]
+        
+        local p = {
+          x = x*8+4,
+          y = y*8+4
+        }
+        
+        if m == 8 then
+          add(player_spawns, p)
+        elseif m == 1 then
+          add(weapon_spawns, p)
+        elseif m == 3 then
+          add(heal_spawns, p)
+        elseif m == 9 then
+          add(flower_spawns, p)
+        end
+      end
+    end
+    
+    player_spawns_n = #player_spawns
+  
     init_destructibles(flower_spawns)
     init_loot(weapon_spawns, heal_spawn)
   end
@@ -175,7 +186,6 @@ function hurt_wall(x,y,dmg)
   wall_hp[y][x] = hp
 end
 
-
 local growth_t = 0
 function grow_walls()
   if not IS_SERVER then return end
@@ -200,6 +210,7 @@ function grow_walls()
   
   growth_t = 0.03
 end
+
 
 
 function update_map_wall(x, y, exists, fx)
@@ -314,10 +325,6 @@ function update_walltile(x, y, recursive)
   
   target()
 end
-
-
-
-
 
 function gen_mapsurf()
   if IS_SERVER then return end
@@ -539,6 +546,17 @@ end
 
 
 
+function get_player_spawn()
+  local i = irnd(player_spawns_n)+1
+  
+  local p = player_spawns[i]
+  
+  del_at(player_spawns, i)
+  add(player_spawns, p)
+  player_spawns_n = (player_spawns_n - 2) % #player_spawns + 1
+  
+  return p
+end
 
 
 maps = {

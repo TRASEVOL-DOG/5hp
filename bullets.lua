@@ -220,9 +220,8 @@ function bullet_collisions(s)
 end
 
 function kill_bullet(s)
-  if s.id and dead_bullets[s.id] then return end
+  if s.id and dead_bullets[s.id] then return end -- to avoid double explosions
 
-  add_shake(2)    
   s.state = "killed"
   s.frame_left = _bullet_def_val.nb_frame_death
   if get_value("explosive", s) then

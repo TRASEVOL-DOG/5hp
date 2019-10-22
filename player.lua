@@ -44,9 +44,8 @@ function create_player(id, x, y)
   player_list[s.id or 0] = s
   
   if not x then
---    local q = get_spawn()
---    s.x, s.y = q.x, q.y
-    s.x, s.y = 64, 64
+    local p = get_player_spawn()
+    s.x, s.y = p.x, p.y
   end
   
   register_object(s)
