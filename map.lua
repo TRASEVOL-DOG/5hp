@@ -14,6 +14,7 @@ local wall_flash = {}
 local walls = {[2] = true}
 local wall_hpmax = 3
 
+local player_spawns = {}
 
 
 function init_map()
@@ -23,16 +24,38 @@ function init_map()
   map_h = #map_data
   
   gen_mapsurf()
+
+  local flower_spawns = {}
+  local weapon_spawns = {}
+  local heal_spawns = {}
   
   for y = 0, map_h-1 do
     wall_hp[y] = {}
     for x = 0, map_w-1 do
       local m = map_data[y][x]
       
+      local p = {
+        x = x*8+4,
+        y = y*8+4
+      }
+      
       if m == 2 then
         wall_hp[y][x] = wall_hpmax
+      elseif m == 8 then
+        add(player_spawns, p)
+      elseif m == 1 then
+        add(weapon_spawns, p)
+      elseif m == 3 then
+        add(heal_spawns, p)
+      elseif m == 9 then
+        add(flower_spawns, p)
       end
     end
+  end
+  
+  if IS_SERVER then
+    init_destructibles(flower_spawns)
+    init_loot(weapon_spawns, heal_spawn)
   end
 end
 

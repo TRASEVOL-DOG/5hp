@@ -6,6 +6,8 @@ require("map")
 require("player")
 require("weapons")
 require("bullets")
+require("loot")
+require("destructible")
 require("fx")
 
 
@@ -19,7 +21,7 @@ function _init()
     "player",
     "enemy",
     "bullet",
-    "destroyable",
+    "destructible",
     "loot",
     "wind"
   )

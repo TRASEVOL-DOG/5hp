@@ -64,6 +64,7 @@ do -- client
   
     client_sync_players()
     client_sync_bullets()
+    client_sync_destructibles()
     
     client_sync_map(diff[7])
   end
@@ -203,6 +204,25 @@ do -- client
     end
   end
   
+  function client_sync_destructibles()
+    local data = client.share[4]
+    if not data then return end
+    
+    for id, d in pairs(data) do
+      local s = destructibles[id]
+      
+      if not s then
+        s = create_destructible(id, d[1], d[2])
+      end
+      
+      if s.dead and not d[3] then
+        respawn_destructible(s)
+      elseif d[3] and not s.dead then
+        kill_destructible(s, d[4])
+      end
+    end
+  end
+  
   function client_sync_map(diff)
     if not diff then return end
     
@@ -270,6 +290,7 @@ do -- server
     
     server_out_players()
     server_out_bullets()
+    server_out_destructibles()
     
     server.share[7] = map_data
   end
@@ -332,8 +353,18 @@ do -- server
         s._g_type * 32 + s._b_type
       }
     end
+  end
+  
+  function server_out_destructibles()
+    local data = server.share[4]
     
-    
+    for id, s in pairs(destructibles) do
+      data[id] = {
+        s.x, s.y,
+        s.dead,
+        s.killer
+      }
+    end
   end
 end
 
@@ -390,12 +421,12 @@ end
     },
     ...
   },
-  [4] = { -- destroyable data
+  [4] = { -- destructible data
     [id] = {
       [1] = x,
       [2] = y,
-      [3] = alive,?
-      [4] = killer ?
+      [3] = dead,
+      [4] = killer_bullet
     },
     ...
   },

@@ -152,6 +152,7 @@ function update_bullet(s)
     
   end
   
+  bullet_collisions(s)
 end
 
 function bullet_movement(s)
@@ -206,7 +207,21 @@ function bullet_movement(s)
   s.y = ny
 end
 
+function bullet_collisions(s)
+
+
+  local destr = all_collide_objgroup(s, "destructible")
+  for _, d in pairs(destr) do
+    if not d.dead then
+      kill_bullet(s)
+      kill_destructible(d, s.id)
+    end
+  end
+end
+
 function kill_bullet(s)
+  if s.id and dead_bullets[s.id] then return end
+
   add_shake(2)    
   s.state = "killed"
   s.frame_left = _bullet_def_val.nb_frame_death
@@ -244,6 +259,10 @@ function kill_bullet(s)
     hurt_wall(tx-1, ty+2, 7)
     hurt_wall(tx,   ty+2, 7)
     hurt_wall(tx+1, ty+2, 7)
+  end
+  
+  if s.id then
+    dead_bullets[s.id] = true
   end
 end
 
