@@ -8,6 +8,7 @@ require("weapons")
 require("bullets")
 require("loot")
 require("destructible")
+require("enemy")
 require("fx")
 
 
