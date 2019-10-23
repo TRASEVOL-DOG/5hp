@@ -215,12 +215,14 @@ function bullet_collisions(s)
   if pla and pla.id ~= s.from and not pla.dead then
     kill_bullet(s)
     hit_player(pla, s.id)
+    return
   end
 
   local enem = collide_objgroup(s, "enemy")
   if enem then
     kill_bullet(s)
     hit_enemy(enem, s.id)
+    return
   end
 
   local destr = all_collide_objgroup(s, "destructible")
@@ -228,6 +230,7 @@ function bullet_collisions(s)
     if not d.dead then
       kill_bullet(s)
       kill_destructible(d, s.id)
+      return
     end
   end
 end
