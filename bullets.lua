@@ -2,7 +2,8 @@ bullets = {}
 local dead_bullets = {}
 
 _bullet_def_val = { -- act as default values
-  type = 1, 
+  _type = 1, 
+  _g_type = 1, 
   damage = 1,
   speed = 200,
   life = .5,
@@ -35,31 +36,31 @@ _g_types = { -- bullet graphical types
            },
   }
 }
--- bullet behavior types
--- type 1 gets all behavior from _bullet_def_val
--- the others gets theirs from what's specified and if a value isn't, from_bullet_def_val
+-- bullet types
+-- we'll leave g_types just to keep using that useful table for now but in the end, every type of bullet should have its own g_type and we'll delete _g_types
 
-_b_types = {
+_types = {
   {},
   {sfx_vol = .75}, -- ar bullet
-  {resistance = .03, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl bullet
+  {_g_type = 2, resistance = .03, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl bullet
 }
 
 
 local bullet_nextid = 1
 
-function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resistance)
+function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
   if id and dead_bullets[id] then return end
 
   local player = player_list[player_id]
   if not player then return end
   
-  local params = _b_types[_b_type] or {}
+  local params = _types[_type] or {}
   
-  local type   = params.type or _bullet_def_val.type
-  local damage = params.damage or _bullet_def_val.damage
-  local w      = _g_types[_g_type].w
-  local h      = _g_types[_g_type].h
+  local _type    = _type or _bullet_def_val.type
+  local damage  = params.damage or _bullet_def_val.damage
+  local _g_type = _types[_type]._g_type or _bullet_def_val.type
+  local w       = _g_types[_g_type].w
+  local h       = _g_types[_g_type].h
   
   local speed      = (params.speed or _bullet_def_val.speed) * (spd_mult or 1)   
   
@@ -79,8 +80,7 @@ function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resista
   local s = {
     id       = id,
     from     = player_id,
-    _g_type  = _g_type,
-    _b_type  = _b_type,
+    _type     = _type,
     damage   = damage,
     
     x  = x,
@@ -173,7 +173,7 @@ function bullet_movement(s)
     hurt_wall(
       flr((nx + col.dir_x)/8),
       flr((s.y + col.dir_y)/8),
-      _b_types[s._b_type].wall_dmg
+      get_value("wall_dmg", s)
     )
     
     local cx = nx + dirx * 1
@@ -191,7 +191,7 @@ function bullet_movement(s)
     hurt_wall(
       flr((s.x + col.dir_x)/8),
       flr((ny + col.dir_y)/8),
-      _b_types[s._b_type].wall_dmg
+      get_value("wall_dmg", s)
     )
     
     local cy = ny + diry * 1
@@ -266,7 +266,7 @@ function kill_bullet(s)
 end
 
 function get_value(name, s)
-  local z = (_b_types[s._b_type] and _b_types[s._b_type][name]) or (s[name]) or _bullet_def_val[name]
+  local z = (_types[s._type] and _types[s._type][name]) or (s[name]) or _bullet_def_val[name]
   return z
 end
 
@@ -280,7 +280,7 @@ function deregister_bullet(s)
 end
 
 function draw_bullet(s) 
-  local b = _g_types[s._g_type].spr[s.state]
+  local b = _g_types[get_value("_g_type", s)].spr[s.state]
   aspr(b.s, s.x, s.y-2, s.angle, b.w, b.h, 0.5, 0.5)
 end
 

@@ -83,7 +83,7 @@ end
 
 function init_game()
 
-  -- cam.follow = create_player(0, 64, 64)
+  cam.follow = create_player(0, 64, 64)
 end
 
 

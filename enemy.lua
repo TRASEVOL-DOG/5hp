@@ -77,7 +77,7 @@ function update_enemy(s)
     local p = players[s.target]
     
     if p then
-      if collide_objobj(s, p) do
+      if collide_objobj(s, p) then
         hit_player(p, s)
         
         s.vx = s.vx * 4
@@ -97,7 +97,7 @@ function update_enemy(s)
     s.state    = "run"
     s.faceleft = (s.vx < 0)
     
-    if get_maptile(s.x/8, s.y/8) == 2 and s,animt % 0.5 < dt() then
+    if get_maptile(s.x/8, s.y/8) == 2 and s.animt % 0.5 < dt() then
       create_leaf(s.x, s.y)
     end
   else
