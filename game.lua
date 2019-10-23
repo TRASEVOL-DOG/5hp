@@ -78,6 +78,8 @@ function _draw()
   
   camera()
   
+  draw_hp_ammo()
+  
   cursor:draw()
 end
 
@@ -89,6 +91,91 @@ function init_game()
 end
 
 
+do -- ui stuff
+  local hp_disp = 0
+  function draw_hp_ammo()
+    if not my_id or not players[my_id] then return end
+    
+    palt(1, true)
+    palt(6, false)
+    palt(0, false)
+    
+    local p = players[my_id]
+    
+    -- hp bar
+    
+    local flash = p.hit > 0.1
+    if flash then
+      all_colors_to()
+    end
+    
+    if hp_disp > p.hp then
+      hp_disp = p.hp
+    elseif hp_disp < p.hp then
+      hp_disp = min(hp_disp + 10*dt(), p.hp)
+    end
+    
+    local k = flr(hp_disp)/2
+    
+    local x, y = 2, 2
+    for i = 1, max(5, ceil(hp_disp)/2) do
+      local sp
+      if k < i then
+        sp = (k+1 > i) and 388 or 384
+      else
+        sp = 386
+      end
+      
+      if i > 5 then
+        sp = sp + 4
+        local n = round(cos(t*2))
+        lighten(12, n)
+        lighten(9, n)
+        lighten(4, n)
+        spr(sp, x, y, 2, 2)
+        pal(12, 12)
+        pal(9, 9)
+        pal(4, 4)
+      else
+        spr(sp, x, y, 2, 2)
+      end
+      
+      x = x + 16
+    end
+    
+    if flash then
+      all_colors_to()
+    end
+    
+    -- ammo
+    
+    x, y = 2, y + 16
+    
+    spr(394, x, y, 2, 2)
+    
+    x = x + 16
+    local wep = p.weapon
+    local ammo = wep.ammo
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    printp_color(14, 11, 6)
+    
+    if ammo then
+      use_font("big")
+      pprint(ammo, x+2, y)
+    else
+      spr(396, x, y, 2, 2)
+    end
+    
+    x, y = 4, y + 16
+    use_font("small")
+    pprint(wep.full_name or wep.name, x-2, y-4)
+    
+    palt(1, false)
+    palt(6, true)
+  end
+  
+  
+end
 
 do -- cursor
 
@@ -137,8 +224,6 @@ do -- cursor
   end
 
 end
-
-
 
 do -- camera
 
@@ -223,6 +308,24 @@ do -- utility stuff
         pal(i, i)
       end
     end
+  end
+  
+  function lighten(c, n)
+    local cc = c
+    for i = 1, n do
+      cc = c_lit[cc]
+    end
+    
+    pal(c, cc)
+  end
+  
+  function darken(c, n)
+    local cc = c
+    for i = 1, n do
+      cc = c_drk[cc]
+    end
+    
+    pal(c, cc)
   end
   
   local _sfx = sfx

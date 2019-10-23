@@ -18,6 +18,7 @@ function create_player(id, x, y)
     
     name  = "",
     hp    = 10,
+    hit   = 0,
     dead  = false,
     animt = 0,
     state = "idle",
