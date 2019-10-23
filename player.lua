@@ -2,7 +2,7 @@
 players = {}
 
 function create_player(id, x, y)
-  -- my_id = 0
+  my_id = 0
   local s = {
     id = id,
     
