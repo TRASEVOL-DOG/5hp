@@ -158,7 +158,13 @@ end
 
 
 function hit_enemy(s, bullet)
-  s.hp  = s.hp - bullet.damage
+  local b = bullets[bullet]
+  
+  if b then
+    s.hp = s.hp - b.damage  
+  else
+    s.hp = s.hp - 1
+  end
   s.hit = 0.2
   
   if s.hp <= 0 then
@@ -200,6 +206,6 @@ function enemy_spawner()
       y = irnd(mh)
     end
     
-    create_enemy(nil, x*8+4, y*8-1)
+    create_enemy(nil, x*8+4, y*8-2)
   end
 end
