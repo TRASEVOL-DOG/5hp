@@ -48,6 +48,12 @@ function create_player(id, x, y)
     s.x, s.y = p.x, p.y
   end
   
+  if not IS_SERVER then
+    for i = 1, 16 do
+      create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
+    end
+  end
+  
   register_object(s)
   return s
 end
@@ -221,7 +227,13 @@ function kill_player(s, killer_id)
   end
 end
 
-function forget_player(s)
+function forget_player(s, fx)
+  if not IS_SERVER then
+    for i = 1, 16 do
+      create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
+    end
+  end
+
   deregister_object(s)
   players[s.id or -1] = nil
 end

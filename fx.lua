@@ -117,7 +117,7 @@ do -- smoke
     s.y = s.y + s.vy * dt()
     
     s.vx = lerp(s.vx, 0, 3*dt())
-    s.vy = lerp(s.vy, -0.25, 3*dt())
+    s.vy = lerp(s.vy, -7.5, 3*dt())
     
     s.r = s.r - 0.75 * dt()
     if s.r < 0 then

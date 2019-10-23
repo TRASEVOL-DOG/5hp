@@ -338,6 +338,11 @@ do -- server
   
   function server_lost_client(id)
     log("Client #"..id.." disconnected.")
+    
+    local p = players[id]
+    if p then
+      forget_player(p)
+    end
   end
   
   
