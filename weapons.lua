@@ -2,37 +2,39 @@ weapons = {}
 
 -- weapons have base attributes and have update (cooldown, etc) and shoot (trigger basically) functions  
 
-function create_weapon(name)
-  return weapons[name] and weapons[name].get_attributes()  
+function create_weapon(id)
+  return weapons[id] and weapons[id].get_attributes()  
 end
 
 function update_weapon(p) -- p for player
-  weapons[p.weapon.name].update(p)
+  weapons[p.weapon.id].update(p)
 end
 
 function shoot(p) -- p for player
-  weapons[p.weapon.name].shoot(p)
+  weapons[p.weapon.id].shoot(p)
 end
 
 function do_shoot(p)
-  return weapons[p.weapon.name].do_shoot(p)
+  return weapons[p.weapon.id].do_shoot(p)
 end
 
 do -- Weapons --
 
   -- Done
+  ------------------------------
   -- Gun                = "gun"
   -- Assault rifle      = "ar"
   -- Shotgun            = "shotgun"
   -- Grenade Launcher   = "gl"
+  -- Heavy Rifle        = "hr"
   
   -- TODO
-  -- {"Grenade Launcher", "Heavy Rifle", "Mini Gun"}
+  -- {"Heavy Rifle", "Mini Gun"}
   
   -- Gun 
   weapons.gun = {
     get_attributes =  function()
-                        local att = {name = "gun", arm_sprite = 120, _type = 1, fire_rate = .3 }  
+                        local att = {id = "gun", name = "Gun", arm_sprite = 120, _type = 1, fire_rate = .3 }  
                         return att
                       end
                       
@@ -58,7 +60,7 @@ do -- Weapons --
   -- Assault rifle
   weapons.ar = {
     get_attributes =  function()
-                        local att = {name = "ar", _type = 2, ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122}  
+                        local att = {id = "ar", name = "Assault Rifle", _type = 2, ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122}  
                         return att
                       end
                       
@@ -94,7 +96,7 @@ do -- Weapons --
   -- Shotgun
   weapons.shotgun = {
     get_attributes =  function()
-                        local att = {name = "shotgun", _type = 1, ammo = 35, fire_rate = .6, arm_sprite = 121}  
+                        local att = {id = "shotgun", name = "Shotgun", _type = 1, ammo = 35, fire_rate = .6, arm_sprite = 121}  
                         return att
                       end
                       
@@ -133,7 +135,7 @@ do -- Weapons --
   -- Grenade Launcher 
   weapons.gl = {
     get_attributes =  function()
-                        local att = {name = "gl", _type = 3, arm_sprite = 124, fire_rate = 1.3 , ammo = 15 }  
+                        local att = {id = "gl", name = "Grenade Launcher", _type = 3, arm_sprite = 124, fire_rate = 1.3 , ammo = 15 }  
                         return att
                       end
                       
@@ -153,6 +155,31 @@ do -- Weapons --
                         w.t_last_shot = t()
                         local params = {type = w.type}
                         create_bullet(p.id, nil, w._type, p.angle, nil)
+                      end
+  }
+  
+  -- Heavy Rifle 
+  weapons.hr = {
+    get_attributes =  function()
+                        local att = {id = "hr", name = "Heavy Rifle ", arm_sprite = 120, _type = 1, fire_rate = .3 }  
+                        return att
+                      end
+                      
+    ,do_shoot =       function(p) -- determine if weapon should shoot this frame
+                        local w = p.weapon   
+                        
+                        if (p.shoot_trigger or p.shoot_held) and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        end                        
+                      end
+    
+    ,update =         function(p)
+                        local w = p.weapon
+                      end
+                      
+    ,shoot  =         function(p)
+                        local w = p.weapon     
+                        w.t_last_shot = t()
+                        create_bullet(p.id, nil, w._type, p.angle )
                       end
   }
   

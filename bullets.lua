@@ -56,9 +56,9 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
   
   local params = _types[_type] or {}
   
-  local _type    = _type or _bullet_def_val.type
+  local _type    = _type or _bullet_def_val._type
   local damage  = params.damage or _bullet_def_val.damage
-  local _g_type = _types[_type]._g_type or _bullet_def_val.type
+  local _g_type = _types[_type]._g_type or _bullet_def_val._g_type
   local w       = _g_types[_g_type].w
   local h       = _g_types[_g_type].h
   
