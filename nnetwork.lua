@@ -184,7 +184,7 @@ do -- client
       
         if not found then
           local b_type, g_type = d[6] % 32, flr(d[6] / 32)
-          b = create_bullet(d[5], id, b_type, g_type, atan2(d[3], d[4]))
+          b = create_bullet(d[5], id, _type, atan2(d[3], d[4]))
           if not b then goto skip_sync end
         end
       end
@@ -385,7 +385,7 @@ do -- server
         s.x, s.y,
         s.vx, s.vy,
         s.from,
-        s._g_type * 32 + s._b_type
+        s._type
       }
     end
   end
@@ -471,7 +471,7 @@ end
       [3] = vx,
       [4] = vy,
       [5] = from_player_id,
-      [6] = type_graphics * 32 + type_behavior
+      [6] = type
     },
     ...
   },
