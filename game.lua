@@ -45,12 +45,14 @@ function _update()
   end
   
   if my_id then
-    cam.follow = player_list[my_id]
+    cam.follow = players[my_id]
   end
   
   grow_walls()
 
   update_objects()
+  
+  enemy_spawner()
 
   update_network()
 end

@@ -65,6 +65,7 @@ do -- client
     client_sync_players()
     client_sync_bullets()
     client_sync_destructibles()
+    client_sync_enemies()
     
     client_sync_map(diff[7])
   end
@@ -72,7 +73,7 @@ do -- client
   function client_output()
     client.home[1] = t()
     
-    local my_player = player_list[client.id] or player_list[0]
+    local my_player = players[client.id] or players[0]
     if my_player then
       client.home[2] = my_player.x
       client.home[3] = my_player.y
@@ -108,7 +109,7 @@ do -- client
     local data = client.share[2]
     if not data then return end
     
-    for id, p in pairs(player_list) do
+    for id, p in pairs(players) do
       if not data[id] then
         kill_player(p)
         forget_player(p)
@@ -116,7 +117,7 @@ do -- client
     end
     
     for id, d in pairs(data) do
-      local p = player_list[id]
+      local p = players[id]
       
       if not p then
         log("New player: id #"..id)
@@ -223,6 +224,39 @@ do -- client
     end
   end
   
+  function client_sync_enemies()
+    local data = client.share[6]
+    if not data then return end
+    
+    for id, s in pairs(enemies) do
+      if not data[id] then
+        kill_enemy(s)
+      end
+    end
+    
+    for id, d in pairs(data) do
+      local s = enemies[id]
+      
+      if not s then
+        s = create_enemy(id, d[1], d[2])
+      end
+      
+      local nx = d[1] + delay * d[3]
+      local ny = d[2] + delay * d[4]
+      
+      s.diff_x = s.diff_x + s.x - nx
+      s.diff_y = s.diff_y + s.y - ny
+      
+      s.x = nx
+      s.y = ny
+      s.vx = d[3]
+      s.vy = d[4]
+      
+      s.target = d[5]
+      s.hp = d[6]
+    end
+  end
+  
   function client_sync_map(diff)
     if not diff then return end
     
@@ -262,7 +296,7 @@ do -- server
     
     if not ho[1] then return end
   
-    local player = player_list[id]
+    local player = players[id]
     if not player then
       player = create_player(id)
     end
@@ -291,6 +325,7 @@ do -- server
     server_out_players()
     server_out_bullets()
     server_out_destructibles()
+    server_out_enemies()
     
     server.share[7] = map_data
   end
@@ -311,12 +346,12 @@ do -- server
     local data_list = server.share[2]
     
     for id, _ in pairs(data_list) do
-      if not player_list[id] then
+      if not players[id] then
         data_list[id] = nil
       end
     end
     
-    for id, p in pairs(player_list) do
+    for id, p in pairs(players) do
       data_list[id] = {
         p.x, p.y,
         p.vx,
@@ -363,6 +398,25 @@ do -- server
         s.x, s.y,
         s.dead,
         s.killer
+      }
+    end
+  end
+  
+  function server_out_enemies()
+    local data = server.share[6]
+    
+    for id, d in pairs(data) do
+      if not enemies[id] then
+        data[id] = nil
+      end
+    end
+    
+    for id, s in pairs(enemies) do
+      data[id] = {
+        s.x,  s.y,
+        s.vx, s.vy,
+        s.target,
+        s.hp
       }
     end
   end
@@ -446,8 +500,7 @@ end
       [3] = vx,
       [4] = vy,
       [5] = target,
-      [6] = hp,
-      [7] = dead,?
+      [6] = hp
     },
     ...
   },

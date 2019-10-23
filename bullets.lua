@@ -51,7 +51,7 @@ local bullet_nextid = 1
 function create_bullet(player_id, id, _b_type, _g_type, angle, spd_mult, resistance)
   if id and dead_bullets[id] then return end
 
-  local player = player_list[player_id]
+  local player = players[player_id]
   if not player then return end
   
   local params = _b_types[_b_type] or {}
@@ -153,6 +153,9 @@ function update_bullet(s)
   end
   
   bullet_collisions(s)
+  
+  s.diff_x = lerp(s.diff_x, 0, dt())
+  s.diff_y = lerp(s.diff_y, 0, dt())
 end
 
 function bullet_movement(s)
@@ -281,7 +284,7 @@ end
 
 function draw_bullet(s) 
   local b = _g_types[s._g_type].spr[s.state]
-  aspr(b.s, s.x, s.y-2, s.angle, b.w, b.h, 0.5, 0.5)
+  aspr(b.s, s.x + s.diff_x, s.y + s.diff_y -2, s.angle, b.w, b.h, 0.5, 0.5)
 end
 
 

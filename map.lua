@@ -153,6 +153,10 @@ function get_maptile(x,y)
   return map_data[y][x]
 end
 
+function get_mapsize()
+  return map_w, map_h
+end
+
 
 
 -- x and y have to be tile coordinates ( flr(world_x/8) )
