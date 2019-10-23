@@ -1,5 +1,5 @@
 
-player_list = {}
+players = {}
 
 function create_player(id, x, y)
   my_id = 0
@@ -41,7 +41,7 @@ function create_player(id, x, y)
     castle_print("/!\\ Creating a player with no id.")
   end
   
-  player_list[s.id or 0] = s
+  players[s.id or 0] = s
   
   if not x then
     local p = get_player_spawn()
@@ -223,5 +223,5 @@ end
 
 function forget_player(s)
   deregister_object(s)
-  player_list[s.id or -1] = nil
+  players[s.id or -1] = nil
 end
