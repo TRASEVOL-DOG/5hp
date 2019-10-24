@@ -1,5 +1,4 @@
 
-
 map_data = nil
 
 local map_w, map_h
@@ -19,6 +18,24 @@ local player_spawns_n = 0
 
 
 function init_map()
+  if LOAD_MAP_FROM_PNG then
+    local map = load_png(nil, "map.png", palettes.pico8, false)
+    target(map)
+    local w,h = target_size()
+    
+    local data = {}
+    for y = 0, h-1 do
+      local line = {}
+      for x = 0, w-1 do
+        line[x] = pget(x, y)
+      end
+      data[y] = line
+    end
+    maps[1] = data
+    
+    target()
+  end
+
   map_index = 1
   map_data = copy_table(maps[map_index], true)
   map_w = #map_data[0]
