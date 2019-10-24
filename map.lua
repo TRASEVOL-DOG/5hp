@@ -34,6 +34,18 @@ function init_map()
     maps[1] = data
     
     target()
+    
+    local str = "{[0]={"
+    for y = 0, h-1 do
+      str = str.."{[0]="
+      for x = 0, h-1 do
+        str = str..data[y][x]..","
+      end
+      str = str:sub(1,#str-1).."},"
+    end
+    str = str:sub(1, #str-1).."}"
+    
+    write_clipboard(str)
   end
 
   map_index = 1
