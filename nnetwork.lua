@@ -366,7 +366,7 @@ do -- server
         p.angle,
         p.weapon.name,
         p.hp,
-        p.ammo,
+        p.weapon.ammo,
         p.dead,
         p.score,
         p.name,
