@@ -3,6 +3,7 @@ require("object")
 require("anim")
 
 require("map")
+require("gamemode")
 require("player")
 require("weapons")
 require("bullets")
@@ -32,6 +33,8 @@ function _init()
     cam = create_camera(0, 0)
   end
   
+  init_gamemode(1)
+  
   init_anims(get_anims())
   
   init_map()
@@ -48,13 +51,22 @@ function _update()
     cam.follow = players[my_id]
   end
   
-  grow_walls()
-
-  update_objects()
+  if current_gm ~= 0 then
   
-  enemy_spawner()
+    update_gamemode()
+    
+    grow_walls()
+
+    update_objects()
+    
+    enemy_spawner()
+    
+  else
+    
+  end
 
   update_network()
+  
 end
 
 function _draw()

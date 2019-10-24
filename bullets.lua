@@ -4,18 +4,21 @@ local dead_bullets = {}
 _bullet_def_val = { -- act as default values
   _type = 1, 
   _g_type = 1, 
-  damage = 1,
+  
+  damage = 1, -- done to entities
   speed = 200,
-  life = .5,
-  dist_spawn = 8,
+  life = .5, -- in time
+  dist_spawn = 8, -- from center of player
   nb_frame_spawn = 3,
   nb_frame_death = 3,
   sfx_vol = 1,
   
-  resistance = 0,
-  spd_loss_col = 0.75,
-  life_loss_col = 0.75,
-  wall_dmg = 2
+  resistance = 0, -- loss of speed each frame going from 0 to 1 being the max
+  spd_loss_col = 0.75,-- loss of speed on colision 
+  life_loss_col = 0.75,-- loss of life on colision  
+  wall_dmg = 2,
+  
+  shake_mult = 1,
 }
 
 _g_types = { -- bullet graphical types
@@ -40,9 +43,10 @@ _g_types = { -- bullet graphical types
 -- we'll leave g_types just to keep using that useful table for now but in the end, every type of bullet should have its own g_type and we'll delete _g_types
 
 _types = {
-  {},
-  {sfx_vol = .75}, -- ar bullet
-  {_g_type = 2, resistance = .03, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl bullet
+  {}, -- gun
+  {sfx_vol = .75}, -- ar ,shotgun and mg
+  {_g_type = 2, resistance = .03, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl
+  {sfx_vol = .75, damage = 2}, -- hr
 }
 
 
