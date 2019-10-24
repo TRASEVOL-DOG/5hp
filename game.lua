@@ -343,8 +343,9 @@ do -- utility stuff
   local _sfx = sfx
   function sfx(id, x, y, pitch, volume)
     local camx, camy = get_camera_pos()
-    x = x - camx
-    y = y - camy
+    local scrw, scrh = screen_size()
+    x = x - camx - scrw/2
+    y = y - camy - scrh/2
     
     _sfx(id, dist(x, y), atan2(x, y), pitch)
   end
