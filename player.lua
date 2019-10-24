@@ -12,7 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("hr"),
+    weapon = create_weapon("mg"),
     hit_timer = 0,
     angle     = 0,
     
@@ -53,7 +53,7 @@ function create_player(id, x, y)
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
     end
   end
-  
+  log(s.weapon.ammo)
   register_object(s)
   return s
 end
@@ -84,9 +84,6 @@ function update_player(s)
 
   
   -- shooty shoot-shoot
-  
-  update_weapon(s)
-
   
   if s.id == my_id then
     s.shoot_trigger = btnp("mouse_lb")

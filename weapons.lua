@@ -11,7 +11,11 @@ function update_weapon(p) -- p for player
 end
 
 function shoot(p) -- p for player
-  weapons[p.weapon.id].shoot(p)
+  local w = weapons[p.weapon.id]
+  w.shoot(p)
+  if not IS_SERVER then
+    add_shake(4 * (w.shake_mult or 1))
+  end
 end
 
 function do_shoot(p)
@@ -29,38 +33,33 @@ do -- Weapons --
   -- Heavy Rifle        = "hr"
   
   -- TODO
-  -- {"Heavy Rifle", "Mini Gun"}
+  -- {"Mini Gun"}
   
   -- Gun 
   weapons.gun = {
     get_attributes =  function()
-                        local att = {id = "gun", name = "Gun", arm_sprite = 120, _type = 1, fire_rate = .3 }  
+                        local att = {id = "gun", name = "Gun", arm_sprite = 120, bullet_type = 1, fire_rate = .3 }  
                         return att
                       end
                       
     ,do_shoot =       function(p) -- determine if weapon should shoot this frame
                         local w = p.weapon   
                         
-                        if p.shoot_trigger then return true
-                        elseif p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        if p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
                         end                        
-                      end
-    
-    ,update =         function(p)
-                        local w = p.weapon
                       end
                       
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
-                        create_bullet(p.id, nil, w._type, p.angle )
+                        create_bullet(p.id, nil, w.bullet_type, p.angle )
                       end
   }
   
   -- Assault rifle
   weapons.ar = {
     get_attributes =  function()
-                        local att = {id = "ar", name = "Assault Rifle", _type = 2, ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122}  
+                        local att = {id = "ar", name = "Assault Rifle", bullet_type = 2, ammo = 60, rafale_length = 3, fire_rate = .1, arm_sprite = 122}  
                         return att
                       end
                       
@@ -80,23 +79,18 @@ do -- Weapons --
                         end                        
                       end
                       
-    ,update =         function(p)
-                        local w = p.weapon
-                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
-                      end
-                      
     ,shoot  =         function(p)
                         local w = p.weapon  
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
-                        create_bullet(p.id, nil, w._type, p.angle)
+                        create_bullet(p.id, nil, w.bullet_type, p.angle)
                       end
   }  
   
   -- Shotgun
   weapons.shotgun = {
     get_attributes =  function()
-                        local att = {id = "shotgun", name = "Shotgun", _type = 1, ammo = 35, fire_rate = .6, arm_sprite = 121}  
+                        local att = {id = "shotgun", name = "Shotgun", bullet_type = 2, ammo = 35, fire_rate = .6, arm_sprite = 121, shake_mult = 1.3}  
                         return att
                       end
                       
@@ -105,11 +99,6 @@ do -- Weapons --
                         
                         if p.shoot_trigger and t() - (w.t_last_shot or 0) > w.fire_rate then return true
                         end                       
-                      end
-                      
-    ,update =         function(p)
-                        local w = p.weapon
-                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
                       
     ,shoot  =         function(p)
@@ -122,20 +111,18 @@ do -- Weapons --
                         while i < m do
                           local angle = p.angle - spread/2 + rnd(1) * spread 
                           local spd_mult = (0.5+rnd(0.5))
-                          create_bullet(p.id, nil, w._type, 1, angle, spd_mult)
+                          create_bullet(p.id, nil, w.bullet_type, 1, angle, spd_mult)
                           
                           w.ammo = w.ammo - 1
                           i = i + 1
-                        end  
-                        
-                        
+                        end
                       end
   }
   
   -- Grenade Launcher 
   weapons.gl = {
     get_attributes =  function()
-                        local att = {id = "gl", name = "Grenade Launcher", _type = 3, arm_sprite = 124, fire_rate = 1.3 , ammo = 15 }  
+                        local att = {id = "gl", name = "Grenade Launcher", bullet_type = 3, arm_sprite = 124, fire_rate = 1.3 , ammo = 15 , shake_mult = 1.3}  
                         return att
                       end
                       
@@ -145,41 +132,56 @@ do -- Weapons --
                         if p.shoot_trigger and t() - (w.t_last_shot or 0) > w.fire_rate then return true
                         end                        
                       end
-    
-    ,update =         function(p)
-                        local w = p.weapon
-                      end
-                      
+                          
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
                         local params = {type = w.type}
-                        create_bullet(p.id, nil, w._type, p.angle, nil)
+                        create_bullet(p.id, nil, w.bullet_type, p.angle, nil)
+                        w.ammo = w.ammo - 1
                       end
   }
   
   -- Heavy Rifle 
   weapons.hr = {
     get_attributes =  function()
-                        local att = {id = "hr", name = "Heavy Rifle ", arm_sprite = 120, _type = 1, fire_rate = .3 }  
+                        local att = {id = "hr", name = "Heavy Rifle", arm_sprite = 123, bullet_type = 2, ammo = 60, fire_rate = .3 , shake_mult = 10.3}  
                         return att
                       end
                       
     ,do_shoot =       function(p) -- determine if weapon should shoot this frame
                         local w = p.weapon   
                         
-                        if (p.shoot_trigger or p.shoot_held) and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        if p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
                         end                        
                       end
     
-    ,update =         function(p)
-                        local w = p.weapon
+    ,shoot  =         function(p)
+                        local w = p.weapon     
+                        w.t_last_shot = t()
+                        create_bullet(p.id, nil, w.bullet_type, p.angle )
+                        w.ammo = w.ammo - 1
+                      end
+  }
+  
+  -- Mini gun
+  weapons.mg = {
+    get_attributes =  function()
+                        local att = {id = "mg", name = "Mini Gun", arm_sprite = 125, ammo = 45, bullet_type = 2, fire_rate = .13 , shake_mult = .8}  
+                        return att
+                      end
+                      
+    ,do_shoot =       function(p) -- determine if weapon should shoot this frame
+                        local w = p.weapon   
+                        
+                        if p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        end                        
                       end
                       
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
-                        create_bullet(p.id, nil, w._type, p.angle )
+                        create_bullet(p.id, nil, w.bullet_type, p.angle )
                       end
   }
   
