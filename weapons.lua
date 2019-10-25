@@ -181,6 +181,7 @@ do -- Weapons --
     ,shoot  =         function(p)
                         local w = p.weapon     
                         w.t_last_shot = t()
+                        w.ammo = w.ammo - 1
                         create_bullet(p.id, nil, w.bullet_type, p.angle )
                       end
   }
