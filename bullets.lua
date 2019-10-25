@@ -1,5 +1,5 @@
 bullets = {}
-local dead_bullets = {}
+dead_bullets = {}
 
 _bullet_def_val = { -- act as default values
   _type = 1, 
@@ -9,8 +9,8 @@ _bullet_def_val = { -- act as default values
   speed = 200,
   life = .5, -- in time
   dist_spawn = 8, -- from center of player
-  nb_frame_spawn = 3,
-  nb_frame_death = 3,
+  spawn_time = 0.1,
+  death_time = 0.1,
   sfx_vol = 1,
   
   resistance = 0, -- loss of speed each frame going from 0 to 1 being the max
@@ -79,7 +79,7 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
   local y     = params.y or player.y + _bullet_def_val.dist_spawn * si
   
   local life  = params.life or _bullet_def_val.life -- remaining life (despawns at 0)
-  local nb_frame_spawn = params.nb_frame_spawn or _bullet_def_val.nb_frame_spawn
+  local spawn_time = params.spawn_time or _bullet_def_val.spawn_time
   
   local s = {
     id       = id,
@@ -103,7 +103,7 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
     
     state = "stopped",
     animt = 0,
-    frame_left = nb_frame_spawn,
+    time_left = spawn_time,
     anim_state = "stopped",
     
     update = update_bullet,
@@ -146,13 +146,13 @@ function update_bullet(s)
     
   elseif s.state == "stopped" then
   
-    s.frame_left = s.frame_left - 1 
-    if s.frame_left < 1 then s.state = "moving" end
+    s.time_left = s.time_left - dt()
+    if s.time_left <= 0 then s.state = "moving" end
     
   elseif s.state == "killed" then
   
-    s.frame_left = s.frame_left - 1 
-    if s.frame_left < 1 then deregister_bullet(s) end  
+    s.time_left = s.time_left - dt() 
+    if s.time_left <= 0 then deregister_bullet(s) end  
     
   end
   
@@ -240,10 +240,14 @@ function bullet_collisions(s)
 end
 
 function kill_bullet(s)
-  if s.id and dead_bullets[s.id] then return end -- to avoid double explosions
+  if s.id and dead_bullets[s.id] then -- to avoid double explosions
+    deregister_object(s)
+    bullets[s.id] = nil
+    return
+  end
 
   s.state = "killed"
-  s.frame_left = _bullet_def_val.nb_frame_death
+  s.time_left = _bullet_def_val.death_time
   if get_value("explosive", s) then
     create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
     -- sfx("explosion", s.x, s.y)
@@ -295,7 +299,7 @@ function deregister_bullet(s)
   
   if s.id then
     bullets[s.id] = nil
-    dead_bullets[s.id] = true
+--    dead_bullets[s.id] = true
   end
 end
 

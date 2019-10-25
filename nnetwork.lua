@@ -175,6 +175,7 @@ do -- client
             if bu.from == my_id and not bu.id then
               bu.id = id
               bullets[id] = bu
+              dead_bullets[id] = nil
               b = bu
               
               found = true
@@ -189,8 +190,10 @@ do -- client
         end
       end
       
-      b.vx = d[3]
-      b.vy = d[4]
+      if vx ~= d[3] or vy ~= d[4] then
+        b.vx, b.vy = d[3], d[4]
+        b.angle = atan2(b.vx, b.vy)
+      end
       
       local nx = d[1] + delay * d[3]
       local ny = d[2] + delay * d[4]

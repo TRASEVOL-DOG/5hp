@@ -1,4 +1,4 @@
-SUGAR_SERVER_MODE = true
+SUGAR_SERVER_MODE = true and not LOAD_MAP_FROM_PNG
 
 require("sugarcoat/sugarcoat")
 sugar.utility.using_package(sugar.S, true)
