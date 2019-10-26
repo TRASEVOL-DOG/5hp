@@ -42,6 +42,7 @@ function create_player(id, x, y)
   end
   
   players[s.id or 0] = s
+  leaderboard[s.id or 0] = 0
   
   if not x then
     local p = get_player_spawn()
@@ -53,7 +54,7 @@ function create_player(id, x, y)
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
     end
   end
-  log(s.weapon.ammo)
+  
   register_object(s)
   return s
 end

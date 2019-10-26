@@ -68,6 +68,10 @@ do -- client
     client_sync_enemies()
     
     client_sync_map(diff[7])
+    -- client_sync_leaderboard()
+    
+    -- current_gamemode = client.share[9]
+    
   end
   
   function client_output()
@@ -276,6 +280,11 @@ do -- client
     end
   end
   
+  -- function client_sync_leaderboard()
+    -- if not client.share[8] then return end        
+    -- client.share[8] = leaderboard
+  -- end
+  
 end
 
 
@@ -292,6 +301,7 @@ do -- server
     server.share[4] = {}
     server.share[5] = {}
     server.share[6] = {}
+    -- server.share[8] = {}
   end
 
   function server_input(id, diff)
@@ -331,6 +341,10 @@ do -- server
     server_out_enemies()
     
     server.share[7] = map_data
+    
+    -- server_out_leaderboard()
+    
+    -- server.share[9] = current_gamemode
   end
   
   function server_new_client(id)
@@ -428,6 +442,11 @@ do -- server
       }
     end
   end
+  
+  -- function server_out_leaderboard()
+    -- if not leaderboard then return end    
+    -- server.share[8] = leaderboard    
+  -- end
 end
 
 
@@ -513,7 +532,8 @@ end
     ...
   },
   [7] = map_data,
-  [8] = crowned_player_id
+  [8] = leaderboard
+  [9] = current_gamemode
 
 --]]
 
