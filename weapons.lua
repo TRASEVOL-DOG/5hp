@@ -84,6 +84,7 @@ do -- Weapons --
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
                         create_bullet(p.id, nil, w.bullet_type, p.angle)
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }  
   
@@ -116,6 +117,7 @@ do -- Weapons --
                           w.ammo = w.ammo - 1
                           i = i + 1
                         end
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }
   
@@ -139,6 +141,7 @@ do -- Weapons --
                         local params = {type = w.type}
                         create_bullet(p.id, nil, w.bullet_type, p.angle, nil)
                         w.ammo = w.ammo - 1
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }
   
@@ -161,6 +164,7 @@ do -- Weapons --
                         w.t_last_shot = t()
                         create_bullet(p.id, nil, w.bullet_type, p.angle )
                         w.ammo = w.ammo - 1
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }
   
@@ -183,6 +187,7 @@ do -- Weapons --
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
                         create_bullet(p.id, nil, w.bullet_type, p.angle )
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }
   
