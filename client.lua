@@ -2,9 +2,22 @@ if CASTLE_PREFETCH then
   CASTLE_PREFETCH({
 --    "https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua",
 --    "nnetwork.lua",
-    "game.lua",
-    "object.lua",
-    "anim.lua",
+    "game/game.lua",
+    "game/utility.lua",
+    "game/systems/anim.lua",
+    "game/systems/gamemode.lua",
+    "game/systems/map.lua",
+    "game/systems/menu.lua",
+    "game/systems/nnetwork.lua",
+    "game/systems/object.lua",
+    "game/systems/utf.lua",
+    "game/objects/bullets.lua",
+    "game/objects/destructible.lua",
+    "game/objects/enemy.lua",
+    "game/objects/fx.lua",
+    "game/objects/loot.lua",
+    "game/objects/player.lua",
+    "game/objects/weapons.lua",
     "sugarcoat/sugarcoat.lua",
   })
 end
@@ -14,10 +27,10 @@ local oassert = assert
 sugar.utility.using_package(sugar.S, true)
 assert = oassert
 
-require("nnetwork")
+require("game/systems/nnetwork")
 start_client()
 
-require("game")
+require("game/game")
 
 
 --client = love

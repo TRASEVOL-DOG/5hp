@@ -1,4 +1,4 @@
-local state = require 'state'
+local state = require 'sharelua/state'
 
 
 local enet = require 'enet' -- Network
@@ -8,12 +8,12 @@ if castle then
   marshal = require 'marshal' -- Serialization
   serpent = require 'https://raw.githubusercontent.com/pkulchenko/serpent/522a6239f25997b101c585c0daf6a15b7e37fad9/src/serpent.lua'
 else
-  local bitser = require 'bitser'
+  local bitser = require 'sharelua/bitser'
   marshal = {
     encode = bitser.dumps,
     decode = bitser.loads
   }
-  serpent = require 'serpent'
+  serpent = require 'sharelua/serpent'
 end
 
 local MAX_MAX_CLIENTS = 64

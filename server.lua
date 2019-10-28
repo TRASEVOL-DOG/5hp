@@ -3,10 +3,10 @@ SUGAR_SERVER_MODE = true and not LOAD_MAP_FROM_PNG
 require("sugarcoat/sugarcoat")
 sugar.utility.using_package(sugar.S, true)
 
-require("nnetwork")
+require("game/systems/nnetwork")
 start_server(8)
 
-require("game")
+require("game/game")
 
 function server.load()
   IS_SERVER = true

@@ -1,5 +1,5 @@
 
-local utf8 = require("utf")
+local utf8 = require("game/systems/utf")
 
 local slider_width = 64
 

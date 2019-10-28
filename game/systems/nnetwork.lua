@@ -1,7 +1,7 @@
 if castle then
   cs = require("https://raw.githubusercontent.com/castle-games/share.lua/master/cs.lua")
 else
-  cs = require("cs")
+  cs = require("sharelua/cs")
 end
 
 
