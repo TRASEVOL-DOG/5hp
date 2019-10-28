@@ -1,6 +1,7 @@
 
 require("object")
 require("anim")
+require("menu")
 
 require("map")
 require("gamemode")
@@ -64,6 +65,8 @@ function _update()
   else
     
   end
+  
+  update_menu()
 
   update_network()
   
@@ -91,6 +94,8 @@ function _draw()
   camera()
   
   draw_hp_ammo()
+  
+  draw_menu()
   
   cursor:draw()
 end
@@ -338,6 +343,51 @@ do -- utility stuff
     end
     
     pal(c, cc)
+  end
+  
+  function frame(s, xa, ya, xb, yb, stretch)
+    local tw, th = 8, 8
+    local iw = xb-xa-2*tw
+    local ih = yb-ya-2*th
+  
+    if stretch then
+      local sx = (s%16) * 8
+      local sy = flr(s/16) * 8
+      
+      sspr(sx+tw, sy+th, tw, th, xa+tw, ya+th, iw, ih)
+      
+      sspr(sx+tw, sy,      tw, th, xa+tw, ya,    iw, th)
+      sspr(sx+tw, sy+2*th, tw, th, xa+tw, yb-th, iw, th)
+      
+      sspr(sx,      sy+th, tw, th, xa,    ya+th, tw, ih)
+      sspr(sx+2*tw, sy+th, tw, th, xb-tw, ya+th, tw, ih)
+    else
+      clip(xa+tw, ya+th, iw, ih)
+      for y = ya+th, yb-th-0.1, th do
+        for x = xa+tw, xb-tw-0.1, tw do
+          spr(s+17, x, y)
+        end
+      end
+      
+      clip(xa+tw, ya, iw, yb-ya)
+      for x = xa+tw, xb-tw-0.1, tw do
+        spr(s+1,  x, ya)
+        spr(s+33, x, yb-th)
+      end
+      
+      clip(xa, ya+th, xb-xa, ih)
+      for y = ya+th, yb-th-0.1, th do
+        spr(s+16, xa,    y)
+        spr(s+18, xb-tw, y)
+      end
+      
+      clip()
+    end
+    
+    spr(s,    xa,    ya)
+    spr(s+2,  xb-tw, ya)
+    spr(s+32, xa,    yb-th)
+    spr(s+34, xb-tw, yb-th)
   end
   
   local _sfx = sfx

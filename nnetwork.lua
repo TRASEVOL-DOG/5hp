@@ -487,54 +487,54 @@ end
         [13] = name,
         [14] = shoot_trigger,
         [15] = shoot_hold
-      }
+      },
+      ...
     },
-    ...
+    [3] = { -- bullet data
+      [id] = {
+        [1] = x,
+        [2] = y,
+        [3] = vx,
+        [4] = vy,
+        [5] = from_player_id,
+        [6] = type
+      },
+      ...
+    },
+    [4] = { -- destructible data
+      [id] = {
+        [1] = x,
+        [2] = y,
+        [3] = dead,
+        [4] = killer_bullet
+      },
+      ...
+    },
+    [5] = { -- loot data
+      [id] = {
+        x,
+        y,
+        type,
+        ???
+      },
+      ...
+    },
+    [6] = { -- enemy data
+      [id] = {
+        [1] = x,
+        [2] = y,
+        [3] = vx,
+        [4] = vy,
+        [5] = target,
+        [6] = hp
+      },
+      ...
+    },
+    [7] = map_data,
+    [8] = leaderboard
+    [9] = current_gamemode
   }
-  [3] = { -- bullet data
-    [id] = {
-      [1] = x,
-      [2] = y,
-      [3] = vx,
-      [4] = vy,
-      [5] = from_player_id,
-      [6] = type
-    },
-    ...
-  },
-  [4] = { -- destructible data
-    [id] = {
-      [1] = x,
-      [2] = y,
-      [3] = dead,
-      [4] = killer_bullet
-    },
-    ...
-  },
-  [5] = { -- loot data
-    [id] = {
-      x,
-      y,
-      type,
-      ???
-    },
-    ...
-  },
-  [6] = { -- enemy data
-    [id] = {
-      [1] = x,
-      [2] = y,
-      [3] = vx,
-      [4] = vy,
-      [5] = target,
-      [6] = hp
-    },
-    ...
-  },
-  [7] = map_data,
-  [8] = leaderboard
-  [9] = current_gamemode
-
+  
 --]]
 
 
