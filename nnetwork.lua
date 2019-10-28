@@ -151,7 +151,7 @@ do -- client
       if not p.weapon or p.weapon.name ~= d[8] then
         p.weapon = create_weapon(d[8])
       end
-      p.weapon.ammo = d[10]
+      --p.weapon.ammo = d[10]
       
       if d[11] and not p.dead then
         kill_player(p, p.dead)
