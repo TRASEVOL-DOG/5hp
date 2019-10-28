@@ -3,7 +3,7 @@ weapons = {}
 -- weapons have base attributes and have update (cooldown, etc) and shoot (trigger basically) functions  
 
 function create_weapon(id)
-  return weapons[id] and weapons[id].get_attributes()  
+  return weapons[id] and weapons[id].get_attributes() 
 end
 
 function update_weapon(p) -- p for player
@@ -19,6 +19,7 @@ function shoot(p) -- p for player
 end
 
 function do_shoot(p)
+  if not p.weapon then log("whooops") p.weapon = create_weapon("gun") end
   return weapons[p.weapon.id].do_shoot(p)
 end
 
@@ -187,7 +188,10 @@ do -- Weapons --
                         w.t_last_shot = t()
                         w.ammo = w.ammo - 1
                         create_bullet(p.id, nil, w.bullet_type, p.angle )
-                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
+                        if w.ammo < 1 then 
+                          p.weapon = create_weapon("gun")
+                        end
+                        -- if w.ammo < 40 then p.weapon = weapons.gun.get_attributes() end
                       end
   }
   

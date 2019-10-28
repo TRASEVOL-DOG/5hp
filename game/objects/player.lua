@@ -98,7 +98,9 @@ function update_player(s)
   if do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
     shoot(s)
   end
-  
+  if not (s.weapon and s.weapon.id) then
+    log("nope")
+  end
   s.shoot_trigger = false
   
   -- update state
@@ -137,8 +139,9 @@ function draw_player(s)
   spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
   
   -- draw weapon arm
-  aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
-  
+  if s.weapon then
+    aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+  end
   -- draw body
   palt(6, true)
   spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
