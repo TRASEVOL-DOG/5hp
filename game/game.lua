@@ -34,9 +34,9 @@ function _init()
   if not IS_SERVER then
     cursor = create_cursor()
     cam = create_camera(0, 0)
-  end
-  
-  init_gamemode(1)
+  else
+    init_gamemode(1)
+  end  
   
   init_anims(get_anims())
   
@@ -74,7 +74,7 @@ function _update()
   
   update_menu()
 
-  update_network()
+  update_network()  
   
 end
 
@@ -101,9 +101,12 @@ function _draw()
   
   draw_hp_ammo()
   
+  draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
+  
   draw_menu()
   
   cursor:draw()
+  
 end
 
 
@@ -178,23 +181,25 @@ do -- ui stuff
     
     x = x + 16
     local wep = p.weapon
-    local ammo = wep.ammo
-    printp(0x0300, 0x3130, 0x3230, 0x0300)
-    printp_color(14, 11, 6)
-    
-    if ammo then
-      use_font("big")
-      pprint(ammo, x+2, y)
-    else
-      spr(396, x, y, 2, 2)
+    if wep then
+      local ammo = wep.ammo
+      printp(0x0300, 0x3130, 0x3230, 0x0300)
+      printp_color(14, 11, 6)
+      
+      if ammo then
+        use_font("big")
+        pprint(ammo, x+2, y)
+      else
+        spr(396, x, y, 2, 2)
+      end
+      
+      x, y = 4, y + 16
+      use_font("small")
+      pprint(wep.full_name or wep.name, x-2, y-4)
+      
+      palt(1, false)
+      palt(6, true)
     end
-    
-    x, y = 4, y + 16
-    use_font("small")
-    pprint(wep.full_name or wep.name, x-2, y-4)
-    
-    palt(1, false)
-    palt(6, true)
   end
   
   
