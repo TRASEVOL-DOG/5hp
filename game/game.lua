@@ -43,6 +43,10 @@ function _init()
   init_map()
   
   init_game()
+  
+  define_menus()
+  
+  menu("test")
 end
 
 function _update()
@@ -305,6 +309,45 @@ do -- camera
 
 end
 
+
+function define_menus()
+  init_menu_system({
+    test = {
+      { "Hello",      function() log("Hello!") end },
+      { "Hi",         function() log("Hi!") end },
+      { "Sfx volume", function(v) if v then v = v/100 end return (sfx_volume(v) or 0)*100 end, "slider", 100 },
+      { "Text",       function(str) log(str) end, "text_field", 12, "Hello" },
+      { "Close",      function() menu() end }
+    },
+--    mainmenu={
+--      {"Play", function() menu_back() connecting = true end},
+--      {"Player Name", function(str) my_name = str end, "text_field", 11, my_name},
+--      {"Settings", function() menu("settings") end},
+----      {"Join the Castle Discord!", function() love.system.openURL("https://discordapp.com/invite/4C7yEEC") end}
+--    },
+--    cancel={
+--      {"Go Back", function() connecting=false main_menu() end}
+--    },
+--    settings={
+--      {"Fullscreen", fullscreen},
+--      {"Screenshake", function(v) if cam then cam.shkp = v add_shake(4) return cam.shkp end return 100 end,"slider",200},
+--      {"Master Volume", master_volume,"slider",100},
+--      {"Music Volume", music_volume,"slider",100},
+--      {"Sfx Volume", sfx_volume,"slider",100},
+--      {"Back", menu_back}
+--    },
+--    pause={
+--      {"Resume", function() menu_back() in_pause = false end},
+--      {"Restart", function() menu_back() in_pause = false restarting = true end},
+--      {"Settings", function() menu("settings") end},
+--      {"Back to Main Menu", function() menu_back() main_menu() in_pause = false end},
+--    },
+--    gameover={
+--      {"Restart", function() menu_back() restarting = true end},
+--      {"Back to Main Menu", main_menu}
+--    }
+  })
+end
 
 function get_anims()
   return {

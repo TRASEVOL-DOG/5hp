@@ -43,6 +43,9 @@ end
 
 
 function frame(s, xa, ya, xb, yb, stretch)
+  xa, ya = flr(xa), flr(ya)
+  xb, yb = flr(xb), flr(yb)
+
   local tw, th = 8, 8
   local iw = xb-xa-2*tw
   local ih = yb-ya-2*th
@@ -91,6 +94,11 @@ end
 
 local _sfx = sfx
 function sfx(id, x, y, pitch, volume)
+  if not x then
+    _sfx(id, 0, 0, pitch)
+    return
+  end
+
   local camx, camy = get_camera_pos()
   local scrw, scrh = screen_size()
   x = x - camx - scrw/2
