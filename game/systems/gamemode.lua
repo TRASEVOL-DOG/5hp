@@ -1,16 +1,17 @@
 -- Gamemode dictates the start, update and end state of the games
 
 gamemode = {}
-current_gm = 0
+-- current_gm = 0
 
 leaderboard = {}
 leaderboard_is_large = false
 
 function init_gamemode(gm)
+  if not IS_SERVER then return end
   if gm < 1 then return end
   current_gm = gm
   leaderboard = {}
-  gamemode[gm].init()
+  gamemode[gm].init()  
 end
 
 function update_gamemode()
@@ -25,6 +26,15 @@ function update_gamemode()
     -- sfx("tab")
   -- end
   
+end
+
+function draw_gamemode_infos()
+
+  -- draw the leaderboard
+  
+  -- write the game mode name (probably in the middle of the top part of the screen
+  local str = current_gm and ("Playing "..gamemode[current_gm].name) or "Waiting for server..."
+  pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
 end
 
 function game_over(sorted_lb)

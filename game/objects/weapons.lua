@@ -19,7 +19,9 @@ function shoot(p) -- p for player
 end
 
 function do_shoot(p)
-  if not p.weapon then log("whooops") p.weapon = create_weapon("gun") end
+  -- log(current_gamemode_ or "nope")
+  -- log(current_gm or "nope2")
+  if not p.weapon then p.weapon = create_weapon("gun") end
   return weapons[p.weapon.id].do_shoot(p)
 end
 

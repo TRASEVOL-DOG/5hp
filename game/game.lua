@@ -34,9 +34,9 @@ function _init()
   if not IS_SERVER then
     cursor = create_cursor()
     cam = create_camera(0, 0)
-  end
-  
-  init_gamemode(1)
+  else
+    init_gamemode(1)
+  end  
   
   init_anims(get_anims())
   
@@ -70,7 +70,7 @@ function _update()
   
   update_menu()
 
-  update_network()
+  update_network()  
   
 end
 
@@ -97,9 +97,12 @@ function _draw()
   
   draw_hp_ammo()
   
+  draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
+  
   draw_menu()
   
   cursor:draw()
+  
 end
 
 

@@ -95,12 +95,11 @@ function update_player(s)
     end
   end
   
+    
   if do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
     shoot(s)
   end
-  if not (s.weapon and s.weapon.id) then
-    log("nope")
-  end
+  
   s.shoot_trigger = false
   
   -- update state
@@ -150,6 +149,7 @@ function draw_player(s)
   if flash then
     all_colors_to()
   end
+  
 
   palt(1, false)
 end
