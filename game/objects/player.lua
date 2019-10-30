@@ -16,7 +16,7 @@ function create_player(id, x, y)
     hit_timer = 0,
     angle     = 0,
     
-    name  = "",
+    name  = "default",
     hp    = 10,
     hit   = 0,
     dead  = false,
@@ -42,7 +42,7 @@ function create_player(id, x, y)
   end
   
   players[s.id or 0] = s
-  leaderboard[s.id or 0] = 0
+  leaderboard[s.id or 0] = {name = s.name, score = 0}
   
   if not x then
     local p = get_player_spawn()
@@ -234,7 +234,8 @@ function forget_player(s, fx)
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
     end
   end
-
+  
   deregister_object(s)
+  leaderboard[s.id or -1] = nil
   players[s.id or -1] = nil
 end
