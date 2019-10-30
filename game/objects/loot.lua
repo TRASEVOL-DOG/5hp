@@ -12,11 +12,6 @@ end
 
 local loot_respawns = {}
 function init_loot(weapon_spawns, heal_spawns, crown)
-  -- todo:
-  --- spawn weapons and heals at listed positions
-  --- register positions for respawn? (idk)
-  --- note: this is only called on server - loot objects then need to be synced with client
-  
   if not IS_SERVER then return end
   
   for _, p in pairs(weapon_spawns) do
