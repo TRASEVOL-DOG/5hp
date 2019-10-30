@@ -250,7 +250,7 @@ function kill_bullet(s)
   s.time_left = _bullet_def_val.death_time
   if get_value("explosive", s) then
     create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
-    -- sfx("explosion", s.x, s.y)
+    sfx("explosion", s.x, s.y)
     
     add_shake(8)
     

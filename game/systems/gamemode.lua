@@ -15,7 +15,13 @@ function init_gamemode(gm)
 end
 
 function update_gamemode()
-  if not IS_SERVER then return end
+  if not IS_SERVER then 
+    if btnp("tab") then 
+      leaderboard_is_large = not leaderboard_is_large 
+      sfx("tab")
+    end   
+    return 
+  end
   
   if gamemode and gamemode[current_gm] and gamemode[current_gm].update then
     gamemode[current_gm].update()
@@ -31,10 +37,14 @@ end
 function draw_gamemode_infos()
 
   -- draw the leaderboard
+  draw_leaderboard()
+  
+  
   
   -- write the game mode name (probably in the middle of the top part of the screen
   local str = current_gm and ("Playing "..gamemode[current_gm].name) or "Waiting for server..."
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
+  
 end
 
 function game_over(sorted_lb)
@@ -107,46 +117,45 @@ do
 
 end
 
--- function draw_leaderboard()
+function draw_leaderboard()
   
-  -- local sx, sy = screen_size()
-  -- local l_t = " Leaderboard "
-  -- local l_w = str_width(l_t)
-  -- local width = get_leaderboard_width()
-  -- local lb_w = str_width("  ") + width
-  -- local y = 8
-    
-  -- local size = #leaderboard.list
+  local sx, sy = screen_size()
+  local l_t = " Leaderboard "
+  local l_w = str_px_width(l_t)
+  local width = 50--str_px_width((players[my_id] and players[my_id].name) or "")
+  local lb_w = str_px_width("  ") + width
+  local y = 8
+  local list = players  
+  local size = #list
   
-  -- y = 8
-  -- if not leaderboard.is_large then
-    -- size = size > 5 and 5 or size
-    -- y = - 13
+  if not leaderboard_is_large then
+    size = size > 5 and 5 or size
+    y = - 13
     
-    -- draw_text_oultined("\"Tab\" to expand", sx - str_width("\"Tab\" to expand"),  y + 3 + (size+1)*9, 0)
-  -- else
+    pprint("\"Tab\" to expand ", sx - str_px_width("\"Tab\" to expand "),  y + 3 + (size+1)*9)
+  else
     
-    -- palt(2,true)
-    -- palt(6,false)
-    -- local w = max(l_w, lb_w)
-    -- draw_frame(448, sx - w - 8, y - 4, sx - 1, y + 14 + (size+1) * (9 + (leaderboard_is_large and 1 or 0)), true)
-    -- palt(6,true)
-    -- palt(2,false)    
+    palt(2,true)
+    palt(6,false)
+    local w = max(l_w, lb_w)
+    draw_frame(448, sx - w - 8, y - 4, sx - 1, y + 14 + (size+1) * (9 + (leaderboard_is_large and 1 or 0)), true)
+    palt(6,true)
+    palt(2,false)    
     
-    -- draw_text_oultined(l_t, sx - w + (w-l_w)/2 - 2, y - 1, 0)
+    pprint(l_t, sx - w + (w-l_w)/2 - 2, y - 1)
     
-    -- sx = sx - 8
+    sx = sx - 8
     
     
-  -- end
+  end
    
   -- if big, will display everything
   -- if small and player <= 5th, will display 5 first
   -- if small and player >  5th, will display 3 first, "..." + the player on the 5th line
- 
-  -- for i = 1, size do
   
-    -- local player = leaderboard.list[i]
+  -- for i = 1, #leaderboard do
+  
+    -- local player = list[i]
     -- local str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
     
     -- if leaderboard.is_large then    
@@ -155,11 +164,26 @@ end
       -- if i == 4 then
         -- str = "..."
       -- elseif i == 5 then        
-        -- player = leaderboard.list[my_place]
+        -- player = list[my_place]
         -- str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
       -- end
     -- end
     -- local c = (my_id ~= player.id)
     -- draw_text_oultined(str, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)) , c)
+    -- pprint(i, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)))
   -- end
--- end
+  
+  local tab = get_sorted_leaderboard()
+  
+  for i, l in pairs(tab) do
+    local str = i..". "..(l.name or "").." " 
+    pprint(str, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)))
+  end
+  
+  
+end
+
+
+function get_sorted_leaderboard()
+  return leaderboard
+end

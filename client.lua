@@ -126,6 +126,8 @@ function define_controls()
   
   register_btn("ctrl", 0, {input_id("keyboard", "lctrl"),
                            input_id("keyboard", "rctrl")})
+                           
+  register_btn("tab", 0, input_id("keyboard", "tab"))
   
   local keyboard_keys = {"backspace", "v"}
   for k in all(keyboard_keys) do

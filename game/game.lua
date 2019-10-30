@@ -35,7 +35,7 @@ function _init()
     cursor = create_cursor()
     cam = create_camera(0, 0)
   else
-    init_gamemode(1)
+    init_gamemode(2)
   end  
   
   init_anims(get_anims())
