@@ -95,7 +95,7 @@ function init_map()
     player_spawns_n = #player_spawns
   
     init_destructibles(flower_spawns)
-    init_loot(weapon_spawns, heal_spawn)
+    init_loot(weapon_spawns, heal_spawns)
   end
 end
 

@@ -65,6 +65,7 @@ do -- client
     client_sync_players()
     client_sync_bullets()
     client_sync_destructibles()
+    client_sync_loot()
     client_sync_enemies()
     
     client_sync_map(diff[7])
@@ -231,6 +232,25 @@ do -- client
     end
   end
   
+  function client_sync_loot()
+    local data = client.share[5]
+    if not data then return end
+    
+    for id, s in pairs(loots) do
+      if not data[id] then
+        deregister_object(s)
+        loots[id] = nil
+      end
+    end
+    
+    for id, d in pairs(data) do
+      if not loots[id] then
+        s = create_loot(id, d[3], d[1], d[2])
+        s.weapon = d[4]
+      end
+    end
+  end
+  
   function client_sync_enemies()
     local data = client.share[6]
     if not data then return end
@@ -338,6 +358,7 @@ do -- server
     server_out_players()
     server_out_bullets()
     server_out_destructibles()
+    server_out_loot()
     server_out_enemies()
     
     server.share[7] = map_data
@@ -420,6 +441,24 @@ do -- server
         s.x, s.y,
         s.dead,
         s.killer
+      }
+    end
+  end
+  
+  function server_out_loot()
+    local data = server.share[5]
+    
+    for id, d in pairs(data) do
+      if not loots[id] then
+        data[id] = nil
+      end
+    end
+    
+    for id, s in pairs(loots) do
+      data[id] = {
+        s.x, s.y,
+        s.type,
+        s.weapon
       }
     end
   end
@@ -515,7 +554,7 @@ end
         x,
         y,
         type,
-        ???
+        weapon
       },
       ...
     },
