@@ -72,6 +72,8 @@ function _update()
     
   end
   
+  update_loot_spawns()
+  
   update_menu()
 
   update_network()  
@@ -154,7 +156,7 @@ do -- ui stuff
       
       if i > 5 then
         sp = sp + 4
-        local n = round(cos(t*2))
+        local n = round(cos(t()*2))
         lighten(12, n)
         lighten(9, n)
         lighten(4, n)

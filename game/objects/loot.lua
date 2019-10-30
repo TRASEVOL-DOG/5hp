@@ -2,9 +2,12 @@ require("game/objects/weapons")
 
 loots = {}
 
-local weapon_list = {}
-for k, _ in pairs(weapons) do
-  add(weapon_list, k)
+local weapon_list, weapon_sprites = {}, {}
+for k, d in pairs(weapons) do
+  if k ~= "gun" then
+    add(weapon_list, k)
+    weapon_sprites[k] = d.get_attributes().loot_sprite
+  end
 end
 
 local loot_respawns = {}
@@ -122,13 +125,13 @@ function draw_loot(s)
   local w = 1
   local sp = 0x2F
   
-  if s.loot_type == 1 then -- weapon
+  if s.type == 1 then -- weapon
     -- get weapon sprite
-    
-  elseif s.loot_type == 2 then -- health
+    sp = weapon_sprites[s.weapon]
+  elseif s.type == 2 then -- health
     sp = 0xE1
     w  = 2
-  elseif s.loot_type == 3 then -- crown
+  elseif s.type == 3 then -- crown
     sp = 0xE0
   end
   
@@ -145,11 +148,11 @@ end
 
 loot_effect = {
   [1] = function(s, p) -- looting weapon
-  
+    p.weapon = create_weapon(s.weapon)
   end,
   
   [2] = function(s, p) -- looting hp
-  
+    heal_player(p)
   end,
   
   [3] = function(s, p) -- looting crown

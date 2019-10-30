@@ -210,6 +210,10 @@ function hit_player(s, b)
   -- todo
 end
 
+function heal_player(s)
+  s.hp = min(s.hp + 5, 20)
+end
+
 
 function resurrect_player(s)
   s.dead = false

@@ -149,7 +149,7 @@ do -- client
         p.shoot_hold = d[15]
       end
       
-      if not p.weapon or p.weapon.name ~= d[8] then
+      if not p.weapon or p.weapon.id ~= d[8] then
         p.weapon = create_weapon(d[8])
       end
       --p.weapon.ammo = d[10]
@@ -402,7 +402,7 @@ do -- server
         p.dx_input,
         p.dy_input,
         p.angle,
-        p.weapon.name,
+        p.weapon.id,
         p.hp,
         p.weapon.ammo,
         p.dead,
