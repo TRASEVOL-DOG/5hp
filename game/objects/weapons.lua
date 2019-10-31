@@ -44,7 +44,7 @@ do -- Weapons --
                           id   = "gun",
                           name = "Gun",
                           bullet_type = 1,
-                          fire_rate   = .3
+                          fire_rate   = .3,
                           arm_sprite  = 0x260,
                           loot_sprite = 0x240,
                         }
