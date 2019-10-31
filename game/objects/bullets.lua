@@ -49,9 +49,9 @@ _g_types = { -- bullet graphical types
   { w = 8, -- (4) fire ball!
     h = 8,
     spr = {
-            moving  = { s = 0x207, w = 2, h = 1},
-            stopped = { s = 0x206, w = 1, h = 1},
-            killed  = { s = 0x209, w = 1, h = 1}
+            moving  = { s = 0x231, w = 2, h = 1},
+            stopped = { s = 0x230, w = 1, h = 1},
+            killed  = { s = 0x233, w = 1, h = 1}
           }
   }
 }
