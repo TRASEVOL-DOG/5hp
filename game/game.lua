@@ -45,8 +45,7 @@ function _init()
   init_game()
   
   define_menus()
-  
-  menu("test")
+  menu("mainmenu")
 end
 
 function _update()
@@ -67,12 +66,17 @@ function _update()
     update_objects()
     
     enemy_spawner()
+    loot_spawner()
     
   else
     
   end
   
-  update_loot_spawns()
+  if get_menu() == "mainmenu" then
+    if btn("r") then
+      my_name = generate_name()
+    end
+  end
   
   update_menu()
 
@@ -108,7 +112,6 @@ function _draw()
   draw_menu()
   
   cursor:draw()
-  
 end
 
 
@@ -204,7 +207,60 @@ do -- ui stuff
     end
   end
   
+  function define_menus()
+    init_menu_system({
+      test = {
+        { "Hello",      function() log("Hello!") end },
+        { "Hi",         function() log("Hi!") end },
+        { "Sfx volume", function(v) if v then v = v/100 end return (sfx_volume(v) or 0)*100 end, "slider", 100 },
+        { "Text",       function(str) log(str) end, "text_field", 12, "Hello" },
+        { "Close",      function() menu() end }
+      },
+      
+      mainmenu={
+        { "Play",      function() menu() connecting = true end },
+        { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, my_name) end },
+        { "Settings",  function() menu("settings") end }
+      },
+      
+  --    cancel={
+  --      {"Go Back", function() connecting=false main_menu() end}
+  --    },
   
+      settings={
+        { "Fullscreen",    fullscreen },
+        { "Screenshake",   function(v) if v and cam then cam.shkp = v add_shake(2) return cam.shkp end return 100 end, "slider",200 },
+        { "Music Volume",  music_volume,  "slider", 100 },
+        { "Sfx Volume",    sfx_volume,    "slider", 100 },
+        { "Back",          menu }
+      },
+      
+  --    pause={
+  --      {"Resume", function() menu_back() in_pause = false end},
+  --      {"Restart", function() menu_back() in_pause = false restarting = true end},
+  --      {"Settings", function() menu("settings") end},
+  --      {"Back to Main Menu", function() menu_back() main_menu() in_pause = false end},
+  --    },
+  --    gameover={
+  --      {"Restart", function() menu_back() restarting = true end},
+  --      {"Back to Main Menu", main_menu}
+  --    }
+    })
+  end
+  
+  function generate_name()
+    return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Branch", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant", "Flower"}
+  end
+
+  if not IS_SERVER then
+    if castle then
+      my_name = castle.user.getMe().username
+    else
+      my_name = generate_name()
+    end
+  end
+
 end
 
 do -- cursor
@@ -316,45 +372,6 @@ do -- camera
 
 end
 
-
-function define_menus()
-  init_menu_system({
-    test = {
-      { "Hello",      function() log("Hello!") end },
-      { "Hi",         function() log("Hi!") end },
-      { "Sfx volume", function(v) if v then v = v/100 end return (sfx_volume(v) or 0)*100 end, "slider", 100 },
-      { "Text",       function(str) log(str) end, "text_field", 12, "Hello" },
-      { "Close",      function() menu() end }
-    },
---    mainmenu={
---      {"Play", function() menu_back() connecting = true end},
---      {"Player Name", function(str) my_name = str end, "text_field", 11, my_name},
---      {"Settings", function() menu("settings") end},
-----      {"Join the Castle Discord!", function() love.system.openURL("https://discordapp.com/invite/4C7yEEC") end}
---    },
---    cancel={
---      {"Go Back", function() connecting=false main_menu() end}
---    },
---    settings={
---      {"Fullscreen", fullscreen},
---      {"Screenshake", function(v) if cam then cam.shkp = v add_shake(4) return cam.shkp end return 100 end,"slider",200},
---      {"Master Volume", master_volume,"slider",100},
---      {"Music Volume", music_volume,"slider",100},
---      {"Sfx Volume", sfx_volume,"slider",100},
---      {"Back", menu_back}
---    },
---    pause={
---      {"Resume", function() menu_back() in_pause = false end},
---      {"Restart", function() menu_back() in_pause = false restarting = true end},
---      {"Settings", function() menu("settings") end},
---      {"Back to Main Menu", function() menu_back() main_menu() in_pause = false end},
---    },
---    gameover={
---      {"Restart", function() menu_back() restarting = true end},
---      {"Back to Main Menu", main_menu}
---    }
-  })
-end
 
 function get_anims()
   return {

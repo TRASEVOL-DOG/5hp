@@ -55,7 +55,7 @@ function init_menu(data, name)
       merge_tables(n, {
         mlen    = o[4] or 24,
         txt     = o[5] or "",
-        w       = max(str_px_width(n.name), 24*6),
+        w       = max(str_px_width(n.name), o[4]*6),
         h       = 34
       })
     end
@@ -321,4 +321,20 @@ function menu(name)
   
   curmenu = name
   menuchange = true
+end
+
+function get_menu()
+  return curmenu
+end
+
+function update_menu_entry(menu, i, v)
+  local m = menus[menu]
+  if not m or not m[i] then return end
+  
+  local n = m[i]
+  if n.type == "slider" then
+    n.slidv = v
+  elseif n.type == "text_field" then
+    n.txt = v
+  end
 end

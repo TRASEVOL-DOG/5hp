@@ -27,7 +27,7 @@ function init_loot(weapon_spawns, heal_spawns, crown)
   end
 end
 
-function update_loot_spawns()
+function loot_spawner()
   if not IS_SERVER then return end
   
   local ti = t()

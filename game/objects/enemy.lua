@@ -62,7 +62,7 @@ function update_enemy(s)
   if s.clock < 0 then
     s.clock = 1 + rnd(1)
   
-    local player, d = nil, sqr(64)
+    local player, d = nil, sqr(96)
     for p in group("player") do
       local sqd = sqrdist(p.x - s.x, p.y - s.y)
       if sqd < d then
