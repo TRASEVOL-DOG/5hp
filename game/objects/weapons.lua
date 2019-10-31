@@ -87,10 +87,10 @@ do -- Weapons --
                           w.rafale_left = w.rafale_length - 1
                           return true
                         elseif w.rafale_started then
-                          if w.rafale_left > 0 and t() - (w.t_last_shot or 0) > w.fire_rate then
-                              w.rafale_left = w.rafale_left - 1
-                              return true
-                          else w.rafale_started = false
+                          if t() - (w.t_last_shot or 0) > w.fire_rate then
+                            w.rafale_left = w.rafale_left - 1
+                            w.rafale_started = w.rafale_left > 0
+                            return true
                           end
                         end
                       end
