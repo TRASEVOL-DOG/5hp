@@ -14,7 +14,7 @@ function shoot(p) -- p for player
   local w = weapons[p.weapon.id]
   w.shoot(p)
   if not IS_SERVER then
-    add_shake(4 * (w.shake_mult or 1))
+    add_shake(4 * (p.weapon.shake_mult or 1))
   end
 end
 
@@ -32,6 +32,7 @@ do -- Weapons --
   -- Shotgun            = "shotgun"
   -- Grenade Launcher   = "gl"
   -- Heavy Rifle        = "hr"
+  -- Flamethrower       = "ft"
   
   -- TODO
   -- {"Mini Gun"}
@@ -149,7 +150,7 @@ do -- Weapons --
   -- Heavy Rifle 
   weapons.hr = {
     get_attributes =  function()
-                        local att = {id = "hr", name = "Heavy Rifle", arm_sprite = 123, loot_sprite = 115, bullet_type = 2, ammo = 60, fire_rate = .3 , shake_mult = 10.3}  
+                        local att = {id = "hr", name = "Heavy Rifle", arm_sprite = 123, loot_sprite = 115, bullet_type = 4, ammo = 60, fire_rate = .3 , shake_mult = 10.3}  
                         return att
                       end
                       
@@ -192,6 +193,32 @@ do -- Weapons --
                           p.weapon = create_weapon("gun")
                         end
                         -- if w.ammo < 40 then p.weapon = weapons.gun.get_attributes() end
+                      end
+  }
+  
+  -- Flamethrower
+  weapons.ft = {
+    get_attributes =  function()
+                        local att = {id = "ft", name = "Flamethrower", arm_sprite = 126, loot_sprite = 118, ammo = 100, bullet_type = 5, fire_rate = 0.1, shake_mult = 0.3}  
+                        return att
+                      end
+                      
+    ,do_shoot =       function(p) -- determine if weapon should shoot this frame
+                        local w = p.weapon   
+                        
+                        if p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        end                        
+                      end
+                      
+    ,shoot  =         function(p)
+                        local w = p.weapon     
+                        w.t_last_shot = t()
+                        w.ammo = w.ammo - 1
+                        create_bullet(p.id, nil, w.bullet_type, p.angle + give_or_take(0.07))
+                        
+                        if w.ammo < 1 then 
+                          p.weapon = create_weapon("gun")
+                        end
                       end
   }
   

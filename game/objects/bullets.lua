@@ -22,21 +22,37 @@ _bullet_def_val = { -- act as default values
 }
 
 _g_types = { -- bullet graphical types
-  { w = 16, 
+  { w = 8,  -- (1) regular bullet
     h = 8, 
     spr = { 
-            moving  = { s = 237, w = 2, h = 1}, 
-            stopped = { s = 236, w = 1, h = 1}, 
-            killed  = { s = 239, w = 1, h = 1}
-           },
+            moving  = { s = 0x201, w = 2, h = 1}, 
+            stopped = { s = 0x200, w = 1, h = 1}, 
+            killed  = { s = 0x203, w = 1, h = 1}
+          },
   },
-  { w = 8, 
-    h = 8, 
+  { w = 6,  -- (2) grenado
+    h = 6, 
     spr = { 
-            moving  = { s = 236, w = 1, h = 1}, 
-            stopped = { s = 236, w = 1, h = 1}, 
-            killed  = { s = 236, w = 1, h = 1}
-           },
+            moving  = { s = 0x204, w = 1, h = 1}, 
+            stopped = { s = 0x210, w = 2, h = 2}, 
+            killed  = { s = 0x213, w = 2, h = 2}
+          },
+  },
+  { w = 10, -- (3) big bullet
+    h = 10,
+    spr = {
+            moving  = { s = 0x212, w = 2, h = 1},
+            stopped = { s = 0x210, w = 2, h = 2},
+            killed  = { s = 0x214, w = 2, h = 2}
+          }
+  },
+  { w = 8, -- (4) fire ball!
+    h = 8,
+    spr = {
+            moving  = { s = 0x207, w = 2, h = 1},
+            stopped = { s = 0x206, w = 1, h = 1},
+            killed  = { s = 0x209, w = 1, h = 1}
+          }
   }
 }
 -- bullet types
@@ -45,8 +61,9 @@ _g_types = { -- bullet graphical types
 _types = {
   {}, -- gun
   {sfx_vol = .75}, -- ar ,shotgun and mg
-  {_g_type = 2, resistance = .03, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl
-  {sfx_vol = .75, damage = 2}, -- hr
+  {_g_type = 2, resistance = 3, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl
+  {_g_type = 3, sfx_vol = .75, damage = 2}, -- hr
+  {_g_type = 4, sfx_vol = .75, damage = 2, speed = 150, life = .25, wall_dmg = 3, resistance = 5}, -- FIRE
 }
 
 
@@ -130,7 +147,6 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
     end
     
     bullets[s.id] = s
-    log("New bullet! #"..s.id)
   end
   
   register_object(s)
@@ -207,8 +223,8 @@ function bullet_movement(s)
     ny = ty - diry * (4.25 + 1)
   end
   
-  s.vx = s.vx * (1 - (get_value("resistance", s) or 0))
-  s.vy = s.vy * (1 - (get_value("resistance", s) or 0))
+  s.vx = s.vx * (1 - (get_value("resistance", s) or 0) * dt())
+  s.vy = s.vy * (1 - (get_value("resistance", s) or 0) * dt())
   
   -- apply new positions
   s.x = nx
