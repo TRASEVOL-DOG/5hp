@@ -12,11 +12,11 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("mg"),
+    weapon = create_weapon("shotgun"),
     hit_timer = 0,
     angle     = 0,
     
-    name  = "default",
+    name  = id.." d ",
     hp    = 10,
     hit   = 0,
     dead  = false,

@@ -92,7 +92,7 @@ do -- Weapons --
   -- Shotgun
   weapons.shotgun = {
     get_attributes =  function()
-                        local att = {id = "shotgun", name = "Shotgun", bullet_type = 2, ammo = 35, fire_rate = .6, arm_sprite = 121, loot_sprite = 113, shake_mult = 1.3}  
+                        local att = {id = "shotgun", name = "Shotgun", bullet_type = 2, ammo = 36, fire_rate = .6, arm_sprite = 121, loot_sprite = 113, shake_mult = 1.3}  
                         return att
                       end
                       
@@ -106,14 +106,14 @@ do -- Weapons --
     ,shoot  =         function(p)
                         local w = p.weapon  
                         w.t_last_shot = t()
-                        local m = min ( 5, w.ammo)
+                        local m = min ( 4, w.ammo)
                         local i = 0
                         local spread = .06
                         
                         while i < m do
                           local angle = p.angle - spread/2 + rnd(1) * spread 
                           local spd_mult = (0.5+rnd(0.5))
-                          create_bullet(p.id, nil, w.bullet_type, 1, angle, spd_mult)
+                          create_bullet(p.id, nil, w.bullet_type, angle, spd_mult)
                           
                           w.ammo = w.ammo - 1
                           i = i + 1

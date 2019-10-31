@@ -4,7 +4,7 @@ gamemode = {}
 -- current_gm = 0
 
 leaderboard = {}
-leaderboard_is_large = false
+leaderboard_is_large = true
 
 function init_gamemode(gm)
   if not IS_SERVER then return end
@@ -27,19 +27,12 @@ function update_gamemode()
     gamemode[current_gm].update()
   end
   
-  -- if btnp(10) then 
-    -- leaderboard_is_large = not leaderboard_is_large 
-    -- sfx("tab")
-  -- end
-  
 end
 
 function draw_gamemode_infos()
 
   -- draw the leaderboard
   draw_leaderboard()
-  
-  
   
   -- write the game mode name (probably in the middle of the top part of the screen
   local str = current_gm and ("Playing "..gamemode[current_gm].name) or "Waiting for server..."
@@ -120,70 +113,139 @@ end
 function draw_leaderboard()
   
   local sx, sy = screen_size()
-  local l_t = " Leaderboard "
+  local size = count(players)
+  
+  local l_t = " Leaderboard  "
   local l_w = str_px_width(l_t)
-  local width = 50--str_px_width((players[my_id] and players[my_id].name) or "")
-  local lb_w = str_px_width("  ") + width
+  
+  local width = str_px_width(get_longest_line())
+  local w = max(str_px_width(l_t), str_px_width("  ") + width) + 6  
+  
   local y = 8
-  local list = players  
-  local size = #list
   
   if not leaderboard_is_large then
-    size = size > 5 and 5 or size
-    y = - 13
-    
-    pprint("\"Tab\" to expand ", sx - str_px_width("\"Tab\" to expand "),  y + 3 + (size+1)*9)
-  else
+    if size > 5 then    
+      size = 5  
+      pprint("\"Tab\" to expand ", sx - str_px_width("\"Tab\" to expand "),  y + (size)*9)    
+    end
+  else  
+    local h = size*9
     
     palt(2,true)
-    palt(6,false)
-    local w = max(l_w, lb_w)
-    draw_frame(448, sx - w - 8, y - 4, sx - 1, y + 14 + (size+1) * (9 + (leaderboard_is_large and 1 or 0)), true)
-    palt(6,true)
-    palt(2,false)    
+    palt(6,false)    
+    frame(448,  sx - w, y - 4, sx - 1, y + h + 24, true)
+    palt(6,true)  
+    palt(2,false)
     
-    pprint(l_t, sx - w + (w-l_w)/2 - 2, y - 1)
-    
-    sx = sx - 8
-    
+    pprint(l_t, sx - w/2 - l_w/2 , y - 2)
     
   end
-   
-  -- if big, will display everything
-  -- if small and player <= 5th, will display 5 first
   -- if small and player >  5th, will display 3 first, "..." + the player on the 5th line
   
-  -- for i = 1, #leaderboard do
+  local tab = count(leaderboard) > 0 and get_ordered_tab("descending", leaderboard, "score") or {}
+  local my_rank = get_rank(tab, my_id)
   
-    -- local player = list[i]
-    -- local str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
-    
-    -- if leaderboard.is_large then    
-      -- str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
-    -- elseif my_place > 5 then
-      -- if i == 4 then
-        -- str = "..."
-      -- elseif i == 5 then        
-        -- player = list[my_place]
-        -- str = player.rank .. "." .. player.name .. "(" .. player.score .. ")"
-      -- end
-    -- end
-    -- local c = (my_id ~= player.id)
-    -- draw_text_oultined(str, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)) , c)
-    -- pprint(i, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)))
-  -- end
+  if leaderboard_is_large or size < 6 then
+  -- if big, will display everything  
+    for i = 1, size do
+      local l = tab[i]    
+      local str = " "..i.."."..(l.name or "").." ("..l.score..") "
+      t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - width/2 , y + (i-1)*8.8 + 9 * (leaderboard_is_large and 1 or -1) ,(i==my_rank) )
+    end
+  else    
+    for i = 1, 3 do
+      local l = tab[i]    
+      local str = i.."."..(l.name or "").." ("..l.score..") "
+      t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
+    end    
   
-  local tab = get_sorted_leaderboard()
-  
-  for i, l in pairs(tab) do
-    local str = i..". "..(l.name or "").." " 
-    pprint(str, sx - width , y + 3 + i*(9 + (leaderboard_is_large and 1 or 0)))
+    -- if small and player <= 5th, will display 5 first
+    if my_rank < 6 then     
+      for i = 4, 5 do
+        local l = tab[i]        
+        local str = i.."."..(l.name or "").." ("..l.score..") "
+        t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
+      end
+    else
+      -- 4th
+      t_pprint("...", sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (4-1)*8.8 - 9 ,(i==my_rank) )
+      
+      -- 5th
+      local l = tab[5]        
+      local str = "5".."."..(l.name or "").." ("..l.score..") "
+      t_pprint(str  , sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (5-1)*8.8 - 9 ,(i==my_rank) )    
+    end
   end
-  
-  
 end
 
+function t_pprint(str, x, y, bool) -- will print player's rank in another color if bool is true
+  if bool then 
+    printp_color(12 + flr(t()*2)%2, 11, 6)
+  end  
+  pprint(str, x, y)  
+  printp_color(14, 11, 6)
+end
 
-function get_sorted_leaderboard()
-  return leaderboard
+function get_longest_line()
+  local n = ""
+  local mw = 0
+  local j = 0
+  local s = 0
+  for i, p in pairs(leaderboard) do
+    local w = str_px_width(j..(p.name or "")..(p.score or 0))
+    if mw < w then
+      mw = w 
+      n = p.name
+      j = i
+      s = p.score
+    end
+  end
+  return j..". "..n.." ( "..s.." ) "
+end
+
+function get_ordered_tab(mode, tab, key)
+  local copy_t = copy_table(tab)
+  local sorted_list = {}
+  
+  if mode == "descending" then    
+    while count(copy_t) > 0 do
+      local mx, i = get_max(copy_t, key)
+      add(sorted_list, tab[i])
+      copy_t[i] = nil
+    end  
+  elseif mode == "ascending" then
+  end
+  
+  return sorted_list
+end
+
+function count(tab)
+  if not tab then return 0 end
+  local nb = 0
+  for i, j in pairs(tab) do nb = nb + 1 end
+  return nb  
+end
+  
+function get_max(tab, key)
+  if tab == {} or not key then return end
+  local mx
+  local index
+  for i, l in pairs(tab) do
+    mx = mx or l.key    
+    index = index or i   
+    if l and l.key then 
+      if l.key > mx then 
+        mx = l.key 
+        index = i 
+      end    
+    end    
+  end
+  return mx, index
+end
+
+function get_rank(lb, id)
+  if not leaderboard or not leaderboard[id] or not lb then return end
+  for i = 1, #lb do
+    if lb[i].name == leaderboard[id].name then return i end
+  end
 end
