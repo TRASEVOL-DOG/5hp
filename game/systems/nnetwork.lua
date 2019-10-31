@@ -175,16 +175,15 @@ do -- client
       
       if not b then
         local found
-        if d[5] == my_id then
-          for bu in group("bullet") do
-            if bu.from == my_id and not bu.id then
-              bu.id = id
-              bullets[id] = bu
-              dead_bullets[id] = nil
-              b = bu
-              
-              found = true
-            end
+        for bu in group("bullet") do
+          if bu.from == d[5] and not bu.id then
+            bu.id = id
+            bullets[id] = bu
+            dead_bullets[id] = nil
+            b = bu
+            
+            found = true
+            break
           end
         end
       

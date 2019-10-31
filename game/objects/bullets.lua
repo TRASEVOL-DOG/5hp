@@ -121,6 +121,7 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
   
   if IS_SERVER then
     s.id = bullet_nextid
+    bullet_nextid = bullet_nextid + 1
   end
   
   if s.id then
@@ -129,7 +130,7 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
     end
     
     bullets[s.id] = s
-    bullet_nextid = max(bullet_nextid, s.id) + 1
+    log("New bullet! #"..s.id)
   end
   
   register_object(s)
