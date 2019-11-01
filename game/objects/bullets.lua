@@ -235,7 +235,7 @@ function bullet_collisions(s)
   local pla = collide_objgroup(s, "player")
   if pla and pla.id ~= s.from and not pla.dead then
     kill_bullet(s)
-    hit_player(pla, s.id)
+    hit_player(pla, s)
     return
   end
 

@@ -67,6 +67,11 @@ function update_player(s)
     s.hit_timer = s.hit_timer - dt()
   end
   
+  if s.dead then
+    update_corpse(s)
+    return
+  end
+  
 
   -- do input
   
@@ -126,7 +131,7 @@ function draw_player(s)
   end
   
   local spi, dy
-  if state == "dead" then
+  if s.dead then
     spi = 142
     dy = -1
   else
@@ -206,8 +211,56 @@ function player_movement(s)
   s.y = ny
 end
 
+function update_corpse(s)
+  s.diff_x = lerp(s.diff_x, 0, 2*dt())
+  s.diff_y = lerp(s.diff_y, 0, 2*dt())
+
+  s.vx = lerp(s.vx, 0, dt())
+  s.vy = lerp(s.vy, 0, dt())
+  
+  local nx = s.x + s.vx * dt()
+  local ny = s.y + s.vy * dt()
+  
+  -- collision check
+  local col = check_mapcol(s, nx, s.y)
+  if col then
+    local cx = nx + col.dir_x * s.w/2
+    local tx = cx - cx % 8 + 4
+    nx = tx - col.dir_x * (4.25 + s.w/2)
+    
+    s.vx = -s.vx
+  end
+  
+  local col = check_mapcol(s, s.x, ny)
+  if col then
+    local cy = ny + col.dir_y * s.h/2
+    local ty = cy - cy % 8 + 4
+    ny = ty - col.dir_y * (4.25 + s.h/2)
+    
+    s.vy = -s.vy
+  end
+  
+  -- apply new positions
+  s.x = nx
+  s.y = ny
+end
+
 function hit_player(s, b)
-  -- todo
+  if s.hit_timer > 0 or s.dead then
+    return
+  end
+  
+  -- knockback
+  local a = atan2(b.x - s.x, b.y - s.y)
+  s.vx = - 70 * cos(a)
+  s.vy = - 70 * sin(a)
+  
+  s.hp = s.hp - b.damage  
+  s.hit_timer = 0.5
+  
+  if s.hp <= 0 then
+    kill_player(s, b.from)
+  end
 end
 
 function heal_player(s)
@@ -221,6 +274,11 @@ end
 
 function kill_player(s, killer_id)
   s.dead = killer_id or true
+  
+  -- killer_id can be nil: if killer is AI
+  
+  s.vx = s.vx * 5
+  s.vy = s.vy * 5
   
   s.animt = 0.49
   
