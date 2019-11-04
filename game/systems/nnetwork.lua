@@ -80,6 +80,14 @@ do -- client
     
     local my_player = players[client.id] or players[0]
     if my_player then
+      if my_player.dead then
+        client.home[2] = nil
+        client.home[3] = nil
+        client.home[4] = nil
+        client.home[5] = nil
+        return
+      end
+      
       client.home[2] = my_player.x
       client.home[3] = my_player.y
       client.home[4] = my_player.dx_input
@@ -123,6 +131,15 @@ do -- client
     
     for id, d in pairs(data) do
       local p = players[id]
+      
+      if p and p.dead and d[9] >= 10 then
+        for i = 1, 16 do
+          create_smoke(p.x, p.y, 1, nil, 14, i/16+rnd(0.1))
+        end
+        
+        p.x = d[1]
+        p.y = d[2]
+      end
       
       if not p then
         log("New player: id #"..id)

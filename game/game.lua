@@ -68,6 +68,8 @@ function _update()
     enemy_spawner()
     loot_spawner()
     
+    player_respawner()
+    
   else
     
   end
@@ -106,6 +108,7 @@ function _draw()
   camera()
   
   draw_hp_ammo()
+  draw_respawn()
   
   draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
   
@@ -135,7 +138,7 @@ do -- ui stuff
     
     -- hp bar
     
-    local flash = p.hit > 0.1
+    local flash = p.hit_timer > 0.1
     if flash then
       all_colors_to()
     end
@@ -205,6 +208,21 @@ do -- ui stuff
       palt(1, false)
       palt(6, true)
     end
+  end
+  
+  function draw_respawn()
+    local p = players[my_id]
+    if not (p and p.dead and my_respawn) then
+      return
+    end
+    
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    printp_color(14, 11, 6)
+    use_font("big")
+    
+    local y = flr(0.25 * screen_h())
+    local str = "Respawn in "..max(ceil(my_respawn), 0).."..."
+    pprint(str, (screen_w() - str_px_width(str))/2, y)
   end
   
   function define_menus()

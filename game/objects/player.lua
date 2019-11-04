@@ -18,7 +18,7 @@ function create_player(id, x, y)
     
     name  = id.." d ",
     hp    = 10,
-    hit   = 0,
+    hit_timer = 2,
     dead  = false,
     animt = 0,
     state = "idle",
@@ -65,6 +65,10 @@ function update_player(s)
   
   if s.hit_timer > 0 then
     s.hit_timer = s.hit_timer - dt()
+  end
+  
+  if s.hp > 10 then
+    s.hp = max(s.hp - dt(), 10)
   end
   
   if s.dead then
@@ -125,7 +129,7 @@ function draw_player(s)
   palt(6, false)
   palt(1, true)
   
-  local flash = s.hit_timer > 0.1
+  local flash = s.hit_timer > 0.4 or s.hit_timer % 0.2 < 0.1
   if flash then
     all_colors_to(14)
   end
@@ -255,7 +259,7 @@ function hit_player(s, b)
   s.vx = - 70 * cos(a)
   s.vy = - 70 * sin(a)
   
-  s.hp = s.hp - b.damage  
+  s.hp = s.hp - b.damage
   s.hit_timer = 0.5
   
   if s.hp <= 0 then
@@ -267,6 +271,41 @@ function heal_player(s)
   s.hp = min(s.hp + 5, 20)
 end
 
+
+local player_respawns = {}
+function player_respawner()
+  if IS_SERVER then
+    for id, p in pairs(players) do
+      if p.dead then
+        player_respawns[id] = (player_respawns[id] or 5) - dt()
+        if player_respawns[id] < 0 then
+          -- respawn player
+          respawn_player(p)
+          player_respawns[id] = nil
+        end
+      end
+    end
+  else
+    local p = players[my_id]
+    if p and p.dead then
+      my_respawn = (my_respawn or 5) - dt()
+    else
+      my_respawn = nil
+    end
+  end
+end
+
+function respawn_player(s)
+  s.dead = false
+  s.hp = 10
+  s.hit_timer = 2
+
+  local p = get_player_spawn()
+  s.x, s.y = p.x, p.y
+  
+  s.weapon = create_weapon("gun")
+  s.state = "idle"
+end
 
 function resurrect_player(s)
   s.dead = false
@@ -290,7 +329,7 @@ function kill_player(s, killer_id)
   end
 end
 
-function forget_player(s, fx)
+function forget_player(s)
   if not IS_SERVER then
     for i = 1, 16 do
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))

@@ -92,7 +92,7 @@ function update_loot(s)
   s.animt = s.animt + dt()
   
   local col = collide_objgroup(s, "player")
-  if col then
+  if col and not col.dead then
     loot_effect[s.type](s, col)
     
     respawn_loot(s)
