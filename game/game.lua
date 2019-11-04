@@ -223,10 +223,6 @@ do -- ui stuff
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, my_name) end },
         { "Settings",  function() menu("settings") end }
       },
-      
-  --    cancel={
-  --      {"Go Back", function() connecting=false main_menu() end}
-  --    },
   
       settings={
         { "Fullscreen",    fullscreen },
@@ -235,17 +231,8 @@ do -- ui stuff
         { "Sfx Volume",    sfx_volume,    "slider", 100 },
         { "Back",          menu }
       },
+
       
-  --    pause={
-  --      {"Resume", function() menu_back() in_pause = false end},
-  --      {"Restart", function() menu_back() in_pause = false restarting = true end},
-  --      {"Settings", function() menu("settings") end},
-  --      {"Back to Main Menu", function() menu_back() main_menu() in_pause = false end},
-  --    },
-  --    gameover={
-  --      {"Restart", function() menu_back() restarting = true end},
-  --      {"Back to Main Menu", main_menu}
-  --    }
     })
   end
   

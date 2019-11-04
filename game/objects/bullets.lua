@@ -17,6 +17,7 @@ _bullet_def_val = { -- act as default values
   spd_loss_col = 0.75,-- loss of speed on colision 
   life_loss_col = 0.75,-- loss of life on colision  
   wall_dmg = 2,
+  wall_death = false, -- if true, kill_bullet is called on wall collision
   
   shake_mult = 1,
 }
@@ -53,6 +54,14 @@ _g_types = { -- bullet graphical types
             stopped = { s = 0x230, w = 1, h = 1},
             killed  = { s = 0x233, w = 1, h = 1}
           }
+  },
+  { w = 8, -- (5) bazooka missile
+    h = 8,
+    spr = {
+            moving  = { s = 0x205, w = 2, h = 1},
+            stopped = { s = 0x210, w = 2, h = 2},
+            killed  = { s = 0x214, w = 2, h = 2}
+          }
   }
 }
 -- bullet types
@@ -61,9 +70,10 @@ _g_types = { -- bullet graphical types
 _types = {
   {}, -- gun
   {sfx_vol = .75}, -- ar ,shotgun and mg
-  {_g_type = 2, resistance = 3, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl
+  {_g_type = 2, damage = 5, resistance = 3, explosive = true, wall_dmg = 4, speed = 200, life = 1}, -- gl
   {_g_type = 3, sfx_vol = .75, damage = 2}, -- hr
-  {_g_type = 4, sfx_vol = .75, damage = 2, speed = 150, life = .25, wall_dmg = 3, resistance = 5}, -- FIRE
+  {_g_type = 4, sfx_vol = .75, speed = 150, life = .25, wall_dmg = 3, resistance = 5, wall_death = true }, -- FIRE
+  {_g_type = 5, damage = 5, explosive = true, speed = 170, life = 2, wall_dmg = 5, wall_death = true}, -- bz
 }
 
 
@@ -187,16 +197,16 @@ function bullet_movement(s)
   
   -- collision check
   local dirx, diry = sgn(s.vx), sgn(s.vy)
-  local col = check_mapcol(s, nx, s.y, 2, 2)
-  if col then
+  local xcol = check_mapcol(s, nx, s.y, 2, 2)
+  if xcol then
     s.vx = -s.vx * _bullet_def_val.spd_loss_col
     s.vy = s.vy * _bullet_def_val.spd_loss_col
     s.angle = -(s.angle - 0.25) + 0.25
     s.life = s.life * _bullet_def_val.life_loss_col
     
     hurt_wall(
-      flr((nx + col.dir_x)/8),
-      flr((s.y + col.dir_y)/8),
+      flr((nx + xcol.dir_x)/8),
+      flr((s.y + xcol.dir_y)/8),
       get_value("wall_dmg", s)
     )
     
@@ -205,16 +215,16 @@ function bullet_movement(s)
     nx = tx - dirx * (4.25 + 1)
   end
   
-  local col = check_mapcol(s, s.x, ny, 2, 2)
-  if col then
+  local ycol = check_mapcol(s, s.x, ny, 2, 2)
+  if ycol then
     s.vx = s.vx * _bullet_def_val.spd_loss_col
     s.vy = -s.vy * _bullet_def_val.spd_loss_col
     s.angle = - s.angle
     s.life = s.life * _bullet_def_val.life_loss_col
     
     hurt_wall(
-      flr((s.x + col.dir_x)/8),
-      flr((ny + col.dir_y)/8),
+      flr((s.x + ycol.dir_x)/8),
+      flr((ny + ycol.dir_y)/8),
       get_value("wall_dmg", s)
     )
     
@@ -229,6 +239,11 @@ function bullet_movement(s)
   -- apply new positions
   s.x = nx
   s.y = ny
+  
+  -- kill bullet if relevant
+  if (xcol or ycol) and get_value("wall_death", s) then
+    kill_bullet(s)
+  end
 end
 
 function bullet_collisions(s)
@@ -256,6 +271,7 @@ function bullet_collisions(s)
   end
 end
 
+local bullet_explosion
 function kill_bullet(s)
   if s.id and dead_bullets[s.id] then -- to avoid double explosions
     deregister_object(s)
@@ -266,43 +282,69 @@ function kill_bullet(s)
   s.state = "killed"
   s.time_left = _bullet_def_val.death_time
   if get_value("explosive", s) then
-    create_explosion(s.x, s.y, 17+rnd(5), (s.from == my_id and 9 or 8))
-    sfx("explosion", s.x, s.y)
-    
-    add_shake(8)
-    
-    local tx = flr(s.x / 8)
-    local ty = flr(s.y / 8)
-    
-    hurt_wall(tx-1, ty-2, 7)
-    hurt_wall(tx,   ty-2, 7)
-    hurt_wall(tx+1, ty-2, 7)
-
-    hurt_wall(tx-2, ty-1, 7)
-    hurt_wall(tx-1, ty-1, 7)
-    hurt_wall(tx,   ty-1, 7)
-    hurt_wall(tx+1, ty-1, 7)
-    hurt_wall(tx+2, ty-1, 7)
-
-    hurt_wall(tx-2, ty  , 7)
-    hurt_wall(tx-1, ty  , 7)
-    hurt_wall(tx,   ty  , 7)
-    hurt_wall(tx+1, ty  , 7)
-    hurt_wall(tx+2, ty  , 7)
-
-    hurt_wall(tx-2, ty+1, 7)
-    hurt_wall(tx-1, ty+1, 7)
-    hurt_wall(tx,   ty+1, 7)
-    hurt_wall(tx+1, ty+1, 7)
-    hurt_wall(tx+2, ty+1, 7)
-
-    hurt_wall(tx-1, ty+2, 7)
-    hurt_wall(tx,   ty+2, 7)
-    hurt_wall(tx+1, ty+2, 7)
+    bullet_explosion(s)
   end
   
   if s.id then
     dead_bullets[s.id] = true
+  end
+end
+
+function bullet_explosion(s)
+  create_explosion(s.x, s.y, 18+rnd(3), (s.from == my_id and 9 or 8))
+  sfx("explosion", s.x, s.y)
+  
+  add_shake(8)
+  
+  local tx = flr(s.x / 8)
+  local ty = flr(s.y / 8)
+  
+  hurt_wall(tx-1, ty-2, 7)
+  hurt_wall(tx,   ty-2, 7)
+  hurt_wall(tx+1, ty-2, 7)
+
+  hurt_wall(tx-2, ty-1, 7)
+  hurt_wall(tx-1, ty-1, 7)
+  hurt_wall(tx,   ty-1, 7)
+  hurt_wall(tx+1, ty-1, 7)
+  hurt_wall(tx+2, ty-1, 7)
+
+  hurt_wall(tx-2, ty  , 7)
+  hurt_wall(tx-1, ty  , 7)
+  hurt_wall(tx,   ty  , 7)
+  hurt_wall(tx+1, ty  , 7)
+  hurt_wall(tx+2, ty  , 7)
+
+  hurt_wall(tx-2, ty+1, 7)
+  hurt_wall(tx-1, ty+1, 7)
+  hurt_wall(tx,   ty+1, 7)
+  hurt_wall(tx+1, ty+1, 7)
+  hurt_wall(tx+2, ty+1, 7)
+
+  hurt_wall(tx-1, ty+2, 7)
+  hurt_wall(tx,   ty+2, 7)
+  hurt_wall(tx+1, ty+2, 7)
+  
+  s.w = 17
+  s.h = 17
+  
+  local pla = all_collide_objgroup(s, "player")
+  for _, p in pairs(pla) do
+    if not p.dead then
+      hit_player(p, s)
+    end
+  end
+  
+  local enem = all_collide_objgroup(s, "enemy")
+  for _, e in pairs(enem) do
+    hit_enemy(e, s.id)
+  end
+  
+  local destr = all_collide_objgroup(s, "destructible")
+  for _, d in pairs(destr) do
+    if not d.dead then
+      kill_destructible(d, s.id)
+    end
   end
 end
 
