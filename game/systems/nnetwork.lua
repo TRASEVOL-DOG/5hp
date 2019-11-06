@@ -179,7 +179,10 @@ do -- client
       
       p.hp = d[9]
       p.score = d[12]
+--      leaderboard[id].score = p.score or 0
+      
       p.name = d[13]
+      leaderboard[id].name = p.name or ""
     end
   end
 

@@ -19,6 +19,8 @@ require("game/utility")
 c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
 c_lit = {[0]=3, 4, 5, 11, 9, 10, 1, 13, 11, 12, 14, 13, 14, 14, 14}
 
+my_name = ""
+
 function _init()
   init_network()
 
@@ -43,6 +45,12 @@ function _init()
   init_map()
   
   init_game()
+  
+  if castle then
+    my_name = castle.user.getMe().username
+  else
+    my_name = generate_name()
+  end
   
   define_menus()
   menu("mainmenu")
@@ -257,15 +265,6 @@ do -- ui stuff
   function generate_name()
     return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Branch", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant", "Flower"}
   end
-
-  if not IS_SERVER then
-    if castle then
-      my_name = castle.user.getMe().username
-    else
-      my_name = generate_name()
-    end
-  end
-
 end
 
 do -- cursor
