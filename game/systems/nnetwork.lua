@@ -74,6 +74,7 @@ do -- client
     if diff[9] and current_gm ~= diff[9] then
       current_gm = client.share[9]
       update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
+      update_menu_entry("gameover", 2, "Mode: <"..gamemode[current_gm].name..">")
     end
   end
   
@@ -154,7 +155,7 @@ do -- client
         p = create_player(id, d[1], d[2])
       end
       
-      if id ~= my_id then
+      if id ~= my_id or p.dead then
         local nx = d[1] + delay * d[3]
         local ny = d[2] + delay * d[4]
         

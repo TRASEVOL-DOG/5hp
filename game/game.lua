@@ -243,23 +243,34 @@ do -- ui stuff
         { "Close",      function() menu() end }
       },
       
-      mainmenu={
+      mainmenu = {
         { "Play",      function() menu() connecting = true end },
         { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
-        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) end },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 3, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
+        { "Settings",  function() menu("settings") end }
+      },
+      
+      mainmenu_ig = {
+        { "Play",      function() menu() connecting = true end },
+        { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
+        { "Settings",  function() menu("settings") end }
+      },
+      
+      gameover = {
+        { "Ready", function()  end},
+        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
         { "Settings",  function() menu("settings") end }
       },
   
-      settings={
+      settings = {
         { "Fullscreen",    fullscreen },
         { "Screenshake",   function(v) if v and cam then cam.shkp = v add_shake(2) return cam.shkp end return 100 end, "slider",200 },
         { "Music Volume",  music_volume,  "slider", 100 },
         { "Sfx Volume",    sfx_volume,    "slider", 100 },
         { "Back",          menu }
-      },
-
-      
+      }
     })
   end
   
