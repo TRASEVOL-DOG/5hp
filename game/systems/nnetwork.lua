@@ -71,8 +71,10 @@ do -- client
     client_sync_map(diff[7])
     client_sync_leaderboard()
     
-    current_gm = client.share[9]
-    
+    if diff[9] and current_gm ~= diff[9] then
+      current_gm = client.share[9]
+      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
+    end
   end
   
   function client_output()
@@ -115,6 +117,12 @@ do -- client
   
   function client_shoot()
     client.home[7] = (client.home[7] or 0) + 1
+  end
+  
+  function client_next_gamemode()
+    client.home[10] = (current_gm or 0) % #gamemode + 1
+    
+    update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[client.home[10]].name..">")
   end
   
   
@@ -344,6 +352,12 @@ do -- server
 
   function server_input(id, diff)
     local ho = server.homes[id]
+    
+    if diff[10] then
+      if diff[10] ~= current_gm then
+        init_gamemode(diff[10])
+      end
+    end
     
     if not ho[1] then return end
   

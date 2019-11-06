@@ -327,14 +327,21 @@ function get_menu()
   return curmenu
 end
 
-function update_menu_entry(menu, i, v)
+function update_menu_entry(menu, i, name, v)
   local m = menus[menu]
   if not m or not m[i] then return end
   
   local n = m[i]
-  if n.type == "slider" then
-    n.slidv = v
-  elseif n.type == "text_field" then
-    n.txt = v
+  
+  if name then
+    n.name = name
+  end
+  
+  if v then
+    if n.type == "slider" then
+      n.slidv = v
+    elseif n.type == "text_field" then
+      n.txt = v
+    end
   end
 end

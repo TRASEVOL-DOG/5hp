@@ -245,8 +245,9 @@ do -- ui stuff
       
       mainmenu={
         { "Play",      function() menu() connecting = true end },
+        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
-        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, my_name) end },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) end },
         { "Settings",  function() menu("settings") end }
       },
   
