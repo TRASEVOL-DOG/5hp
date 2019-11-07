@@ -5,6 +5,7 @@ require("game/systems/menu")
 
 require("game/systems/map")
 require("game/systems/gamemode")
+require("game/systems/leaderboard")
 
 require("game/objects/player")
 require("game/objects/weapons")
