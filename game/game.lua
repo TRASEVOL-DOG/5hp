@@ -5,6 +5,7 @@ require("game/systems/menu")
 
 require("game/systems/map")
 require("game/systems/gamemode")
+require("game/systems/log")
 require("game/systems/leaderboard")
 
 require("game/objects/player")
@@ -19,6 +20,8 @@ require("game/utility")
 
 c_drk = {[0]=1, 6, 1, 0, 1, 2, 6, 3, 0, 4, 5, 3, 9, 11, 13}
 c_lit = {[0]=3, 4, 5, 11, 9, 10, 1, 13, 11, 12, 14, 13, 14, 14, 14}
+
+my_name = ""
 
 function _init()
   init_network()
@@ -45,19 +48,23 @@ function _init()
   
   init_game()
   
-  define_menus()
+  if castle then
+    my_name = castle.user.getMe().username
+  else
+    my_name = generate_name()
+  end
   
-  menu("test")
+  define_menus()
+  menu("mainmenu")
 end
 
 function _update()
-  if not IS_SERVER and btnp("mouse_lb") then
-    add_shake(4)
-  end
   
   if my_id then
     cam.follow = players[my_id]
   end
+  
+  wind_maker()
   
   if current_gm ~= 0 then
   
@@ -68,14 +75,22 @@ function _update()
     update_objects()
     
     enemy_spawner()
+    loot_spawner()
+    
+    player_respawner()
     
   else
     
   end
   
-  update_loot_spawns()
+  if not IS_SERVER and get_menu() == "mainmenu" then
+    if btn("r") then
+      my_name = generate_name()
+    end
+  end
   
   update_menu()
+  update_log()
 
   update_network()  
   
@@ -103,13 +118,14 @@ function _draw()
   camera()
   
   draw_hp_ammo()
+  draw_respawn()
   
   draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
   
+  draw_log()
   draw_menu()
   
   cursor:draw()
-  
 end
 
 
@@ -133,7 +149,7 @@ do -- ui stuff
     
     -- hp bar
     
-    local flash = p.hit > 0.1
+    local flash = p.hit_timer > 0.1
     if flash then
       all_colors_to()
     end
@@ -205,7 +221,65 @@ do -- ui stuff
     end
   end
   
+  function draw_respawn()
+    local p = players[my_id]
+    if not (p and p.dead and my_respawn) then
+      return
+    end
+    
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    printp_color(14, 11, 6)
+    use_font("big")
+    
+    local y = flr(0.25 * screen_h())
+    local str = "Respawn in "..max(ceil(my_respawn), 0).."..."
+    pprint(str, (screen_w() - str_px_width(str))/2, y)
+  end
   
+  function define_menus()
+    init_menu_system({
+      test = {
+        { "Hello",      function() log("Hello!") end },
+        { "Hi",         function() log("Hi!") end },
+        { "Sfx volume", function(v) if v then v = v/100 end return (sfx_volume(v) or 0)*100 end, "slider", 100 },
+        { "Text",       function(str) log(str) end, "text_field", 12, "Hello" },
+        { "Close",      function() menu() end }
+      },
+      
+      mainmenu = {
+        { "Play",      function() menu() connecting = true end },
+        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 3, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
+        { "Settings",  function() menu("settings") end }
+      },
+      
+      mainmenu_ig = {
+        { "Play",      function() menu() connecting = true end },
+        { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
+        { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
+        { "Settings",  function() menu("settings") end }
+      },
+      
+      gameover = {
+        { "Ready", function()  end},
+        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Settings",  function() menu("settings") end }
+      },
+  
+      settings = {
+        { "Fullscreen",    fullscreen },
+        { "Screenshake",   function(v) if v and cam then cam.shkp = v add_shake(2) return cam.shkp end return 100 end, "slider",200 },
+        { "Music Volume",  music_volume,  "slider", 100 },
+        { "Sfx Volume",    sfx_volume,    "slider", 100 },
+        { "Back",          menu }
+      }
+    })
+  end
+  
+  function generate_name()
+    return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Branch", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant", "Flower"}
+  end
 end
 
 do -- cursor
@@ -317,45 +391,6 @@ do -- camera
 
 end
 
-
-function define_menus()
-  init_menu_system({
-    test = {
-      { "Hello",      function() log("Hello!") end },
-      { "Hi",         function() log("Hi!") end },
-      { "Sfx volume", function(v) if v then v = v/100 end return (sfx_volume(v) or 0)*100 end, "slider", 100 },
-      { "Text",       function(str) log(str) end, "text_field", 12, "Hello" },
-      { "Close",      function() menu() end }
-    },
---    mainmenu={
---      {"Play", function() menu_back() connecting = true end},
---      {"Player Name", function(str) my_name = str end, "text_field", 11, my_name},
---      {"Settings", function() menu("settings") end},
-----      {"Join the Castle Discord!", function() love.system.openURL("https://discordapp.com/invite/4C7yEEC") end}
---    },
---    cancel={
---      {"Go Back", function() connecting=false main_menu() end}
---    },
---    settings={
---      {"Fullscreen", fullscreen},
---      {"Screenshake", function(v) if cam then cam.shkp = v add_shake(4) return cam.shkp end return 100 end,"slider",200},
---      {"Master Volume", master_volume,"slider",100},
---      {"Music Volume", music_volume,"slider",100},
---      {"Sfx Volume", sfx_volume,"slider",100},
---      {"Back", menu_back}
---    },
---    pause={
---      {"Resume", function() menu_back() in_pause = false end},
---      {"Restart", function() menu_back() in_pause = false restarting = true end},
---      {"Settings", function() menu("settings") end},
---      {"Back to Main Menu", function() menu_back() main_menu() in_pause = false end},
---    },
---    gameover={
---      {"Restart", function() menu_back() restarting = true end},
---      {"Back to Main Menu", main_menu}
---    }
-  })
-end
 
 function get_anims()
   return {

@@ -11,7 +11,9 @@ function init_gamemode(gm)
   if gm < 1 then return end
   current_gm = gm
   leaderboard = {}
-  gamemode[gm].init()  
+  
+  log("Initializing game mode: "..gamemode[gm].name)
+  gamemode[gm].init()
 end
 
 function update_gamemode()

@@ -12,7 +12,7 @@ local interact = {}
 local draw     = {}
 
 function init_menu_system(menu_data)
-  if not menu_data or IS_SERVER then
+  if IS_SERVER or not menu_data then
     return
   end
   
@@ -55,7 +55,7 @@ function init_menu(data, name)
       merge_tables(n, {
         mlen    = o[4] or 24,
         txt     = o[5] or "",
-        w       = max(str_px_width(n.name), 24*6),
+        w       = max(str_px_width(n.name), o[4]*6),
         h       = 34
       })
     end
@@ -321,4 +321,27 @@ function menu(name)
   
   curmenu = name
   menuchange = true
+end
+
+function get_menu()
+  return curmenu
+end
+
+function update_menu_entry(menu, i, name, v)
+  local m = menus[menu]
+  if not m or not m[i] then return end
+  
+  local n = m[i]
+  
+  if name then
+    n.name = name
+  end
+  
+  if v then
+    if n.type == "slider" then
+      n.slidv = v
+    elseif n.type == "text_field" then
+      n.txt = v
+    end
+  end
 end

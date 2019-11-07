@@ -18,7 +18,7 @@ function create_player(id, x, y)
     
     name  = id.." d ",
     hp    = 10,
-    hit   = 0,
+    hit_timer = 2,
     dead  = false,
     animt = 0,
     state = "idle",
@@ -65,6 +65,15 @@ function update_player(s)
   
   if s.hit_timer > 0 then
     s.hit_timer = s.hit_timer - dt()
+  end
+  
+  if s.hp > 10 then
+    s.hp = max(s.hp - dt(), 10)
+  end
+  
+  if s.dead then
+    update_corpse(s)
+    return
   end
   
 
@@ -120,13 +129,13 @@ function draw_player(s)
   palt(6, false)
   palt(1, true)
   
-  local flash = s.hit_timer > 0.1
+  local flash = s.hit_timer > 0.4 or s.hit_timer % 0.2 < 0.1
   if flash then
     all_colors_to(14)
   end
   
   local spi, dy
-  if state == "dead" then
+  if s.dead then
     spi = 142
     dy = -1
   else
@@ -206,14 +215,97 @@ function player_movement(s)
   s.y = ny
 end
 
+function update_corpse(s)
+  s.diff_x = lerp(s.diff_x, 0, 2*dt())
+  s.diff_y = lerp(s.diff_y, 0, 2*dt())
+
+  s.vx = lerp(s.vx, 0, dt())
+  s.vy = lerp(s.vy, 0, dt())
+  
+  local nx = s.x + s.vx * dt()
+  local ny = s.y + s.vy * dt()
+  
+  -- collision check
+  local col = check_mapcol(s, nx, s.y)
+  if col then
+    local cx = nx + col.dir_x * s.w/2
+    local tx = cx - cx % 8 + 4
+    nx = tx - col.dir_x * (4.25 + s.w/2)
+    
+    s.vx = -s.vx
+  end
+  
+  local col = check_mapcol(s, s.x, ny)
+  if col then
+    local cy = ny + col.dir_y * s.h/2
+    local ty = cy - cy % 8 + 4
+    ny = ty - col.dir_y * (4.25 + s.h/2)
+    
+    s.vy = -s.vy
+  end
+  
+  -- apply new positions
+  s.x = nx
+  s.y = ny
+end
+
 function hit_player(s, b)
-  -- todo
+  if s.hit_timer > 0 or s.dead then
+    return
+  end
+  
+  -- knockback
+  local a = atan2(b.x - s.x, b.y - s.y)
+  s.vx = - 70 * cos(a)
+  s.vy = - 70 * sin(a)
+  
+  s.hp = s.hp - b.damage
+  s.hit_timer = 0.5
+  
+  if s.hp <= 0 then
+    kill_player(s, b.from)
+  end
 end
 
 function heal_player(s)
   s.hp = min(s.hp + 5, 20)
 end
 
+
+local player_respawns = {}
+function player_respawner()
+  if IS_SERVER then
+    for id, p in pairs(players) do
+      if p.dead then
+        player_respawns[id] = (player_respawns[id] or 5) - dt()
+        if player_respawns[id] < 0 then
+          -- respawn player
+          respawn_player(p)
+          player_respawns[id] = nil
+        end
+      end
+    end
+  else
+    local p = players[my_id]
+    if p and p.dead then
+      my_respawn = (my_respawn or 5) - dt()
+    else
+      my_respawn = nil
+    end
+  end
+end
+
+function respawn_player(s)
+  s.dead = false
+  s.hp = 10
+  s.hit_timer = 2
+
+  local p = get_player_spawn()
+  s.x, s.y = p.x, p.y
+  
+  s.weapon = create_weapon("gun")
+  s.state = "idle"
+end
 
 function resurrect_player(s)
   s.dead = false
@@ -222,7 +314,27 @@ end
 function kill_player(s, killer_id)
   s.dead = killer_id or true
   
+  -- killer_id can be nil: if killer is AI
+  
+  s.vx = s.vx * 5
+  s.vy = s.vy * 5
+  
   s.animt = 0.49
+  
+  local k = killer_id and players[killer_id]
+  if k and killer_id == my_id and s.id == my_id then
+    new_log("You killed yourself!", 8)
+  elseif k and killer_id == my_id then
+    new_log("You killed "..s.name.."!", 10)
+  elseif k and s.id == my_id then
+    new_log("You got killed by "..k.name..".", 8)
+  elseif k then
+    new_log(s.name.." got killed by "..k.name..".", 8)
+  elseif s.id == my_id then
+    new_log("You died.", 8)
+  else
+    new_log(s.name.." died.", 11)
+  end
   
   if s.id == my_id then
     add_shake(5)
@@ -232,7 +344,7 @@ function kill_player(s, killer_id)
   end
 end
 
-function forget_player(s, fx)
+function forget_player(s)
   if not IS_SERVER then
     for i = 1, 16 do
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))

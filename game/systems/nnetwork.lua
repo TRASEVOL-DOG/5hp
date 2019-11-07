@@ -71,8 +71,13 @@ do -- client
     client_sync_map(diff[7])
     client_sync_leaderboard()
     
-    current_gm = client.share[9]
-    
+    if diff[9] and current_gm ~= diff[9] then
+      current_gm = client.share[9]
+      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
+      update_menu_entry("gameover", 2, "Mode: <"..gamemode[current_gm].name..">")
+      
+      new_log("Now playing "..gamemode[current_gm].name.."!")
+    end
   end
   
   function client_output()
@@ -80,6 +85,14 @@ do -- client
     
     local my_player = players[client.id] or players[0]
     if my_player then
+      if my_player.dead then
+        client.home[2] = nil
+        client.home[3] = nil
+        client.home[4] = nil
+        client.home[5] = nil
+        return
+      end
+      
       client.home[2] = my_player.x
       client.home[3] = my_player.y
       client.home[4] = my_player.dx_input
@@ -109,6 +122,12 @@ do -- client
     client.home[7] = (client.home[7] or 0) + 1
   end
   
+  function client_next_gamemode()
+    client.home[10] = (current_gm or 0) % #gamemode + 1
+    
+    update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[client.home[10]].name..">")
+  end
+  
   
   function client_sync_players()
     local data = client.share[2]
@@ -124,12 +143,21 @@ do -- client
     for id, d in pairs(data) do
       local p = players[id]
       
+      if p and p.dead and d[9] >= 10 then
+        for i = 1, 16 do
+          create_smoke(p.x, p.y, 1, nil, 14, i/16+rnd(0.1))
+        end
+        
+        p.x = d[1]
+        p.y = d[2]
+      end
+      
       if not p then
         log("New player: id #"..id)
         p = create_player(id, d[1], d[2])
       end
       
-      if id ~= my_id then
+      if id ~= my_id or p.dead then
         local nx = d[1] + delay * d[3]
         local ny = d[2] + delay * d[4]
         
@@ -162,7 +190,10 @@ do -- client
       
       p.hp = d[9]
       p.score = d[12]
+--      leaderboard[id].score = p.score or 0
+      
       p.name = d[13]
+      leaderboard[id].name = p.name or ""
     end
   end
 
@@ -175,22 +206,20 @@ do -- client
       
       if not b then
         local found
-        if d[5] == my_id then
-          for bu in group("bullet") do
-            if bu.from == my_id and not bu.id then
-              bu.id = id
-              bullets[id] = bu
-              dead_bullets[id] = nil
-              b = bu
-              
-              found = true
-            end
+        for bu in group("bullet") do
+          if bu.from == d[5] and not bu.id then
+            bu.id = id
+            bullets[id] = bu
+            dead_bullets[id] = nil
+            b = bu
+            
+            found = true
+            break
           end
         end
       
         if not found then
-          local b_type, g_type = d[6] % 32, flr(d[6] / 32)
-          b = create_bullet(d[5], id, _type, atan2(d[3], d[4]))
+          b = create_bullet(d[5], id, d[6], atan2(d[3], d[4]))
           if not b then goto skip_sync end
         end
       end
@@ -326,6 +355,12 @@ do -- server
 
   function server_input(id, diff)
     local ho = server.homes[id]
+    
+    if diff[10] then
+      if diff[10] ~= current_gm then
+        init_gamemode(diff[10])
+      end
+    end
     
     if not ho[1] then return end
   

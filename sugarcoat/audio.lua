@@ -108,7 +108,7 @@ local function unload_music(id)
 end
 
 
-local function sfx(id, distance, stereo_angle, pitch)
+local function sfx(id, distance, stereo_angle, pitch, volume)
   local s = _sfx_map[id]
   
   if not s then
@@ -119,9 +119,11 @@ local function sfx(id, distance, stereo_angle, pitch)
   distance = distance or 0
   stereo_angle = stereo_angle or 0
   pitch = pitch or 1
+  volume = volume or 1
   
-  s.chnk:setPosition(distance * sugar.maths.cos(stereo_angle + 0.25), 0, 1)
+  s.chnk:setPosition(distance * sugar.maths.cos(stereo_angle + 0.25), distance * sugar.maths.sin(stereo_angle + 0.25), 1)
   s.chnk:setPitch(pitch)
+  s.chnk:setVolume(mid(_sfx_volume * volume, 0, 1))
   
   if s.chnk:isPlaying() then
     s.chnk:seek(0)

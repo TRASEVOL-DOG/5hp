@@ -2,7 +2,7 @@
 
 local anim_info
 
-function draw_anim(x,y,object,state,t,flipx,flipy)
+function draw_anim(x, y, object, state, t, flipx, flipy)
   local state = state or "only"
   local info  = anim_info[object][state]
   
@@ -16,7 +16,7 @@ function draw_anim(x,y,object,state,t,flipx,flipy)
   spr(info.sprites[step], x - w*4, y - h*4, w, h, flipx, flipy)
 end
 
-function draw_anim_rotated(x,y,object,state,t,r,flipx,flipy)
+function draw_anim_rotated(x, y, object, state, t, r, flipx, flipy)
   local state = state or "only"
   local info  = anim_info[object][state]
   
@@ -43,12 +43,17 @@ function draw_self(s)
 end
 
 function anim_step(object, state, t)
- local info=anim_info[object][state]
+ local info = anim_info[object][state]
  
- local v=flr(t/info.dt%#info.sprites)
- local k=flr((t/info.dt)/#info.sprites)
+ local v = flr(t / info.dt % #info.sprites)
+ local k = flr((t / info.dt) / #info.sprites)
  
- return v,(t%info.dt<dt()),k
+ return v, (t%info.dt<dt()), k
+end
+
+function anim_length(object, state)
+  local info = anim_info[object][state]
+  return info.dt * #info.sprites
 end
 
 function init_anims(info)

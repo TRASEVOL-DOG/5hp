@@ -27,7 +27,7 @@ function init_loot(weapon_spawns, heal_spawns, crown)
   end
 end
 
-function update_loot_spawns()
+function loot_spawner()
   if not IS_SERVER then return end
   
   local ti = t()
@@ -92,7 +92,7 @@ function update_loot(s)
   s.animt = s.animt + dt()
   
   local col = collide_objgroup(s, "player")
-  if col then
+  if col and not col.dead then
     loot_effect[s.type](s, col)
     
     respawn_loot(s)

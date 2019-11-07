@@ -17,6 +17,7 @@ function create_enemy(id, x, y)
     
     target = 0,
     clock  = 0,
+    damage = 2,
     
     animt    = rnd(10),
     state    = "idle",
@@ -62,10 +63,10 @@ function update_enemy(s)
   if s.clock < 0 then
     s.clock = 1 + rnd(1)
   
-    local player, d = nil, sqr(64)
+    local player, d = nil, sqr(96)
     for p in group("player") do
       local sqd = sqrdist(p.x - s.x, p.y - s.y)
-      if sqd < d then
+      if sqd < d and not p.dead then
         player = p
         d = sqd
       end
