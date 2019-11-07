@@ -5,6 +5,7 @@ require("game/systems/menu")
 
 require("game/systems/map")
 require("game/systems/gamemode")
+require("game/systems/log")
 
 require("game/objects/player")
 require("game/objects/weapons")
@@ -88,6 +89,7 @@ function _update()
   end
   
   update_menu()
+  update_log()
 
   update_network()  
   
@@ -119,6 +121,7 @@ function _draw()
   
   draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
   
+  draw_log()
   draw_menu()
   
   cursor:draw()

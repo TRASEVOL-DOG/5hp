@@ -75,6 +75,8 @@ do -- client
       current_gm = client.share[9]
       update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
       update_menu_entry("gameover", 2, "Mode: <"..gamemode[current_gm].name..">")
+      
+      new_log("Now playing "..gamemode[current_gm].name.."!")
     end
   end
   

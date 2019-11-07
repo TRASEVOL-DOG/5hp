@@ -321,6 +321,21 @@ function kill_player(s, killer_id)
   
   s.animt = 0.49
   
+  local k = killer_id and players[killer_id]
+  if k and killer_id == my_id and s.id == my_id then
+    new_log("You killed yourself!", 8)
+  elseif k and killer_id == my_id then
+    new_log("You killed "..s.name.."!", 10)
+  elseif k and s.id == my_id then
+    new_log("You got killed by "..k.name..".", 8)
+  elseif k then
+    new_log(s.name.." got killed by "..k.name..".", 8)
+  elseif s.id == my_id then
+    new_log("You died.", 8)
+  else
+    new_log(s.name.." died.", 11)
+  end
+  
   if s.id == my_id then
     add_shake(5)
     sfx("get_hit_player", s.x, s.y)
