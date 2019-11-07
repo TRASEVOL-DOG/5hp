@@ -34,6 +34,7 @@ do -- Weapons --
   -- Heavy Rifle        = "hr"
   -- Flamethrower       = "ft"
   -- Bazooka            = "bz"
+  -- Burster            = "br"
 
   -- TODO
   -- {"Mini Gun"}
@@ -288,6 +289,38 @@ do -- Weapons --
                           ammo        = 10,
                           arm_sprite  = 0x267,
                           loot_sprite = 0x247,
+                          shake_mult  = 2
+                        }
+                      end
+
+    ,do_shoot =       function(p) -- determine if weapon should shoot this frame
+                        local w = p.weapon
+
+                        if p.shoot_trigger and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        end
+                      end
+
+    ,shoot  =         function(p)
+                        local w = p.weapon
+                        w.t_last_shot = t()
+                        local params = {type = w.type}
+                        create_bullet(p.id, nil, w.bullet_type, p.angle, nil)
+                        w.ammo = w.ammo - 1
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
+                      end
+  }
+  
+  -- Burster
+  weapons.br = {
+    get_attributes =  function()
+                        return {
+                          id   = "br",
+                          name = "Burster",
+                          bullet_type = 7,
+                          fire_rate   = 1.2,
+                          ammo        = 16,
+                          arm_sprite  = 0x268,
+                          loot_sprite = 0x248,
                           shake_mult  = 2
                         }
                       end
