@@ -95,7 +95,7 @@ end
 local _sfx = sfx
 function sfx(id, x, y, pitch, volume)
   if not x then
-    _sfx(id, 0, 0, pitch)
+    _sfx(id, 0, 0, pitch, (volume or 100)/100)
     return
   end
 
@@ -104,6 +104,6 @@ function sfx(id, x, y, pitch, volume)
   x = x - camx - scrw/2
   y = y - camy - scrh/2
   
-  _sfx(id, dist(x, y), atan2(x, y), pitch)
+  _sfx(id, dist(x, y) / 32, atan2(x, y) - 0.25, pitch, (volume or 100)/100)
 end
 

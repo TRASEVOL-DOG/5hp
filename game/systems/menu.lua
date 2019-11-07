@@ -12,7 +12,7 @@ local interact = {}
 local draw     = {}
 
 function init_menu_system(menu_data)
-  if not menu_data or IS_SERVER then
+  if IS_SERVER or not menu_data then
     return
   end
   

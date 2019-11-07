@@ -189,3 +189,78 @@ do -- explosion
 
 end
 
+
+do -- wind
+
+  local wind_dir = 1
+  local last_sfx = nil
+  local timer, timerb, timerc = 0, 0, 0
+  function wind_maker()
+    if IS_SERVER then return end
+    
+    timer = timer - dt()
+    if timer < 0 then
+      create_wind()
+      timer = 0.01 + rnd(0.14)
+    end
+    
+    timerb = timerb - dt()
+    if timerb <= 0 then
+      wind_dir = -wind_dir
+      timerb = 5 + rnd(30)
+    end
+    
+    timerc = timerc - dt()
+    if timerc <= 0 then
+      sfx("wind_"..pick({'a', 'b', 'c', 'd', 'e'}), nil, nil, 0.7 + rnd(0.4), 5+rnd(10))
+      timerc = 1.5 + rnd(1)
+    end
+  end
+  
+  function create_wind()
+    local cx, cy = get_camera_pos()
+    
+    local x, y, m1, m2
+    repeat
+      x = flr((cx + rnd(screen_w() + 32) - 16) / 8)
+      y = flr((cy + rnd(screen_h() + 32) - 16) / 8)
+      m1 = get_maptile(x, y)
+      m2 = get_maptile(x + wind_dir, y)
+    until m1 and m2 and m1 ~= 2 and m2 ~=2
+    x = x * 8 + 2 + rnd(4)
+    y = y * 8 + 2 + rnd(4)
+    
+    local s = {
+      x = x,
+      y = y,
+      dir   = wind_dir,
+      state = pick{'a', 'b', 'c'},
+      animt = 0,
+      flipx = wind_dir < 0,
+      flipy = chance(50),
+      update = update_wind,
+      draw   = draw_wind,
+      regs   = {"to_update", "to_draw0", "wind"}
+    }
+    
+    s.life = anim_length("wind", s.state)
+    
+    register_object(s)
+    return s
+  end
+  
+  function update_wind(s)
+    s.animt = s.animt + dt()
+    
+    if s.animt >= s.life then
+      deregister_object(s)
+    end
+  end
+  
+  function draw_wind(s)
+    local x = s.x + s.dir * s.animt/0.06 * 0.5
+    draw_anim(x, s.y, "wind", s.state, s.animt, s.flipx, s.flipy)
+  end
+
+end
+

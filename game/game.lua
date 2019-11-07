@@ -57,13 +57,12 @@ function _init()
 end
 
 function _update()
-  if not IS_SERVER and btnp("mouse_lb") then
-    add_shake(4)
-  end
   
   if my_id then
     cam.follow = players[my_id]
   end
+  
+  wind_maker()
   
   if current_gm ~= 0 then
   
@@ -82,7 +81,7 @@ function _update()
     
   end
   
-  if get_menu() == "mainmenu" then
+  if not IS_SERVER and get_menu() == "mainmenu" then
     if btn("r") then
       my_name = generate_name()
     end
