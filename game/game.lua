@@ -125,6 +125,10 @@ function _draw()
   draw_log()
   draw_menu()
   
+  if get_menu() == "mainmenu" then
+    draw_title()
+  end
+  
   cursor:draw()
 end
 
@@ -251,7 +255,8 @@ do -- ui stuff
         { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 3, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
-        { "Settings",  function() menu("settings") end }
+        { "Settings",  function() menu("settings") end },
+        params = { anc_y = 0.7 }
       },
       
       mainmenu_ig = {
@@ -279,6 +284,84 @@ do -- ui stuff
   
   function generate_name()
     return pick{"Nice", "Sir", "Sire", "Miss", "Madam", "Ever", "Good", "Dandy", "Green", "Lead", "Gold", "Dirt", "Dust", "Joli", "Rouge", "Belle", "Beau", "Haut", "Grand", "Riche"} .." ".. pick{"Sir", "Madam", "Dandy", "Green", "Jewel", "Trip", "Gun", "Lead", "Tree", "Guns", "Shot", "Fate", "Play", "Branch", "Grass", "Sprout", "Seeds", "Leaf", "Mark", "Groom", "Bloom", "Gems", "Crown", "Roses", "Tulip", "Acorn", "Fruit", "Plant", "Flower"}
+  end
+  
+  function draw_title()
+    local scrnw, scrnh = screen_size()
+    local c0,c1,c2 = 14, 9, 6
+    
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    printp_color(c0, c1, c2)
+    
+    use_font("big")
+    local str = "Trasevol_Dog and Eliott present"
+    pprint(str, scrnw/2 - str_px_width(str)/2, -1)
+    
+    spritesheet("title")
+    
+    local x = 0.5 * scrnw - 9 * 9
+    local y = 0.25 * scrnh - 14
+    
+    for i = 0, 9 do
+      local s = (i*2)%16 + flr(i*2/16)*32
+      local v = t() * 0.25 + i * 0.1
+      
+      local dy = 2*(4+3*sin(t()*0.13+i*0.13))*cos(v)
+      local yy = y + dy
+      local a = 0.03*cos(v+0.25)
+      
+      pal(14, 6)
+      aspr(s, x, yy-1, a, 2, 2)
+      aspr(s, x-1, yy, a, 2, 2)
+      aspr(s, x+1, yy, a, 2, 2)
+      aspr(s, x-1, yy+1, a, 2, 2)
+      aspr(s, x+1, yy+1, a, 2, 2)
+      aspr(s, x, yy+2, a, 2, 2)
+
+      pal(14,10)
+      aspr(s, x, yy+1, a, 2, 2)
+      pal(14,14)
+      aspr(s, x, yy, a, 2, 2)
+      
+      x = x + 18
+    end
+    
+    local x = 0.5 * scrnw - 7 * 9
+    local y = 0.25 * scrnh + 14
+    
+    for i = 0,7 do
+      local s = 64+ (i*2)%16 + flr(i*2/16)*32
+      local v = t()*0.25+(i+0.5)*0.1
+      
+      local dy = 2*(4+3*sin(t()*0.13+i*0.13))*cos(v)
+      local yy = y + dy
+      local a = 0.03*cos(v+0.25)
+      
+      pal(14, 6)
+      
+      aspr(s, x, yy-1, a, 2, 2)
+      aspr(s, x-1, yy, a, 2, 2)
+      aspr(s, x+1, yy, a, 2, 2)
+      aspr(s, x-1, yy+1, a, 2, 2)
+      aspr(s, x+1, yy+1, a, 2, 2)
+      aspr(s, x, yy+2, a, 2, 2)
+      
+      pal(14,10)
+      aspr(s, x, yy+1, a, 2, 2)
+      pal(14,14)
+      aspr(s, x, yy, a, 2, 2)
+      
+      x = x + 18
+    end
+    
+    pal(14, 14)
+    
+    spritesheet("sprites")
+    
+    str = "@Trasevol_Dog"
+    pprint(str, scrnw - str_px_width(str) - 4, scrnh-32)
+    str = "@Eliott_MacR"
+    pprint(str, scrnw - str_px_width(str) - 4, scrnh-16)
   end
 end
 

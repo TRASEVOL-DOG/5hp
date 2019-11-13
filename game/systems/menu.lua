@@ -67,12 +67,18 @@ function init_menu(data, name)
   
   local spacing = 8
   
-  m.params = {
+  if data.params then
+    m.params = copy_table(data.params)
+  else
+    m.params = {}
+  end
+  
+  merge_tables(m.params, {
     chosen  = nil,
     w       = maxw + 32,
     h       = toth + (#m-1) * spacing,
     spacing = spacing
-  }
+  })
   
   menus[name] = m
 end
