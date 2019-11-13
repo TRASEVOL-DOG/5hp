@@ -10,6 +10,7 @@ do -- General init and update
   delay = 0
   my_id = nil
   connected = false
+  connecting = false
   
   function init_network()
     if IS_SERVER then
@@ -81,7 +82,11 @@ do -- client
   end
   
   function client_output()
-    client.home[1] = t()
+    if connecting then
+      client.home[1] = t()
+    else
+      client.home[1] = nil
+    end
     
     local my_player = players[client.id] or players[0]
     if my_player then
