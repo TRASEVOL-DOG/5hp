@@ -1,20 +1,21 @@
 
 function draw_leaderboard()
-  
+
+  use_font("small")  
   if not gm_values.leaderboard then return end
-    
+  
+  local leaderboard = {}
   for i, l in pairs(gm_values.leaderboard) do
-    if not players[i] then gm_values.leaderboard[i] = nil end 
+    if players[i] then leaderboard[i] = l end 
   end
   
   local sx, sy = screen_size()
-  local leaderboard = gm_values.leaderboard
   local size = count(leaderboard)
   
   local l_t = " Leaderboard  "
   local l_w = str_px_width(l_t)
   
-  local width = str_px_width(get_longest_line())
+  local width = str_px_width(get_longest_line(leaderboard))
   local w = max(str_px_width(l_t), str_px_width("  ") + width) + 6  
   
   
@@ -88,12 +89,16 @@ function t_pprint(str, x, y, bool) -- will print player's rank in another color 
   printp_color(14, 11, 6)
 end
 
-function get_longest_line()
+function get_longest_line(leaderboard)
   local n = ""
   local mw = 0
   local j = 0
   local s = 0
-  local leaderboard = gm_values.leaderboard or {}
+  -- local leaderboard = gm_values.leaderboard or {}
+  -- local leaderboard = {}
+  -- for i, l in pairs(gm_values.leaderboard) do
+    -- if players[i] then leaderboard[i] = l end 
+  -- end
   
   for i, p in pairs(leaderboard) do
     local w = str_px_width(j..(players[i].name or "")..(p.score or 0))
@@ -110,13 +115,14 @@ end
 function get_ordered_tab(mode, tab, key)
   local copy_t = copy_table(tab)
   local sorted_list = {}
-  
   if mode == "descending" then    
+      if writep then new_log("Begin") end
     while count(copy_t) > 0 do
       local mx, i = get_max(copy_t, key)
-      add(sorted_list, tab[i])
+      sorted_list[#sorted_list + 1] = tab[i]
       copy_t[i] = nil
     end  
+    if writep then new_log("End") end
   elseif mode == "ascending" then
   end
   
@@ -135,11 +141,11 @@ function get_max(tab, key)
   local mx
   local index
   for i, l in pairs(tab) do
-    mx = mx or l.key    
+    mx = mx or l[key]    
     index = index or i   
-    if l and l.key then 
-      if l.key > mx then 
-        mx = l.key 
+    if l[key] then 
+      if l[key] > mx then 
+        mx = l[key] 
         index = i 
       end    
     end    

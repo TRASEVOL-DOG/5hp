@@ -72,12 +72,12 @@ do -- client
     client_sync_map(diff[7])
     client_sync_gm_values()
     
-    if diff[9] and current_gm ~= diff[9] then
-      current_gm = client.share[9]
-      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
-      update_menu_entry("gameover", 2, "Mode: <"..gamemode[current_gm].name..">")
+    if diff[9] and gm_values.gm ~= diff[9] then
+      gm_values.gm = client.share[9]
+      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
+      update_menu_entry("gameover", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
       
-      new_log("Now playing " .. gamemode[current_gm].name .. "!")
+      new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
     end
   end
   
@@ -128,7 +128,7 @@ do -- client
   end
   
   function client_next_gamemode()
-    client.home[10] = (current_gm or 0) % #gamemode + 1
+    client.home[10] = (gm_values.gm or 0) % #gamemode + 1
     
     update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[client.home[10]].name..">")
   end
@@ -367,7 +367,7 @@ do -- server
     local ho = server.homes[id]
     
     if diff[10] then
-      if diff[10] ~= current_gm then
+      if diff[10] ~= gm_values.gm then
         init_gamemode(diff[10])
       end
     end
@@ -410,7 +410,7 @@ do -- server
     
     server_out_gm_values()
     
-    server.share[9] = current_gm
+    server.share[9] = gm_values.gm or 0
   end
   
   function server_new_client(id)

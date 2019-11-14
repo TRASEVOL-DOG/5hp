@@ -16,7 +16,7 @@ function create_player(id, x, y)
     hit_timer = 0,
     angle     = 0,
     
-    name  = id.." d ",
+    name  = "Someone",
     hp    = 10,
     hit_timer = 2,
     dead  = false,

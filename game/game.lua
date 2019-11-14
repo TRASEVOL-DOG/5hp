@@ -68,7 +68,7 @@ function _update()
   
   wind_maker()
   
-  if current_gm ~= 0 then
+  if (gm_values.gm or 0) ~= 0 then
   
     update_gamemode()
     

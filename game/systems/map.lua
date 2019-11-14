@@ -81,7 +81,7 @@ function init_map()
           y = y*8+4
         }
         
-        if m == 7 and current_gm == 1 and not crown then
+        if m == 7 and gm_values.gm == 1 and not crown then
           if map_data[y][x+1] == 7 then p.x = p.x + 4 end
           if map_data[y+1][x] == 7 then p.y = p.y + 4 end
           crown = p

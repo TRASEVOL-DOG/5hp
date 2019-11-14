@@ -1,7 +1,6 @@
 -- Gamemode dictates the start, update and end state of the games
 
 gamemode = {}
--- current_gm = 0
 
 gm_values = {}
 
@@ -10,10 +9,10 @@ leaderboard_is_large = true
 function init_gamemode(gm)
   if not IS_SERVER then return end
   if gm < 1 then return end
-  current_gm = gm
+  gm_values.gm = gm
   
-  log("Initializing game mode: "..gamemode[gm].name)
-  -- log(gm_values.leaderboard and count(gm_values.leaderboard) or "nil")
+  log("Initializing game mode: " .. gamemode[gm].name)
+  
   gamemode[gm].init()
 end
 
@@ -26,10 +25,8 @@ function update_gamemode()
     return 
   end
   
-  -- log(gm_values.leaderboard and count(gm_values.leaderboard) or "nil")
-  
-  if gamemode and gamemode[current_gm] and gamemode[current_gm].update then
-    gamemode[current_gm].update()
+  if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
+    gamemode[gm_values.gm].update()
   end
   
 end
@@ -39,8 +36,9 @@ function draw_gamemode_infos()
   -- draw the leaderboard
   draw_leaderboard()
   
-  -- write the game mode name (probably in the middle of the top part of the screen
-  local str = current_gm and ("Playing "..gamemode[current_gm].name) or "Waiting for server..."
+  -- write the game mode name
+  use_font("small")
+  local str = gm_values.gm and ("Playing "..gamemode[gm_values.gm].name) or ""
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
   
   if gamemode == 1 then draw_crown_indicator() end
@@ -48,18 +46,17 @@ function draw_gamemode_infos()
 end
 
 function game_over(sorted_lb)
-  current_gm = 0
   gm_values = {}
 end
 
 function notify_gamemode_new_p(id_player, score)
-  if SERVER_ONLY and not id_player then return end
-  gamemode[current_gm].new_p(id_player, score)  
+  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  gamemode[gm_values.gm].new_p(id_player, score)  
 end
 
 function notify_gamemode_deleted_p(id_player)
-  if SERVER_ONLY and not id_player then return end
-  gamemode[current_gm].deleted_p(id_player)  
+  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  gamemode[gm_values.gm].deleted_p(id_player)  
 end
 
 do
@@ -124,7 +121,9 @@ do
       end,
     
       update = function()
-        
+        for i, l in pairs(gm_values.leaderboard) do
+          l.score = l.score + dt()
+        end
       end,
       
       new_p = function(id_player, score)

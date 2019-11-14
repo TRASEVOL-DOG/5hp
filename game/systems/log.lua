@@ -3,9 +3,9 @@ local logs = {}
 local font = "big"
 
 function new_log(str, c)
-  if IS_SERVER then return end
-
-  use_font(font)
+  if IS_SERVER or (logs[#logs] and logs[#logs].str == str) then return end
+  
+  use_font(font)  
   add(logs, {
     str = str,
     c   = c,
@@ -13,6 +13,7 @@ function new_log(str, c)
     w   = str_px_width(str),
     l   = 5
   })
+  
 end
 
 function update_log()
