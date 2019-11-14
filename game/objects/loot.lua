@@ -150,7 +150,9 @@ loot_effect = {
     heal_player(p)
   end,
   
-  [3] = function(s, p) -- looting crown
-  
+  [3] = function(s, p) -- looting crown  
+    if IS_SERVER then
+      gm_values.crowned_player = p.id
+    end
   end
 }

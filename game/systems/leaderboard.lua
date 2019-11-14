@@ -1,14 +1,22 @@
 
 function draw_leaderboard()
   
+  if not gm_values.leaderboard then return end
+    
+  for i, l in pairs(gm_values.leaderboard) do
+    if not players[i] then gm_values.leaderboard[i] = nil end 
+  end
+  
   local sx, sy = screen_size()
-  local size = count(players)
+  local leaderboard = gm_values.leaderboard
+  local size = count(leaderboard)
   
   local l_t = " Leaderboard  "
   local l_w = str_px_width(l_t)
   
   local width = str_px_width(get_longest_line())
   local w = max(str_px_width(l_t), str_px_width("  ") + width) + 6  
+  
   
   local y = 8
   
@@ -30,39 +38,44 @@ function draw_leaderboard()
     
   end
   -- if small and player >  5th, will display 3 first, "..." + the player on the 5th line
-  
-  local tab = count(leaderboard) > 0 and get_ordered_tab("descending", leaderboard, "score") or {}
-  local my_rank = get_rank(tab, my_id)
-  
-  if leaderboard_is_large or size < 6 then
-  -- if big, will display everything  
-    for i = 1, size do
-      local l = tab[i]    
-      local str = " "..i.."."..(l.name or "").." ("..l.score..") "
-      t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - width/2 , y + (i-1)*8.8 + 9 * (leaderboard_is_large and 1 or -1) ,(i==my_rank) )
+  if count(leaderboard) > 0 then
+    for i, l in pairs(leaderboard) do
+      l.name = players[i].name
     end
-  else    
-    for i = 1, 3 do
-      local l = tab[i]    
-      local str = i.."."..(l.name or "").." ("..l.score..") "
-      t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
-    end    
-  
-    -- if small and player <= 5th, will display 5 first
-    if my_rank < 6 then     
-      for i = 4, 5 do
-        local l = tab[i]        
+    
+    local tab = get_ordered_tab("descending", leaderboard, "score") or {}
+    local my_rank = get_rank(tab, my_id)
+    
+    if leaderboard_is_large or size < 6 then
+    -- if big, will display everything  
+      for i = 1, size do
+        local l = tab[i]    
+        local str = " "..i.."."..(l.name or "").." ("..l.score..") "
+        t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - width/2 , y + (i-1)*8.8 + 9 * (leaderboard_is_large and 1 or -1) ,(i==my_rank) )
+      end
+    else    
+      for i = 1, 3 do
+        local l = tab[i]    
         local str = i.."."..(l.name or "").." ("..l.score..") "
         t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
+      end    
+    
+      -- if small and player <= 5th, will display 5 first
+      if my_rank < 6 then     
+        for i = 4, 5 do
+          local l = tab[i]        
+          local str = i.."."..(l.name or "").." ("..l.score..") "
+          t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
+        end
+      else
+        -- 4th
+        t_pprint("...", sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (4-1)*8.8 - 9 ,(i==my_rank) )
+        
+        -- 5th
+        local l = tab[5]        
+        local str = "5".."."..(l.name or "").." ("..l.score..") "
+        t_pprint(str  , sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (5-1)*8.8 - 9 ,(i==my_rank) )    
       end
-    else
-      -- 4th
-      t_pprint("...", sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (4-1)*8.8 - 9 ,(i==my_rank) )
-      
-      -- 5th
-      local l = tab[5]        
-      local str = "5".."."..(l.name or "").." ("..l.score..") "
-      t_pprint(str  , sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (5-1)*8.8 - 9 ,(i==my_rank) )    
     end
   end
 end
@@ -80,11 +93,13 @@ function get_longest_line()
   local mw = 0
   local j = 0
   local s = 0
+  local leaderboard = gm_values.leaderboard or {}
+  
   for i, p in pairs(leaderboard) do
-    local w = str_px_width(j..(p.name or "")..(p.score or 0))
+    local w = str_px_width(j..(players[i].name or "")..(p.score or 0))
     if mw < w then
       mw = w 
-      n = p.name
+      n = players[i].name
       j = i
       s = p.score
     end
@@ -133,8 +148,8 @@ function get_max(tab, key)
 end
 
 function get_rank(lb, id)
-  if not leaderboard or not leaderboard[id] or not lb then return end
+  if not players or not players[id] or not lb then return end
   for i = 1, #lb do
-    if lb[i].name == leaderboard[id].name then return i end
+    if lb[i].name == players[id].name then return i end
   end
 end

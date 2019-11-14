@@ -69,14 +69,14 @@ do -- client
     client_sync_enemies()
     
     client_sync_map(diff[7])
-    client_sync_leaderboard()
+    client_sync_gm_values()
     
     if diff[9] and current_gm ~= diff[9] then
       current_gm = client.share[9]
       update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[current_gm].name..">")
       update_menu_entry("gameover", 2, "Mode: <"..gamemode[current_gm].name..">")
       
-      new_log("Now playing "..gamemode[current_gm].name.."!")
+      new_log("Now playing " .. gamemode[current_gm].name .. "!")
     end
   end
   
@@ -190,10 +190,14 @@ do -- client
       
       p.hp = d[9]
       p.score = d[12]
---      leaderboard[id].score = p.score or 0
+      
       
       p.name = d[13]
-      leaderboard[id].name = p.name or ""
+      
+      -- notify_gamemode_new_p(id, p.score)
+      -- gm_values.leaderboard = gm_values.leaderboard or {}      
+      -- gm_values.leaderboard[id] = {name = p.name or "", score = p.score or 0}
+      
     end
   end
 
@@ -329,9 +333,10 @@ do -- client
     end
   end
   
-  function client_sync_leaderboard()
-    if not client.share[8] then return end        
-    client.share[8] = leaderboard
+  function client_sync_gm_values()
+    if not client.share[8] then return end
+    log("here")
+    gm_values = client.share[8]
   end
   
 end
@@ -398,7 +403,7 @@ do -- server
     
     server.share[7] = map_data
     
-    server_out_leaderboard()
+    server_out_gm_values()
     
     server.share[9] = current_gm
   end
@@ -517,9 +522,9 @@ do -- server
     end
   end
   
-  function server_out_leaderboard()
-    if not leaderboard then return end    
-    server.share[8] = leaderboard    
+  function server_out_gm_values()
+    if not gm_values then return end    
+    server.share[8] = gm_values    
   end
 end
 
@@ -605,7 +610,7 @@ end
       ...
     },
     [7] = map_data,
-    [8] = leaderboard
+    [8] = gm_values
     [9] = current_gamemode
   }
   

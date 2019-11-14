@@ -59,7 +59,6 @@ function _init()
 end
 
 function _update()
-  
   if my_id then
     cam.follow = players[my_id]
   end
@@ -114,7 +113,7 @@ function _draw()
   apply_camera()
   
   draw_objects(4)
-  
+    
   camera()
   
   draw_hp_ammo()

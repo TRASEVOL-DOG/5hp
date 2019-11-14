@@ -40,9 +40,12 @@ function create_player(id, x, y)
   if not id then
     castle_print("/!\\ Creating a player with no id.")
   end
-  
+  -- leaderboard = gm_values.leaderboard or {}
   players[s.id or 0] = s
-  leaderboard[s.id or 0] = {name = s.name, score = 0}
+  
+  if IS_SERVER then
+    notify_gamemode_new_p(s.id or 0)
+  end
   
   if not x then
     local p = get_player_spawn()
@@ -352,6 +355,10 @@ function forget_player(s)
   end
   
   deregister_object(s)
-  leaderboard[s.id or -1] = nil
+  
+  if SERVER_ONLY then
+    notify_gamemode_deleted_p(s.id or 0)
+  end
+  
   players[s.id or -1] = nil
 end
