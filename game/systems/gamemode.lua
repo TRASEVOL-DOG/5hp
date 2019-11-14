@@ -79,15 +79,15 @@ do
     
       update = function()
       
-        -- local found = false
-        -- for _, p in pairs(players) do 
-          -- if found and dist(player, crown) < 16 then 
-            -- crown = nil
+        local found = false
+        for _, p in pairs(players) do 
+          if not found and dist(player, crown) < 16 then 
+            crown = nil
             -- crowned_player = player.id
-            -- found = true
-            -- display_new_ruler(player.name)
-          -- end
-        -- end
+            found = true
+            new_log(player.name .. " began his rule.")
+          end
+        end
         
         -- if crowned_player then -- update score based on time possessing the crown
           -- local l = leaderboard[crowned_player]
@@ -121,13 +121,13 @@ do
       end,
     
       update = function()
-        for i, l in pairs(gm_values.leaderboard) do
-          l.score = l.score + dt()
-        end
+        -- for i, l in pairs(gm_values.leaderboard) do  
+          -- l.score = flr((t() - l.time_joined)*10)/10
+        -- end
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or 0}      
+        gm_values.leaderboard[id_player or 0] = {score = score or 0}--, time_joined = t()}      
       end,
       
       deleted_p = function(id_player)

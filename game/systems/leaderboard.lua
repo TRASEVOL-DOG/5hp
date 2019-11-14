@@ -115,15 +115,13 @@ end
 function get_ordered_tab(mode, tab, key)
   local copy_t = copy_table(tab)
   local sorted_list = {}
-  if mode == "descending" then    
-      if writep then new_log("Begin") end
+  if mode == "descending" then
     while count(copy_t) > 0 do
       local mx, i = get_max(copy_t, key)
       sorted_list[#sorted_list + 1] = tab[i]
       copy_t[i] = nil
     end  
-    if writep then new_log("End") end
-  elseif mode == "ascending" then
+  -- elseif mode == "ascending" then
   end
   
   return sorted_list
