@@ -48,14 +48,17 @@ function _init()
   
   init_game()
   
-  if castle then
-    my_name = castle.user.getMe().username
-  else
-    my_name = generate_name()
+  if not IS_SERVER then
+    if castle then
+      my_name = castle.user.getMe().username
+    else
+      my_name = generate_name()
+    end
+    
+    define_menus()
+    menu("mainmenu")
   end
   
-  define_menus()
-  menu("mainmenu")
 end
 
 function _update()
