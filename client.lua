@@ -50,9 +50,13 @@ function client.load()
   load_assets()
   
   _init()
+  
+  initialized = true
 end
 
 function client.update()
+  if not initialized then return end
+
   if ROLE then client.preupdate(dt()) end
     
   _update()
@@ -61,6 +65,8 @@ function client.update()
 end
 
 function client.draw()
+  if not initialized then return end
+
   _draw()
 end
 
