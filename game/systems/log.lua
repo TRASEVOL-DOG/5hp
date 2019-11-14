@@ -9,7 +9,7 @@ function new_log(str, c)
   add(logs, {
     str = str,
     c   = c,
-    y   = 64,
+    y   = 32,
     w   = str_px_width(str),
     l   = 5
   })
