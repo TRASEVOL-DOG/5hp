@@ -3,6 +3,7 @@ require("game/systems/object")
 require("game/systems/anim")
 require("game/systems/menu")
 
+require("game/systems/shader")
 require("game/systems/map")
 require("game/systems/gamemode")
 require("game/systems/log")
@@ -25,7 +26,7 @@ my_name = ""
 
 function _init()
   init_network()
-
+  
   init_object_mgr(
     "player",
     "enemy",
@@ -39,6 +40,12 @@ function _init()
   if not IS_SERVER then
     cursor = create_cursor()
     cam = create_camera(0, 0)
+    
+    if castle then
+      load_settings()
+    else
+      select_shader("all")
+    end
   else
     init_gamemode(2)
   end  
@@ -68,6 +75,7 @@ function _update()
   end
   
   wind_maker()
+  update_objects()
   
   if (gm_values.gm or 0) ~= 0 then
     update_gamemode() 
@@ -75,8 +83,8 @@ function _update()
     -- gm_values.init_gm = true
   end
   
-  if not gm_values.GAME_OVER then 
     update_objects()
+  if not gm_values.GAME_OVER then 
   else
     if cursor then cursor:update() end
     for o in group("particles") do
@@ -104,7 +112,9 @@ function _update()
 end
 
 function _draw()
-  cls(10)  
+  update_shader()
+
+  cls(10)
   camera()
   
   draw_map()
@@ -248,6 +258,65 @@ do -- ui stuff
   end
   
   function define_menus()
+    local function toggle_glow()
+      local sel = shader_params()
+      if sel == "all" then
+        select_shader("no_glow")
+        save_setting("glow", false)
+      else
+        select_shader("all")
+        save_setting("glow", true)
+      end
+      
+      cam.glow = 1
+    end
+    
+    local function set_crt(v)
+      local _, crt = shader_params()
+      
+      if v then
+        select_shader(nil, v/100 * 0.05, nil)
+        save_setting("crt", v/100 * 0.05)
+        return v
+      end
+      
+      return crt/0.05 * 100
+    end
+    
+    local function set_scanlines(v)
+      local _, _, scan = shader_params()
+      
+      if v then
+        select_shader(nil, nil, v/100 * 0.25)
+        save_setting("scanlines", v/100 * 0.25)
+        return v
+      end
+      
+      return scan/0.25 * 100
+    end
+    
+    _music_volume = music_volume
+    local function music_volume(v)
+      if v then
+        _music_volume(v/100)
+        save_setting("music", v/100)
+        return v
+      end
+      
+      return _music_volume()*100
+    end
+    
+    _sfx_volume = sfx_volume
+    local function sfx_volume(v)
+      if v then
+        _sfx_volume(v/100)
+        save_setting("sfx", v/100)
+        return v
+      end
+      
+      return _sfx_volume()*100
+    end
+  
     init_menu_system({
       test = {
         { "Hello",      function() log("Hello!") end },
@@ -280,11 +349,14 @@ do -- ui stuff
       },
   
       settings = {
-        { "Fullscreen",    fullscreen },
-        { "Screenshake",   function(v) if v and cam then cam.shkp = v add_shake(2) return cam.shkp end return 100 end, "slider",200 },
-        { "Music Volume",  music_volume,  "slider", 100 },
-        { "Sfx Volume",    sfx_volume,    "slider", 100 },
-        { "Back",          menu }
+        { "Music Volume", music_volume,  "slider",  100 },
+        { "Sfx Volume",   sfx_volume,    "slider",  100 },
+        { "Screenshake",  shake_strength, "slider", 200 },
+        { "Disable Glow", toggle_glow },
+        { "Glow Strength",glow_strength,  "slider", 200 },
+        { "CRT curve",    set_crt,        "slider", 200 },
+        { "Scanlines",    set_scanlines,  "slider", 200 },
+        { "Back",         menu }
       }
     })
   end
@@ -439,6 +511,20 @@ do -- camera
     local a = rnd(1)
     cam.shkx = powr*cos(a)
     cam.shky = powr*sin(a)
+    
+    cam.glow = max(powr/8, cam.glow + powr/32)
+  end
+  
+  function shake_strength(v)
+    if v and cam then
+      cam.shkp = v
+      add_shake(2)
+      
+      save_setting("shake", v)
+      return cam.shkp
+    end
+    
+    return cam.shkp
   end
   
   function update_camera(s)
@@ -453,6 +539,8 @@ do -- camera
       
       s.shkt = 1/30
     end
+    
+    cam.glow = max(lerp(cam.glow, 0, 3*dt()) - 3*dt(), 0)
     
     if s.follow then
       local scrnw, scrnh = screen_size()
@@ -469,6 +557,7 @@ do -- camera
       shky   = 0,
       shkt   = 0,
       shkp   = 100,
+      glow   = 0,
       follow = nil,
       update = update_camera,
       regs   = {"to_update"}
@@ -481,6 +570,30 @@ do -- camera
 
 end
 
+do -- settings
+  function save_setting(name, v)
+    if not castle then return end
+    
+    network.async(castle.storage.set, nil, name, v)
+  end
+
+  function load_settings()
+    if not castle then return end
+
+    local glow = castle.storage.get("glow")
+    glow = glow or (glow == nil)
+    
+    local crt = castle.storage.get("crt") or 0.05
+    local scanlines = castle.storage.get("scanlines") or 0.25
+    select_shader(glow and "all" or "no_glow", crt, scanlines)
+    
+    glow_strength(castle.storage.get("glow_str") or 100)
+    shake_strength(castle.storage.get("shake") or 100)
+    
+    sfx_volume(castle.storage.get("sfx") or 1)
+    music_volume(castle.storage.get("music") or 1)
+  end
+end
 
 function get_anims()
   return {

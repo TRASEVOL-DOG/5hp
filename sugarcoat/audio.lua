@@ -133,6 +133,11 @@ local function sfx(id, distance, stereo_angle, pitch, volume)
 end
 
 local function music(id, loop)
+  if not id then
+    _music_playing.mus:stop()
+    return
+  end
+
   local s = _music_map[id]
   
   if not s then
@@ -149,6 +154,8 @@ local function music(id, loop)
 
   love.audio.play(s.mus)
   _music_playing = s
+  
+  if not loop then return s.mus:getDuration() end
 end
 
 
