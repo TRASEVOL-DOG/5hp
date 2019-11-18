@@ -7,30 +7,55 @@ gm_values = {}
 leaderboard_is_large = true
 
 function init_gamemode(gm)
-  log("qwertyuiop")
-
-  if not IS_SERVER then return end
-  if gm < 1 then return end
-  gm_values.gm = gm
-  
   log("Initializing game mode: " .. gamemode[gm].name)
   
-  gamemode[gm].init()
+  if IS_SERVER then
+    if gm < 1 then return end
+    gm_values.gm = gm
+    gamemode[gm].init()
+  end
+end
+
+function client_init_gm()
+  gm_values = {}
 end
 
 function update_gamemode()
-  if not IS_SERVER then 
+
+  if IS_SERVER then
+    if not gm_values.GAME_OVER then
+      if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
+        gamemode[gm_values.gm].update()
+      end
+      gm_values.GAME_OVER = is_game_over()
+      t_game_over = 0
+    else
+      -- decide how game over ends
+      
+      t_game_over = t_game_over + dt()
+      if t_game_over > 3 then
+        init_gamemode(gm_values.gm)
+        gm_values.GAME_OVER = false
+        displayed_g_o = false
+      end
+      
+    end
+  else -- Client
     if btnp("tab") then 
       leaderboard_is_large = not leaderboard_is_large 
       sfx("tab")
     end   
-    return 
+    if gm_values.GAME_OVER then
+      if not displayed_g_o then
+        -- do things
+        -- END_OF_GAME = false
+        displayed_g_o = true
+        new_log("The game is over !")
+      end
+    else
+      -- END_OF_GAME = true
+    end
   end
-  
-  if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
-    gamemode[gm_values.gm].update()
-  end
-  
 end
 
 function draw_gamemode_infos()
@@ -49,6 +74,11 @@ end
 
 function game_over(sorted_lb)
   gm_values = {}
+end
+
+function is_game_over()
+  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  return gamemode[gm_values.gm].is_game_over()  
 end
 
 function notify_gamemode_new_p(id_player, score)
@@ -80,16 +110,19 @@ do
       end,
     
       update = function()
-      
-        local found = false
-        for _, p in pairs(players) do 
-          if not found and dist(player, crown) < 16 then 
-            crown = nil
-            -- crowned_player = player.id
-            found = true
-            new_log(player.name .. " began his rule.")
-          end
+        
+        for i, l in pairs(gm_values.leaderboard()) do
+          l.score = l.score - dt()
         end
+        -- local found = false
+        -- for _, p in pairs(players) do 
+          -- if not found and dist(player, crown) < 16 then 
+            -- crown = nil
+            -- crowned_player = player.id
+            -- found = true
+            -- new_log(player.name .. " began his rule.")
+          -- end
+        -- end
         
         -- if crowned_player then -- update score based on time possessing the crown
           -- local l = leaderboard[crowned_player]
@@ -99,11 +132,17 @@ do
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or 0}      
+        gm_values.leaderboard[id_player or 0] = {score = score or 15}      
       end,
       
       deleted_p = function(id_player)
         gm_values.leaderboard[id_player or 0] = nil     
+      end,
+      
+      is_game_over = function()
+        for i, l in pairs(gm_values.leaderboard) do
+          if l.score <= 0 then l.score = 0 return true end
+        end
       end,
       
       game_over = function()
@@ -123,18 +162,25 @@ do
       end,
     
       update = function()
-        -- for i, l in pairs(gm_values.leaderboard) do  
-          -- l.score = flr((t() - l.time_joined)*10)/10
-        -- end
+        for i, l in pairs(gm_values.leaderboard) do  
+          l.score = 5 - flr((t() - l.time_joined)*10)/10
+        end
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or 0}--, time_joined = t()}      
+        gm_values.leaderboard[id_player or 0] = {score = score or 100, time_joined = t()}      
       end,
       
       deleted_p = function(id_player)
         gm_values.leaderboard[id_player or 0] = nil     
       end,
+      
+      is_game_over = function()
+        for i, l in pairs(gm_values.leaderboard) do
+          if l.score <= 0 then l.score = 0 new_log("here") return true end
+        end
+      end,
+      
   
       game_over = function()
         sorted_lb = {} -- rank : {player_id, score} , table is already sorted
