@@ -24,7 +24,7 @@ do -- leaf
       
       update = update_leaf,
       draw   = draw_leaf,
-      regs   = {"to_update", "to_draw4"}
+      regs   = {"to_update", "to_draw4", "particles"}
     }
     
     register_object(s)
@@ -104,7 +104,7 @@ do -- smoke
       c  = c or pick{0,1,6},
       update = update_smoke,
       draw   = draw_smoke,
-      regs   = {"to_update","to_draw4"}
+      regs   = {"to_update","to_draw4", "particles"}
     }
 
     register_object(s)
@@ -240,7 +240,7 @@ do -- wind
       flipy = chance(50),
       update = update_wind,
       draw   = draw_wind,
-      regs   = {"to_update", "to_draw0", "wind"}
+      regs   = {"to_update", "to_draw0", "particles"}
     }
     
     s.life = anim_length("wind", s.state)

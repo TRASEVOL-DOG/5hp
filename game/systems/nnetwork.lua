@@ -62,15 +62,16 @@ do -- client
       return
     end
   
-  
-    client_sync_players()
-    client_sync_bullets()
+    if not gm_values.GAME_OVER then
+      client_sync_players()
+      client_sync_bullets()
+      client_sync_loot()
+      client_sync_enemies()
+    end
     client_sync_destructibles()
-    client_sync_loot()
-    client_sync_enemies()
     
     client_sync_map(diff[7])
-    client_sync_gm_values()
+    client_sync_gm_values(diff[7])
     
     if diff[9] and gm_values.gm ~= diff[9] then
       gm_values.gm = client.share[9]
@@ -338,10 +339,12 @@ do -- client
     end
   end
   
-  function client_sync_gm_values()
+  function client_sync_gm_values(diff)
     if not client.share[8] then return end
-    log("here")
-    gm_values = client.share[8]
+    if diff ~= nil then
+      if not diff then client_init_gm() end 
+    end
+    gm_values = copy_table(client.share[8])
   end
   
 end

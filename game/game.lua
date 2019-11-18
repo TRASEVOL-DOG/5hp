@@ -32,6 +32,7 @@ function _init()
     "bullet",
     "destructible",
     "loot",
+    "particles",
     "wind"
   )
   
@@ -69,21 +70,25 @@ function _update()
   wind_maker()
   
   if (gm_values.gm or 0) ~= 0 then
-  
-    update_gamemode()
-    
-    grow_walls()
-
-    update_objects()
-    
-    enemy_spawner()
-    loot_spawner()
-    
-    player_respawner()
-    
+    update_gamemode() 
   else
-    
+    -- gm_values.init_gm = true
   end
+  
+  if not gm_values.GAME_OVER then 
+    update_objects()
+  else
+    if cursor then cursor:update() end
+    for o in group("particles") do
+      o:update()
+    end
+  end
+  
+  grow_walls()
+  enemy_spawner()
+  loot_spawner()
+  player_respawner()
+  
   
   if not IS_SERVER and get_menu() == "mainmenu" then
     if btn("r") then
@@ -93,7 +98,7 @@ function _update()
   
   update_menu()
   update_log()
-
+  
   update_network()  
   
 end
