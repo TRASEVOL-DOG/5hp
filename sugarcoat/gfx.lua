@@ -369,16 +369,16 @@ local function update_screen_size()
   
   _clear_window()
   
+  if _D.shaders.index_to_color:hasUniform("SCREEN_SIZE") then
+    local w,h = screen_size()
+    _D.shaders.index_to_color:send("SCREEN_SIZE", {w, h})
+  end
+  
   if win_w == _prev_win_w and win_h == _prev_win_h then
     return
   else
     _prev_win_w = win_w
     _prev_win_h = win_h
-  end
-  
-  if _D.shaders.index_to_color:hasUniform("SCREEN_SIZE") then
-    local w,h = screen_size()
-    _D.shaders.index_to_color:send("SCREEN_SIZE", {w, h})
   end
 
   if sugar.on_resize then
@@ -529,9 +529,11 @@ local function screen_shader(shader_code)
       local var = var_dec:match('extern.-%a+.-([%a_]+).-;')
       local is_array = var_dec:find('%[') ~= nil
       
-      _shader_vars[var] = true
-      if is_array then
-        _shader_arrays[var] = true
+      if _D.shaders.index_to_color:hasUniform(var) then
+        _shader_vars[var] = true
+        if is_array then
+          _shader_arrays[var] = true
+        end
       end
     end
     

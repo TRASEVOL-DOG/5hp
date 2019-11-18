@@ -131,6 +131,7 @@ do -- client
     client.home[10] = (gm_values.gm or 0) % #gamemode + 1
     
     update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[client.home[10]].name..">")
+    update_menu_entry("gameover", 2, "Mode: <"..gamemode[client.home[10]].name..">")
   end
   
   

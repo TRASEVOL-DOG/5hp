@@ -7,6 +7,8 @@ gm_values = {}
 leaderboard_is_large = true
 
 function init_gamemode(gm)
+  log("qwertyuiop")
+
   if not IS_SERVER then return end
   if gm < 1 then return end
   gm_values.gm = gm
