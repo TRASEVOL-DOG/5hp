@@ -139,6 +139,13 @@ function update_enemy(s)
   else
     s.state = "idle"
   end
+  
+  if s.state == "run" then
+    local a,b,c = anim_step("helldog", "run", s.animt)
+    if b and a%8 == 5 then
+      sfx("steps", s.x, s.y, 0.9-rnd(0.2))
+    end
+  end
 end
 
 function draw_enemy(s)

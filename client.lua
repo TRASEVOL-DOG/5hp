@@ -46,7 +46,8 @@ if CASTLE_PREFETCH then
     "assets/sfx/wind_d.ogg",
     "assets/sfx/wind_e.ogg",
     "assets/sfx/explosion.ogg",
-    "assets/sfx/hurt.ogg"
+    "assets/sfx/hurt.ogg",
+    "assets/sfx/loot.wav"
   })
 end
 
@@ -127,7 +128,9 @@ function load_assets()
     wind_d             = "wind_d.ogg",
     wind_e             = "wind_e.ogg",
     explosion          = "explosion.ogg",
-    hurt               = "hurt.ogg"
+    hurt               = "hurt.ogg",
+    heal               = "heal.ogg",
+    loot               = "loot.ogg"
   }
   
   for k, f in pairs(sfx_list) do

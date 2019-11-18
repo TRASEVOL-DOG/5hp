@@ -284,7 +284,7 @@ function bullet_collisions(s)
   end
 end
 
-local bullet_explosion
+local bullet_explosion, bullet_burst
 function kill_bullet(s)
   if s.id and dead_bullets[s.id] then -- to avoid double explosions
     deregister_object(s)

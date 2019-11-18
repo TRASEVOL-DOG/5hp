@@ -15,6 +15,12 @@ function shoot(p) -- p for player
   w.shoot(p)
   if not IS_SERVER then
     add_shake(4 * (p.weapon.shake_mult or 1))
+    
+    if p.id == my_id then
+      sfx("shoot", p.x, p.y, 0.9+rnd(0.2))
+    else
+      sfx("enemy_shoot", p.x, p.y, 0.9+rnd(0.2))
+    end
   end
 end
 
