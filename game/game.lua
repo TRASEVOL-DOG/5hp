@@ -373,8 +373,15 @@ do -- ui stuff
     printp_color(c0, c1, c2)
     
     use_font("big")
-    local str = "Trasevol_Dog and Eliott present"
-    pprint(str, scrnw/2 - str_px_width(str)/2, -1)
+    if scrnw > 215 then
+      local str = "Trasevol_Dog and Eliott present "
+      pprint(str, scrnw/2 - str_px_width(str)/2, -1)
+    else
+      local str = "Trasevol_Dog and Eliott "
+      pprint(str, scrnw/2 - str_px_width(str)/2, -1)
+      local str = "present "
+      pprint(str, scrnw/2 - str_px_width(str)/2, 13)
+    end
     
     spritesheet("title")
     
