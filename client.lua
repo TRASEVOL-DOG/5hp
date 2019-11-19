@@ -47,7 +47,7 @@ if CASTLE_PREFETCH then
     "assets/sfx/wind_e.ogg",
     "assets/sfx/explosion.ogg",
     "assets/sfx/hurt.ogg",
-    "assets/sfx/heal.ogg"
+    "assets/sfx/heal.ogg",
     "assets/sfx/loot.ogg"
   })
 end
