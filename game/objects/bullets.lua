@@ -177,6 +177,8 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
 end
 
 function update_bullet(s) 
+  s.animt = s.animt + dt()
+
   if s.state == "moving" then 
   
     s.life = s.life - dt()  
@@ -200,6 +202,10 @@ function update_bullet(s)
   
   s.diff_x = lerp(s.diff_x, 0, dt())
   s.diff_y = lerp(s.diff_y, 0, dt())
+  
+  if not IS_SERVER and get_maptile(s.x/8, s.y/8) == 12 and s.animt % 0.03 < dt() then
+    create_ripple(s.x, s.y)
+  end
 end
 
 function bullet_movement(s)

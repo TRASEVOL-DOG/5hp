@@ -34,7 +34,8 @@ function _init()
     "destructible",
     "loot",
     "particles",
-    "wind"
+    "wind",
+    "water"
   )
   
   if not IS_SERVER then
@@ -83,7 +84,7 @@ function _update()
     -- gm_values.init_gm = true
   end
   
-    update_objects()
+--    update_objects()
   if not gm_values.GAME_OVER then 
   else
     if cursor then cursor:update() end

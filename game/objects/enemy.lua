@@ -126,6 +126,14 @@ function update_enemy(s)
   s.x = s.x + s.vx * dt()
   s.y = s.y + s.vy * dt()
   
+  if get_maptile(s.x/8, s.y/8) == 12 then
+    s.x = s.x - s.vx * dt()
+    s.y = s.y - s.vy * dt()
+    
+    s.vx = -s.vx
+    s.vy = -s.vy
+  end
+  
   s.diff_x = lerp(s.diff_x, 0, dt())
   s.diff_y = lerp(s.diff_y, 0, dt())
   

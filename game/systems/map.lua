@@ -112,7 +112,21 @@ function draw_map()
   local sx,sy = 0,0
 
   palt(0,false)
+  spr_sheet(map_water_surf, -x, -y)
+  
+  palt(6,true)
+  apply_camera()
+  for s in group("water") do
+    s:draw()
+  end
+  palt(6,false)
+  camera()
+  
+  palt(9, true)
+  palt(12, true)
   spr_sheet(map_ground_surf, -x, -y)
+  palt(9, false)
+  palt(12, false)
   palt(0,true)
   
   pal(7,14)
@@ -376,9 +390,9 @@ end
 function gen_mapsurf()
   if IS_SERVER then return end
   
-  map_ground_surf = map_ground_surf or new_surface(map_w*8, map_h*8-8)
-  map_wall_surf = map_wall_surf or new_surface(map_w*8, map_h*8)
-  map_water_surf = map_water_surf or new_surface(map_w*8, map_h*8-8)
+  map_ground_surf = map_ground_surf or new_surface(map_w*8, map_h*8-8, "map_ground")
+  map_wall_surf = map_wall_surf or new_surface(map_w*8, map_h*8, "map_walls")
+  map_water_surf = map_water_surf or new_surface(map_w*8, map_h*8-8, "map_water")
   
   target(map_ground_surf)
   cls(10)
@@ -614,6 +628,9 @@ function gen_mapsurf()
     target(map_ground_surf)
     spr(242, crown_spawn.x-4, crown_spawn.y-4)
   end
+  
+  target(map_water_surf)
+  spr_sheet(map_ground_surf, 0, 0)
   
   target()
   palt(0,true)
