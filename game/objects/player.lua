@@ -206,7 +206,7 @@ function player_movement(s)
   local ny = s.y + s.vy * dt()
   
   -- collision check
-  local col = check_mapcol(s, nx, s.y)
+  local col = check_mapcol(s, nx, s.y, nil, nil, true)
   if col then
     local cx = nx + col.dir_x * s.w/2
     local tx = cx - cx % 8 + 4
@@ -215,7 +215,7 @@ function player_movement(s)
     s.vy = s.vy - 600 * col.dir_y * dt()
   end
   
-  local col = check_mapcol(s, s.x, ny)
+  local col = check_mapcol(s, s.x, ny, nil, nil, true)
   if col then
     local cy = ny + col.dir_y * s.h/2
     local ty = cy - cy % 8 + 4
