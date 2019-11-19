@@ -104,7 +104,10 @@ function update_enemy(s)
         s.vx = s.vx + cos(a) * 5
         s.vy = s.vy + sin(a) * 5
       end
+      
+      if p.dead then s.target = nil end
     end
+    
   end
   
   -- enemies push each other
