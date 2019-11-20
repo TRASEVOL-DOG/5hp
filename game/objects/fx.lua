@@ -264,3 +264,35 @@ do -- wind
 
 end
 
+
+do -- ripples
+
+  function create_ripple(x, y)
+    if IS_SERVER then return end
+    
+    local s = {
+      x = x,
+      y = y,
+      a = rnd(1),
+      animt = 0,
+      update = update_ripple,
+      draw = draw_ripple,
+      regs = {"to_update", "water", "particles"}
+    }
+    
+    register_object(s)
+    return s
+  end
+  
+  function update_ripple(s)
+    s.animt = s.animt + dt()
+    if s.animt/0.1 > 5 then
+      deregister_object(s)
+    end
+  end
+  
+  function draw_ripple(s)
+    local n = flr(min(s.animt/0.1, 5))
+    aspr(0x280+n*3, s.x, s.y, s.a, 3, 3)
+  end
+end

@@ -80,7 +80,7 @@ local shader_code = {
       Texel_color(texture, coords - tcd)
     );
     
-    return mix(col + glow_strength * glow, glow, 0.25) * mask;
+    return vec4(mix(col + glow_strength * glow, glow, 0.25).rgb * mask, 1.0);
   }
 ]],
 
@@ -107,7 +107,7 @@ no_glow = [[
     
     vec4 col = Texel_color(texture, coords);
     
-    return col * mask;
+    return vec4(col.rgb * mask, 1.0);
   }
 ]]
 }

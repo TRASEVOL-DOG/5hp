@@ -46,7 +46,9 @@ if CASTLE_PREFETCH then
     "assets/sfx/wind_d.ogg",
     "assets/sfx/wind_e.ogg",
     "assets/sfx/explosion.ogg",
-    "assets/sfx/hurt.ogg"
+    "assets/sfx/hurt.ogg",
+    "assets/sfx/heal.ogg",
+    "assets/sfx/loot.ogg"
   })
 end
 
@@ -127,7 +129,9 @@ function load_assets()
     wind_d             = "wind_d.ogg",
     wind_e             = "wind_e.ogg",
     explosion          = "explosion.ogg",
-    hurt               = "hurt.ogg"
+    hurt               = "hurt.ogg",
+    heal               = "heal.ogg",
+    loot               = "loot.ogg"
   }
   
   for k, f in pairs(sfx_list) do
@@ -172,7 +176,7 @@ end
 function on_resize()
   local winw, winh = window_size()
   
-  local scale = min(flr(winw/300), flr(winh/200))
+  local scale = min(flr(winw/175), flr(winh/250))
   
   screen_resizeable(true, scale, on_resize)
 end

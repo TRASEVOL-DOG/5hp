@@ -94,6 +94,8 @@ function update_loot(s)
   
   local col = collide_objgroup(s, "player")
   if col and not col.dead then
+    sfx("loot", s.x, s.y, 1.0+give_or_take(0.05))
+  
     loot_effect[s.type](s, col)
     
     if s.type ~= 3 then respawn_loot(s) end

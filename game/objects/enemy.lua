@@ -104,7 +104,10 @@ function update_enemy(s)
         s.vx = s.vx + cos(a) * 5
         s.vy = s.vy + sin(a) * 5
       end
+      
+      if p.dead then s.target = nil end
     end
+    
   end
   
   -- enemies push each other
@@ -123,6 +126,14 @@ function update_enemy(s)
   s.x = s.x + s.vx * dt()
   s.y = s.y + s.vy * dt()
   
+  if get_maptile(s.x/8, s.y/8) == 12 then
+    s.x = s.x - s.vx * dt()
+    s.y = s.y - s.vy * dt()
+    
+    s.vx = -s.vx
+    s.vy = -s.vy
+  end
+  
   s.diff_x = lerp(s.diff_x, 0, dt())
   s.diff_y = lerp(s.diff_y, 0, dt())
   
@@ -138,6 +149,13 @@ function update_enemy(s)
     end
   else
     s.state = "idle"
+  end
+  
+  if s.state == "run" then
+    local a,b,c = anim_step("helldog", "run", s.animt)
+    if b and a%8 == 5 then
+      sfx("steps", s.x, s.y, 0.9-rnd(0.2))
+    end
   end
 end
 

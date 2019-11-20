@@ -56,6 +56,10 @@ function create_player(id, x, y)
     for i = 1, 16 do
       create_smoke(s.x, s.y, 1, nil, 14, i/16+rnd(0.1))
     end
+    
+    if s.id == my_id then
+      sfx("startplay", s.x, s.y)
+    end
   end
   
   register_object(s)
@@ -120,6 +124,13 @@ function update_player(s)
     s.state = "run"
   else
     s.state = "idle"
+  end
+  
+  if s.state == "run" then
+    local a,b,c = anim_step("player", "run", s.animt)
+    if b and a%8 == 1 then
+      sfx("steps", s.x, s.y, 1+rnd(0.2))
+    end
   end
   
   s.faceleft = (s.angle-0.25)%1 < 0.5
@@ -195,7 +206,7 @@ function player_movement(s)
   local ny = s.y + s.vy * dt()
   
   -- collision check
-  local col = check_mapcol(s, nx, s.y)
+  local col = check_mapcol(s, nx, s.y, nil, nil, true)
   if col then
     local cx = nx + col.dir_x * s.w/2
     local tx = cx - cx % 8 + 4
@@ -204,7 +215,7 @@ function player_movement(s)
     s.vy = s.vy - 600 * col.dir_y * dt()
   end
   
-  local col = check_mapcol(s, s.x, ny)
+  local col = check_mapcol(s, s.x, ny, nil, nil, true)
   if col then
     local cy = ny + col.dir_y * s.h/2
     local ty = cy - cy % 8 + 4
@@ -265,6 +276,12 @@ function hit_player(s, b)
   s.hp = s.hp - b.damage
   s.hit_timer = 0.5
   
+  if s.id == "my_id" then
+    sfx("get_hit_player", s.x, s.y)
+  else
+    sfx("get_hit", s.x, s.y)
+  end
+  
   if s.hp <= 0 then
     kill_player(s, b.from)
   end
@@ -272,6 +289,7 @@ end
 
 function heal_player(s)
   s.hp = min(s.hp + 5, 20)
+  sfx("heal", s.x, s.y, 1)
 end
 
 
