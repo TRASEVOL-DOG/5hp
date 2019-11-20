@@ -47,7 +47,7 @@ function _init()
       select_shader("all")
     end
   else
-    init_gamemode(2)
+    init_gamemode(1)
   end  
   
   init_anims(get_anims())
@@ -83,7 +83,6 @@ function _update()
     -- gm_values.init_gm = true
   end
   
-    update_objects()
   if not gm_values.GAME_OVER then 
   else
     if cursor then cursor:update() end

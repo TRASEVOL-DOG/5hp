@@ -345,6 +345,15 @@ function kill_player(s, killer_id)
   else
     sfx("get_hit", s.x, s.y)
   end
+  
+  if gm_values.gm == 1 and gm_values.crowned_player == s.id then
+    if IS_SERVER then
+      create_loot(nil, 3, s.x, s.y)
+    end
+    gm_values.crowned_player = nil
+    
+  end
+  
 end
 
 function forget_player(s)

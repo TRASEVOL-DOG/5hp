@@ -20,6 +20,10 @@ function client_init_gm()
   gm_values = {}
 end
 
+function should_player_loot()
+  return gamemode[gm_values.gm].should_player_loot and gamemode[gm_values.gm].should_player_loot() 
+end
+
 function update_gamemode()
 
   if IS_SERVER then
@@ -100,6 +104,8 @@ do
       
       description = "The Crown's description, and it's holy.",
       
+      base_score = 60,
+      
       init = function()
         -- place the crown on the map
         -- set crown.x, crown.y         
@@ -107,32 +113,21 @@ do
         gm_values.leaderboard = {}        
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end
         
+        -- spawn_crown()
+      
       end,
     
       update = function()
-        
-        for i, l in pairs(gm_values.leaderboard()) do
-          l.score = l.score - dt()
+        for i, l in pairs(gm_values.leaderboard) do  
+          if gm_values.crowned_player == i then
+            local p_since_picked = flr((t() - l.time_picked_crown)*10)/10
+            l.score = (l.last_score or 60) - p_since_picked
+          end
         end
-        -- local found = false
-        -- for _, p in pairs(players) do 
-          -- if not found and dist(player, crown) < 16 then 
-            -- crown = nil
-            -- crowned_player = player.id
-            -- found = true
-            -- new_log(player.name .. " began his rule.")
-          -- end
-        -- end
-        
-        -- if crowned_player then -- update score based on time possessing the crown
-          -- local l = leaderboard[crowned_player]
-          -- l = l + dt()
-        -- end
-        
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or 15}      
+        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].base_score , time_picked_crown = nil, last_score = gamemode[gm_values.gm].base_score}      
       end,
       
       deleted_p = function(id_player)
@@ -145,6 +140,12 @@ do
         end
       end,
       
+      spawn_crown = function()
+        for i, l in pairs(gm_values.leaderboard) do
+          if l.score <= 0 then l.score = 0 return true end
+        end
+      end,
+       
       game_over = function()
         sorted_lb = {} -- rank : {player_id, score} , table is already sorted
         game_over(sorted_lb)
@@ -168,7 +169,10 @@ do
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or 100, time_joined = t()}      
+      -- new_p = function(id_player, score)
+        -- gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].base_score , time_picked_crown = nil, last_score = gamemode[gm_values.gm].base_score}      
+      -- end,
+        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm].base_score, time_joined = t()}      
       end,
       
       deleted_p = function(id_player)
@@ -180,14 +184,12 @@ do
           if l.score <= 0 then l.score = 0 new_log("here") return true end
         end
       end,
-      
   
       game_over = function()
         sorted_lb = {} -- rank : {player_id, score} , table is already sorted
         game_over(sorted_lb)
       end,
     }
-    
   }
   ------------
   
@@ -198,12 +200,13 @@ do -- gamemode ui
     if my_id then
       if player_list[my_id] then
         local angle = 0
-        local scrnw,scrnh=screen_size()
+        local scrnw,scrnh = screen_size()
+        local crowned_player = gm_values.crowned_player
         if crowned_player ~= nil and crowned_player ~= my_id and player_list[crowned_player] then
           angle = atan2(player_list[my_id].x - player_list[crowned_player].x,
           player_list[my_id].y - player_list[crowned_player].y)
           indicate_crown(angle)
-        else 
+        else
           local c = crown_looted()
           if c then
             angle = atan2(player_list[my_id].x - c.x, player_list[my_id].y - c.y)
@@ -215,10 +218,7 @@ do -- gamemode ui
   end
 
   function indicate_crown(angle)
-  --  local camx, camy = get_camera_pos()
-  --  color(13)
-  --  line(player_list[my_id].x - camx + 10 * cos(angle+.5), player_list[my_id].y - camy + 10 * sin(angle+.5), player_list[my_id].x - camx + 20 * cos(angle+.5), player_list[my_id].y - camy + 20 * sin(angle+.5))
-
+  
     local player = player_list[my_id]
     if not player then return end
 

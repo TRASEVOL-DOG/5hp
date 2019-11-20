@@ -62,6 +62,17 @@ local function str_px_width(str, font)
   return fnt:getWidth(str)
 end
 
+local function str_px_width(str, font)
+  local fnt
+  if font then
+    fnt = _D.font_list[font]
+  else
+    fnt = _D.font_list[_D.current_font]
+  end
+  
+  return fnt:getWidth(str)
+end
+
 local _flr = math.floor
 local function print(str, x, y, c)
   if c then color(c) end

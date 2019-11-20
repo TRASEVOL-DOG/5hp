@@ -11,6 +11,7 @@ for k, d in pairs(weapons) do
 end
 
 local loot_respawns = {}
+
 function init_loot(weapon_spawns, heal_spawns, crown)
   if not IS_SERVER then return end
   
@@ -95,7 +96,8 @@ function update_loot(s)
   if col and not col.dead then
     loot_effect[s.type](s, col)
     
-    respawn_loot(s)
+    if s.type ~= 3 then respawn_loot(s) end
+    
     deregister_object(s)
     
     if IS_SERVER then
@@ -153,6 +155,7 @@ loot_effect = {
   [3] = function(s, p) -- looting crown  
     if IS_SERVER then
       gm_values.crowned_player = p.id
+      gm_values.leaderboard[p.id].time_picked_crown = t()
     end
   end
 }
