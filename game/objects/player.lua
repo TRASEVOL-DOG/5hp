@@ -207,7 +207,7 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
       x = x / winw * scrw
       y = y / winh * scrh
       
-      if x < winw/2 then
+      if x < scrw/2 then
         add(xas, x)
         add(yas, y)
       else
@@ -218,8 +218,8 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     local k = #xas
     if k == 1 then
-      xap = xas - xa
-      yap = yas - ya
+      xap = xas[1] - xa
+      yap = yas[1] - ya
     elseif k > 1 then
       xap, yap = -xa, -ya
       for i = 1, k do
@@ -233,8 +233,8 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     local k = #xbs
     if k == 1 then
-      xbp = xbs - xb
-      ybp = ybs - yb
+      xbp = xbs[1] - xb
+      ybp = ybs[1] - yb
     elseif k > 1 then
       for i = 1, k do
         xbp = xbp + xbs[i]/k
