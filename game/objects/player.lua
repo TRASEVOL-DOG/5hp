@@ -279,6 +279,16 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     circ(xb, yb, r, 14)
     circfill(xb+xbp, yb+ybp, r/2, 14)
+    
+    local p = players[my_id]
+    if p then
+      line(
+        p.x + 8*cos(p.angle),
+        p.y + 8*sin(p.angle),
+        p.x + 15*cos(p.angle),
+        p.y + 15*sin(p.angle)
+      )
+    end
   end
 
 end
