@@ -176,7 +176,7 @@ end
 function on_resize()
   local winw, winh = window_size()
   
-  local scale = min(flr(winw/175), flr(winh/250))
+  local scale = max(min(flr(winw/175), flr(winh/250)), 1)
   
   screen_resizeable(true, scale, on_resize)
 end

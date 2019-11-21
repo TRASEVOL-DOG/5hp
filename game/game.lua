@@ -147,6 +147,10 @@ function _draw()
     draw_title()
   end
   
+  if players[my_id] and draw_mobile_controls then
+    draw_mobile_controls()
+  end
+  
   cursor:draw()
 end
 

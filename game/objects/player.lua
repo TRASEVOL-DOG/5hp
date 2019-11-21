@@ -87,9 +87,16 @@ function update_player(s)
   -- do input
   
   if s.id == my_id then
-    s.dx_input = btnv("right") - btnv("left")
-    s.dy_input = btnv("down") - btnv("up")
-    s.angle = atan2(cursor.x - s.x, cursor.y - s.y)
+    if castle and not castle.system.isDesktop() then
+      get_mobile_controls(s)
+    else
+      s.dx_input = btnv("right") - btnv("left")
+      s.dy_input = btnv("down") - btnv("up")
+      
+      s.angle = atan2(cursor.x - s.x, cursor.y - s.y)
+      s.shoot_trigger = btnp("mouse_lb")
+      s.shoot_held    = btn("mouse_lb")
+    end
   end
   
  
@@ -103,10 +110,7 @@ function update_player(s)
   -- shooty shoot-shoot
   
   if s.id == my_id then
-    s.shoot_trigger = btnp("mouse_lb")
-    s.shoot_held    = btn("mouse_lb")
-    
-    if btnp("mouse_lb") then
+    if s.shoot_trigger then
       client_shoot()
     end
   end
@@ -177,6 +181,107 @@ function draw_player(s)
   palt(1, false)
 end
 
+
+if castle and not castle.system.isDesktop() then -- mobile_controls
+
+  local r, xa, ya, xb, yb
+  local xap, yap, xbp, ybp = 0, 0, 0, 0
+  
+  function get_mobile_controls(s)
+    local scrw, scrh = screen_size()
+    
+    local msize = min(scrw, scrh)
+    r = msize/6
+    xa = msize * 0.2
+    ya = scrh - xa
+    xb = scrw - xa
+    yb = ya
+    
+    
+    local touches = love.touch.getTouches()
+    local winw, winh = window_size()
+    
+    local xas, yas, xbs, ybs = {}, {}, {}, {}
+    for _, t in pairs(touches) do
+      local x, y = love.touch.getPosition(t)
+      x = x / winw * scrw
+      y = y / winh * scrh
+      
+      if x < winw/2 then
+        add(xas, x)
+        add(yas, y)
+      else
+        add(xbs, x)
+        add(ybs, y)
+      end
+    end
+    
+    local k = #xas
+    if k == 1 then
+      xap = xas - xa
+      yap = yas - ya
+    elseif k > 1 then
+      xap, yap = -xa, -ya
+      for i = 1, k do
+        xap = xap + xas[i]/k
+        yap = yap + yas[i]/k
+      end
+    else
+      xap = lerp(xap, 0, 10*dt())
+      yap = lerp(yap, 0, 10*dt())
+    end
+    
+    local k = #xbs
+    if k == 1 then
+      xbp = xbs - xb
+      ybp = ybs - yb
+    elseif k > 1 then
+      for i = 1, k do
+        xbp = xbp + xbs[i]/k
+        ybp = ybp + ybs[i]/k
+      end
+    else
+      xbp = lerp(xbp, 0, 10*dt())
+      ybp = lerp(ybp, 0, 10*dt())
+    end
+    
+    
+    -- movement input
+    local d = dist(xap, yap)
+    if d > r then
+      xap = xap / d * r
+      yap = yap / d * r
+    end
+
+    s.dx_input = xap/r
+    s.dy_input = yap/r
+    
+    
+    -- aiming and shooting input
+    local d = dist(xbp, ybp)
+    if d > r then
+      xbp = xbp / d * r
+      ybp = ybp / d * r
+    end
+
+    s.angle = atan2(xbp, ybp)
+    
+    local prev = s.shoot_held
+    s.shoot_held = d > r*0.75
+    s.shoot_trigger = s.shoot_held and not prev
+  end
+  
+  function draw_mobile_controls()
+    if not r then return end
+    
+    circ(xa, ya, r, 14)
+    circfill(xa+xap, ya+yap, r/2, 14)
+    
+    circ(xb, yb, r, 14)
+    circfill(xb+xbp, yb+ybp, r/2, 14)
+  end
+
+end
 
 
 function player_movement(s)
