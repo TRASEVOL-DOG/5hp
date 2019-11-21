@@ -397,8 +397,9 @@ function hit_player(s, b)
     sfx("get_hit", s.x, s.y)
   end
   
-  if s.hp <= 0 then
+  if s.hp <= 0 and s.id == my_id then
     kill_player(s, b.from)
+    client_die(b.from)
   end
 end
 

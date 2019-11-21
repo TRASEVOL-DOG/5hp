@@ -126,6 +126,16 @@ do -- client
   end
   
   
+  local death = 1
+  function client_die(killer)
+    local p = players[my_id]
+    client.home[12] = death
+    client.home[13] = killer
+    client.home[14] = p.vx
+    client.home[15] = p.vy
+    death = death + 1
+  end
+  
   function client_shoot()
     client.home[7] = (client.home[7] or 0) + 1
   end
@@ -157,6 +167,7 @@ do -- client
           create_smoke(p.x, p.y, 1, nil, 14, i/16+rnd(0.1))
         end
         
+        resurrect_player(p)
         p.x = d[1]
         p.y = d[2]
       end
@@ -192,12 +203,12 @@ do -- client
       --p.weapon.ammo = d[10]
       
       if d[11] and not p.dead then
-        kill_player(p, p.dead)
-      elseif p.dead and not d[11] then
-        resurrect_player(p)
+        kill_player(p, d[11])
+     -- elseif p.dead and not d[11] then
+     --   resurrect_player(p)
       end
       
-      p.hp = d[9]
+--      p.hp = d[9]
       p.score = d[12]
       
       
@@ -356,9 +367,11 @@ end
 do -- server
   
   local shot_ids
+  local death_ids
 
   function server_init()
     shot_ids = {}
+    death_ids = {}
     
     server.share[1] = {}
     server.share[2] = {}
@@ -398,6 +411,14 @@ do -- server
       shot_ids[id] = ho[7]
     end
     
+    if ho[12] and ho[12] > death_ids[id] then
+      kill_player(player, ho[13])
+      player.vx = ho[14]
+      player.vy = ho[15]
+      
+      death_ids[id] = ho[12]
+    end
+    
     player.name = ho[9] or ""
   end
   
@@ -423,6 +444,7 @@ do -- server
     log("New client: #"..id)
     
     shot_ids[id] = 0
+    death_ids[id] = 0
   end
   
   function server_lost_client(id)
@@ -553,7 +575,11 @@ end
     [8] = player_shoot_held,
     [9] = player_name,
     [10]= chosen_gamemode,
-    [11]= player_ready
+    [11]= player_ready,
+    [12]= death_id,
+    [13]= killed_by,
+    [14]= player_vx,
+    [15]= player_vy
   }
   
   
