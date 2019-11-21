@@ -83,11 +83,13 @@ do -- client
   end
   
   function client_output()
-    if connecting then
+--    if connecting then
       client.home[1] = t()
-    else
-      client.home[1] = nil
-    end
+--    else
+--      client.home[1] = nil
+--    end
+    
+    client.home[11] = connecting
     
     local my_player = players[client.id] or players[0]
     if my_player then
@@ -376,7 +378,7 @@ do -- server
       end
     end
     
-    if not ho[1] then return end
+    if not ho[1] or not ho[11] then return end
   
     local player = players[id]
     if not player then
@@ -550,6 +552,8 @@ end
     [7] = player_shoot_id,
     [8] = player_shoot_held,
     [9] = player_name,
+    [10]= chosen_gamemode,
+    [11]= player_ready
   }
   
   

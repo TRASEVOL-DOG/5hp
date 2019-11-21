@@ -214,7 +214,7 @@ function enemy_spawner()
   if spawn_t < 0 then
     spawn_t = 1 + rnd(2)
   
-    if group_size("enemy") >= 8 then
+    if group_size("enemy") >= 5 then
       return
     end
   

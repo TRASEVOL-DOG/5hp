@@ -146,6 +146,10 @@ function _draw()
     draw_title()
   end
   
+  if players[my_id] and draw_mobile_controls then
+    draw_mobile_controls()
+  end
+  
   cursor:draw()
 end
 
@@ -519,6 +523,7 @@ do -- camera
     cam.shkx = powr*cos(a)
     cam.shky = powr*sin(a)
     
+    powr = powr - 3
     cam.glow = max(powr/8, cam.glow + powr/32)
   end
   
