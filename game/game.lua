@@ -520,6 +520,7 @@ do -- camera
     cam.shkx = powr*cos(a)
     cam.shky = powr*sin(a)
     
+    powr = powr - 3
     cam.glow = max(powr/8, cam.glow + powr/32)
   end
   
