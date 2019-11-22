@@ -92,17 +92,15 @@ local loot_effect
 function update_loot(s)
   s.animt = s.animt + dt()
   
-  local col = collide_objgroup(s, "player")
-  if col and not col.dead then
-    sfx("loot", s.x, s.y, 1.0+give_or_take(0.05))
-  
-    loot_effect[s.type](s, col)
-    
-    if s.type ~= 3 then respawn_loot(s) end
-    
-    deregister_object(s)
-    
-    if IS_SERVER then
+  if IS_SERVER then
+    local col = collide_objgroup(s, "player")
+    if col and not col.dead then
+      take_loot(s, col)
+    end
+  elseif s.life then
+    s.life = s.life - dt()
+    if s.life <= 0 then
+      deregister_object(s)
       loots[s.id] = nil
     end
   end
@@ -142,6 +140,26 @@ function draw_loot(s)
   
   palt(6, true)
   palt(1, false)
+end
+
+function take_loot(s, p)
+  if not s then
+    return
+  end
+
+  sfx("loot", s.x, s.y, 1.0+give_or_take(0.05))
+  
+  loot_effect[s.type](s, p)
+  
+  if s.type ~= 3 then respawn_loot(s) end
+  
+  deregister_object(s)
+  
+  p.last_loot = s.id
+  
+  if IS_SERVER then
+    loots[s.id] = nil
+  end
 end
 
 

@@ -219,6 +219,10 @@ do -- client
       
       p.name = d[13]
       
+      if p.last_loot ~= d[16] then
+        take_loot(loots[d[16]], p)
+      end
+      
       -- notify_gamemode_new_p(id, p.score)
       -- gm_values.leaderboard = gm_values.leaderboard or {}      
       -- gm_values.leaderboard[id] = {name = p.name or "", score = p.score or 0}
@@ -296,8 +300,9 @@ do -- client
     
     for id, s in pairs(loots) do
       if not data[id] then
-        deregister_object(s)
-        loots[id] = nil
+        if not s.life then
+          s.life = 3
+        end
       end
     end
     
@@ -463,7 +468,7 @@ do -- server
   end
   
   
-  
+ 
   function server_out_players()
     local data_list = server.share[2]
     
@@ -488,7 +493,8 @@ do -- server
         p.score,
         p.name,
         p.shoot_trigger,
-        p.shoot_hold
+        p.shoot_hold,
+        p.last_loot
       }
     end
   end
@@ -585,9 +591,7 @@ end
     [12]= death_id,
     [13]= killed_by,
     [14]= player_vx,
-    [15]= player_vy,
-    [16]= loot_id,   -- loot counter
-    [17]= looted_id  -- actual loot id
+    [15]= player_vy
   }
   
   
@@ -612,7 +616,8 @@ end
         [12] = score,
         [13] = name,
         [14] = shoot_trigger,
-        [15] = shoot_hold
+        [15] = shoot_hold,
+        [16] = loot
       },
       ...
     },
