@@ -15,6 +15,7 @@ function create_enemy(id, x, y)
     hp   = 2,
     hit  = 0,
     
+    dir    = rnd(1),
     target = 0,
     clock  = 0,
     damage = 2,
@@ -101,8 +102,10 @@ function update_enemy(s)
         s.vy = s.vy * 1.5
       else
         local a = atan2(p.x - s.x, p.y - s.y)
-        s.vx = s.vx + cos(a) * 5
-        s.vy = s.vy + sin(a) * 5
+        s.dir = s.dir + dt() * sgn(angle_diff(s.dir, a))
+        
+        s.vx = s.vx + cos(s.dir) * 5
+        s.vy = s.vy + sin(s.dir) * 5
       end
       
       if p.dead then s.target = nil end
@@ -130,6 +133,7 @@ function update_enemy(s)
     s.x = s.x - s.vx * dt()
     s.y = s.y - s.vy * dt()
     
+    s.dir = s.dir + 0.5
     s.vx = -s.vx
     s.vy = -s.vy
   end
