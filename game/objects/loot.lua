@@ -148,10 +148,16 @@ end
 loot_effect = {
   [1] = function(s, p) -- looting weapon
     p.weapon = create_weapon(s.weapon)
+    if p.id == my_id then
+      create_text(p.x, p.y, p.weapon.name.."!")
+    end
   end,
   
   [2] = function(s, p) -- looting hp
     heal_player(p)
+    if p.id == my_id then
+      create_text(p.x, p.y, "+2.5 HP")
+    end
   end,
   
   [3] = function(s, p) -- looting crown  

@@ -24,6 +24,7 @@ function create_player(id, x, y)
     state = "idle",
     faceleft = chance(50),
     skin  = pick{13, 11, 7, 3, 0},
+    water_draw = water_draw_player,
     
     update = update_player,
     draw   = draw_player,
@@ -155,7 +156,7 @@ function draw_player(s)
   local spi, dy
   if s.dead then
     spi = 142
-    dy = -1
+    dy = +1
   else
     spi = anim_sprite("player", s.state, s.animt)
     dy = -2
@@ -166,7 +167,7 @@ function draw_player(s)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x, y+dy-2-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
@@ -177,7 +178,46 @@ function draw_player(s)
     all_colors_to()
   end
   
+  palt(1, false)
+end
 
+function water_draw_player(s)
+  local x = s.x + s.diff_x
+  local y = s.y + s.diff_y
+
+  palt(6, false)
+  palt(1, true)
+  
+  local flash = s.hit_timer > 0.4 or s.hit_timer % 0.2 < 0.1
+  if flash then
+    all_colors_to(14)
+  end
+  
+  local spi, dy
+  if s.dead then
+    spi = 142
+    dy = +1
+  else
+    spi = anim_sprite("player", s.state, s.animt)
+    dy = -2
+  end
+  
+  -- draw body outline
+  spr(spi, x-8, y-dy+1, 2, 2, s.faceleft, true)
+  
+  -- draw weapon arm
+  if s.weapon then
+    aspr(s.weapon.arm_sprite, x, y-dy+2+6.5, -s.angle, 1, 1, 1/8, 5/8, 1, -sgn((s.angle-0.25)%1-0.5))
+  end
+  -- draw body
+  palt(6, true)
+  spr(spi, x-8, y-dy+1, 2, 2, s.faceleft, true)
+
+  
+  if flash then
+    all_colors_to()
+  end
+  
   palt(1, false)
 end
 
@@ -378,6 +418,11 @@ function update_corpse(s)
   -- apply new positions
   s.x = nx
   s.y = ny
+  
+  -- ripples
+  if not IS_SERVER and get_maptile(s.x/8, s.y/8) == 12 and s.animt % 0.03 < dt() then
+    create_ripple(s.x, s.y)
+  end
 end
 
 function hit_player(s, b)

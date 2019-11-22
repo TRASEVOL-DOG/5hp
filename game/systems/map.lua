@@ -109,6 +109,12 @@ function draw_map()
   
   palt(6,true)
   apply_camera()
+  for s in group("enemy") do
+    s:water_draw()
+  end
+  for s in group("player") do
+    s:water_draw()
+  end
   for s in group("water") do
     s:draw()
   end

@@ -23,6 +23,7 @@ function create_enemy(id, x, y)
     animt    = rnd(10),
     state    = "idle",
     faceleft = chance(50),
+    water_draw = water_draw_enemy,
     
     update = update_enemy,
     draw   = draw_enemy,
@@ -173,6 +174,22 @@ function draw_enemy(s)
     all_colors_to()
   else
     draw_anim(s.x, s.y-2, "helldog", s.state, s.animt, s.faceleft)
+  end
+  
+  palt(6, true)
+  palt(1, false)
+end
+
+function water_draw_enemy(s)
+  palt(1, true)
+  palt(6, false)
+  
+  if s.hit > 0 then
+    all_colors_to(14)
+    draw_anim(s.x, s.y+4, "helldog", s.state, s.animt, s.faceleft, true)
+    all_colors_to()
+  else
+    draw_anim(s.x, s.y+4, "helldog", s.state, s.animt, s.faceleft, true)
   end
   
   palt(6, true)
