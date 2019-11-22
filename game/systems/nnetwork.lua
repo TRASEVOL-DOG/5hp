@@ -168,8 +168,13 @@ do -- client
         end
         
         resurrect_player(p)
+        p.hp = 10
         p.x = d[1]
         p.y = d[2]
+        
+        for i = 1, 16 do
+          create_smoke(p.x, p.y, 1, nil, 14, i/16+rnd(0.1))
+        end
       end
       
       if not p then
@@ -404,10 +409,11 @@ do -- server
     player.dy_input = ho[5] or 0
     player.angle = ho[6] or 0
     
-    player.shoot_held = ho[8]
+    --player.shoot_held = ho[8]
     
     if ho[7] and ho[7] > shot_ids[id] then
-      player.shoot_trigger = true
+      --player.shoot_trigger = true
+      shoot(player)
       shot_ids[id] = ho[7]
     end
     
@@ -579,7 +585,9 @@ end
     [12]= death_id,
     [13]= killed_by,
     [14]= player_vx,
-    [15]= player_vy
+    [15]= player_vy,
+    [16]= loot_id,   -- loot counter
+    [17]= looted_id  -- actual loot id
   }
   
   

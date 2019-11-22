@@ -110,15 +110,16 @@ function update_player(s)
   
   -- shooty shoot-shoot
   
-  if s.id == my_id then
-    if s.shoot_trigger then
-      client_shoot()
-    end
-  end
+--  if s.id == my_id then
+--    if s.shoot_trigger then
+--      client_shoot()
+--    end
+--  end
   
     
-  if do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
+  if s.id == my_id and do_shoot(s) then -- determine if weapon should shoot this frame (if player trigger, auto fire, rafale, etc..)
     shoot(s)
+    client_shoot()
   end
   
   s.shoot_trigger = false
@@ -156,7 +157,7 @@ function draw_player(s)
   local spi, dy
   if s.dead then
     spi = 142
-    dy = +1
+    dy = -1
   else
     spi = anim_sprite("player", s.state, s.animt)
     dy = -2
@@ -167,7 +168,7 @@ function draw_player(s)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x, y+dy-2-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
@@ -196,7 +197,7 @@ function water_draw_player(s)
   local spi, dy
   if s.dead then
     spi = 142
-    dy = +1
+    dy = -1
   else
     spi = anim_sprite("player", s.state, s.animt)
     dy = -2
@@ -207,7 +208,7 @@ function water_draw_player(s)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x, y-dy+2+6.5, -s.angle, 1, 1, 1/8, 5/8, 1, -sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x, y+6.5, -s.angle, 1, 1, 1/8, 5/8, 1, -sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
