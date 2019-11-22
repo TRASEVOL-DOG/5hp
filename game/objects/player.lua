@@ -282,12 +282,14 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     local p = players[my_id]
     if p then
+      apply_camera()
       line(
         p.x + 8*cos(p.angle),
         p.y + 8*sin(p.angle),
         p.x + 15*cos(p.angle),
         p.y + 15*sin(p.angle)
       )
+      camera()
     end
   end
 
@@ -397,8 +399,9 @@ function hit_player(s, b)
     sfx("get_hit", s.x, s.y)
   end
   
-  if s.hp <= 0 then
+  if s.hp <= 0 and s.id == my_id then
     kill_player(s, b.from)
+    client_die(b.from)
   end
 end
 
