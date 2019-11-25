@@ -93,7 +93,7 @@ function _update()
   end
   
   grow_walls()
-  enemy_spawner()
+  -- enemy_spawner()
   loot_spawner()
   player_respawner()
   
@@ -108,7 +108,7 @@ function _update()
   update_log()
   
   update_network()  
-  
+  -- if IS_SERVER and gm_values and gm_values.crowned_player then log(gm_values and gm_values.crowned_player) end
 end
 
 function _draw()

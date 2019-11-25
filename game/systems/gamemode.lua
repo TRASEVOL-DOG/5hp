@@ -9,6 +9,10 @@ leaderboard_is_large = true
 function init_gamemode(gm)
   log("Initializing game mode: " .. gamemode[gm].name)
   
+  -- init_map()
+  gm_values = {}
+  displayed_g_o = false
+  
   if IS_SERVER then
     if gm < 1 then return end
     gm_values.gm = gm
@@ -16,33 +20,19 @@ function init_gamemode(gm)
   end
 end
 
-function client_init_gm()
-  gm_values = {}
-end
-
-function should_player_loot()
-  return gamemode[gm_values.gm].should_player_loot and gamemode[gm_values.gm].should_player_loot() 
-end
-
 function update_gamemode()
 
   if IS_SERVER then
     if not gm_values.GAME_OVER then
+      -- log("here")
       if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
         gamemode[gm_values.gm].update()
       end
-      gm_values.GAME_OVER = is_game_over()
-      t_game_over = 0
     else
-      -- decide how game over ends
-      
       t_game_over = t_game_over + dt()
       if t_game_over > 3 then
         init_gamemode(gm_values.gm)
-        gm_values.GAME_OVER = false
-        displayed_g_o = false
       end
-      
     end
   else -- Client
     if btnp("tab") then 
@@ -51,23 +41,17 @@ function update_gamemode()
     end   
     if gm_values.GAME_OVER then
       if not displayed_g_o then
-        -- do things
-        -- END_OF_GAME = false
         displayed_g_o = true
         new_log("The game is over !")
       end
-    else
-      -- END_OF_GAME = true
     end
   end
 end
 
 function draw_gamemode_infos()
 
-  -- draw the leaderboard
   draw_leaderboard()
-  
-  -- write the game mode name
+ 
   use_font("small")
   local str = gm_values.gm and ("Playing "..gamemode[gm_values.gm].name) or ""
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
@@ -76,22 +60,23 @@ function draw_gamemode_infos()
   
 end
 
-function game_over(sorted_lb)
-  gm_values = {}
+function game_over()
+  gm_values.GAME_OVER = true
+  t_game_over = 0
 end
 
 function is_game_over()
-  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  if not gm_values.gm then return end
   return gamemode[gm_values.gm].is_game_over()  
 end
 
 function notify_gamemode_new_p(id_player, score)
-  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  if not id_player or not gm_values.gm then return end
   gamemode[gm_values.gm].new_p(id_player, score)  
 end
 
 function notify_gamemode_deleted_p(id_player)
-  if SERVER_ONLY and not id_player and not gm_values.gm then return end
+  if not id_player or not gm_values.gm then return end
   gamemode[gm_values.gm].deleted_p(id_player)  
 end
 
@@ -104,51 +89,51 @@ do
       
       description = "The Crown's description, and it's holy.",
       
-      base_score = 60,
+      base_score = 5,
       
       init = function()
-        -- place the crown on the map
-        -- set crown.x, crown.y         
-        -- crowned_player = nil    
         gm_values.leaderboard = {}        
-        for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end
-        
-        -- spawn_crown()
-      
+        gm_values.leaderboard_order = "ascending"
+        for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end    
       end,
     
       update = function()
         for i, l in pairs(gm_values.leaderboard) do  
           if gm_values.crowned_player == i then
-            local p_since_picked = flr((t() - l.time_picked_crown)*10)/10
-            l.score = (l.last_score or 60) - p_since_picked
+            local p_since_picked = flr((t() - (l.time_picked_crown))*10)/10
+            l.score = (l.last_score or gamemode[gm_values.gm].base_score) - p_since_picked
           end
         end
+        
+        is_game_over()
+        
       end,
       
-      new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].base_score , time_picked_crown = nil, last_score = gamemode[gm_values.gm].base_score}      
+      new_p = function(id_player)
+        gm_values.leaderboard[id_player or 0] = { score = gamemode[gm_values.gm].base_score , 
+                                                  time_picked_crown = nil, 
+                                                  last_score = gamemode[gm_values.gm].base_score}
       end,
       
       deleted_p = function(id_player)
-        gm_values.leaderboard[id_player or 0] = nil     
+        gm_values.leaderboard[id_player or 0] = nil
+        
+        if gm_values.crowned_player == id_player then
+          if IS_SERVER then
+            create_loot(nil, 3, players[id_player].x, players[id_player].y)
+          end
+          gm_values.crowned_player = nil    
+        end
+        
       end,
       
       is_game_over = function()
         for i, l in pairs(gm_values.leaderboard) do
-          if l.score <= 0 then l.score = 0 return true end
+          if l.score <= 0 then 
+            l.score = 0 
+            game_over()
+          end
         end
-      end,
-      
-      spawn_crown = function()
-        for i, l in pairs(gm_values.leaderboard) do
-          if l.score <= 0 then l.score = 0 return true end
-        end
-      end,
-       
-      game_over = function()
-        sorted_lb = {} -- rank : {player_id, score} , table is already sorted
-        game_over(sorted_lb)
       end,
     },
     {    
@@ -169,9 +154,6 @@ do
       end,
       
       new_p = function(id_player, score)
-      -- new_p = function(id_player, score)
-        -- gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].base_score , time_picked_crown = nil, last_score = gamemode[gm_values.gm].base_score}      
-      -- end,
         gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm].base_score, time_joined = t()}      
       end,
       
@@ -181,14 +163,13 @@ do
       
       is_game_over = function()
         for i, l in pairs(gm_values.leaderboard) do
-          if l.score <= 0 then l.score = 0 new_log("here") return true end
+          if l.score <= 0 then 
+            l.score = 0 
+            game_over()
+          end
         end
       end,
   
-      game_over = function()
-        sorted_lb = {} -- rank : {player_id, score} , table is already sorted
-        game_over(sorted_lb)
-      end,
     }
   }
   ------------

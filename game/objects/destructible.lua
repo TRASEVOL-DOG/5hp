@@ -107,6 +107,8 @@ end
 
 
 function init_destructibles(spawns)
+  
+  if destructibles then for i, _ in pairs(destructibles) do destructibles[i] = nil end end
   for _, p in pairs(spawns) do
     if chance(90) then
       create_destructible(nil, p.x+irnd(3)-1, p.y+irnd(3)-2)

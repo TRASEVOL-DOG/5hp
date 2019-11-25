@@ -49,7 +49,14 @@ function init_map()
   map_h = #map_data+1
   
   gen_mapsurf()
-
+  
+  if loots then
+    for i, _ in pairs(loots)        do loots[i] = nil end
+  end
+  if loot_respawns then
+    for i, _ in pairs(loot_respawns)do loot_respawns[i] = nil end
+  end
+  
   local flower_spawns = {}
   local weapon_spawns = {}
   local heal_spawns = {}
