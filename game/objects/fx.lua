@@ -190,6 +190,60 @@ do -- explosion
 end
 
 
+do -- floating text
+  
+  function create_text(x, y, txt, c)
+    if IS_SERVER then return end
+  
+    local s = {
+      x = x,
+      y = y,
+      c = c,
+      z = 16,
+      l = 1.5,
+      txt = txt,
+      update = update_floatingtext,
+      draw   = draw_floatingtext,
+      regs   = {"to_update", "to_draw4", "particles"}
+    }
+    
+    register_object(s)
+    
+    return s
+  end
+  
+  function update_floatingtext(s)
+    s.z = lerp(s.z, 32, 5*dt())
+    s.l = s.l - dt()
+    
+    if s.l <= 0 then
+      deregister_object(s)
+    end
+  end
+  
+  function draw_floatingtext(s)
+    use_font("small")
+    
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    local y = s.y
+
+    local c = s.c or 9
+    if s.l < 0.1 then
+      printp_color(c_drk[c], c_drk[c_drk[c]], 6)
+    elseif s.l < 0.2 then
+      printp_color(c, c_drk[c], 6)
+    else
+      printp_color(14, c, 6)
+    end
+    
+    local x = s.x - str_px_width(s.txt)/2
+    local y = s.y - s.z
+    pprint(s.txt, x, y)
+  end
+
+end
+
+
 do -- wind
 
   local wind_dir = 1

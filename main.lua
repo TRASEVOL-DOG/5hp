@@ -6,7 +6,7 @@
 --sugar.utility.using_package(sugar.S, true)
 
 
--- LOAD_MAP_FROM_PNG = true
+--LOAD_MAP_FROM_PNG = true
 
 
 

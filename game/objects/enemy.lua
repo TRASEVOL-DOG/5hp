@@ -15,6 +15,7 @@ function create_enemy(id, x, y)
     hp   = 2,
     hit  = 0,
     
+    dir    = rnd(1),
     target = 0,
     clock  = 0,
     damage = 2,
@@ -22,6 +23,7 @@ function create_enemy(id, x, y)
     animt    = rnd(10),
     state    = "idle",
     faceleft = chance(50),
+    water_draw = water_draw_enemy,
     
     update = update_enemy,
     draw   = draw_enemy,
@@ -101,8 +103,10 @@ function update_enemy(s)
         s.vy = s.vy * 1.5
       else
         local a = atan2(p.x - s.x, p.y - s.y)
-        s.vx = s.vx + cos(a) * 5
-        s.vy = s.vy + sin(a) * 5
+        s.dir = s.dir + dt() * sgn(angle_diff(s.dir, a))
+        
+        s.vx = s.vx + cos(s.dir) * 5
+        s.vy = s.vy + sin(s.dir) * 5
       end
       
       if p.dead then s.target = nil end
@@ -130,6 +134,7 @@ function update_enemy(s)
     s.x = s.x - s.vx * dt()
     s.y = s.y - s.vy * dt()
     
+    s.dir = s.dir + 0.5
     s.vx = -s.vx
     s.vy = -s.vy
   end
@@ -169,6 +174,22 @@ function draw_enemy(s)
     all_colors_to()
   else
     draw_anim(s.x, s.y-2, "helldog", s.state, s.animt, s.faceleft)
+  end
+  
+  palt(6, true)
+  palt(1, false)
+end
+
+function water_draw_enemy(s)
+  palt(1, true)
+  palt(6, false)
+  
+  if s.hit > 0 then
+    all_colors_to(14)
+    draw_anim(s.x, s.y+4, "helldog", s.state, s.animt, s.faceleft, true)
+    all_colors_to()
+  else
+    draw_anim(s.x, s.y+4, "helldog", s.state, s.animt, s.faceleft, true)
   end
   
   palt(6, true)

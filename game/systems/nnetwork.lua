@@ -168,8 +168,13 @@ do -- client
         end
         
         resurrect_player(p)
+        p.hp = 10
         p.x = d[1]
         p.y = d[2]
+        
+        for i = 1, 16 do
+          create_smoke(p.x, p.y, 1, nil, 14, i/16+rnd(0.1))
+        end
       end
       
       if not p then
@@ -213,6 +218,10 @@ do -- client
       
       
       p.name = d[13]
+      
+      if p.last_loot ~= d[16] then
+        take_loot(loots[d[16]], p)
+      end
       
       -- notify_gamemode_new_p(id, p.score)
       -- gm_values.leaderboard = gm_values.leaderboard or {}      
@@ -291,8 +300,9 @@ do -- client
     
     for id, s in pairs(loots) do
       if not data[id] then
-        deregister_object(s)
-        loots[id] = nil
+        if not s.life then
+          s.life = 3
+        end
       end
     end
     
@@ -401,10 +411,11 @@ do -- server
     player.dy_input = ho[5] or 0
     player.angle = ho[6] or 0
     
-    player.shoot_held = ho[8]
+    --player.shoot_held = ho[8]
     
     if ho[7] and ho[7] > shot_ids[id] then
-      player.shoot_trigger = true
+      --player.shoot_trigger = true
+      shoot(player)
       shot_ids[id] = ho[7]
     end
     
@@ -454,7 +465,7 @@ do -- server
   end
   
   
-  
+ 
   function server_out_players()
     local data_list = server.share[2]
     
@@ -479,7 +490,8 @@ do -- server
         p.score,
         p.name,
         p.shoot_trigger,
-        p.shoot_hold
+        p.shoot_hold,
+        p.last_loot
       }
     end
   end
@@ -601,7 +613,8 @@ end
         [12] = score,
         [13] = name,
         [14] = shoot_trigger,
-        [15] = shoot_hold
+        [15] = shoot_hold,
+        [16] = loot
       },
       ...
     },

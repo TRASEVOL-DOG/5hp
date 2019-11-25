@@ -373,6 +373,17 @@ function bullet_explosion(s)
       kill_destructible(d, s.id)
     end
   end
+
+  if not IS_SERVER then
+    local l = 18
+    for i = 1, 7 do
+      local a = i/7 + give_or_take(0.05)
+      create_ripple(
+        s.x + l*cos(a),
+        s.y + l*sin(a)
+      ).animt = rnd(0.2)
+    end
+  end
 end
 
 function bullet_burst(s)

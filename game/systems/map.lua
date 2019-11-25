@@ -114,13 +114,22 @@ function draw_map()
   palt(0,false)
   spr_sheet(map_water_surf, -x, -y)
   
+  clip(-x, -y, map_w*8, map_h*8-8)
+  
   palt(6,true)
   apply_camera()
+  for s in group("enemy") do
+    s:water_draw()
+  end
+  for s in group("player") do
+    s:water_draw()
+  end
   for s in group("water") do
     s:draw()
   end
   palt(6,false)
   camera()
+  clip()
   
   palt(9, true)
   palt(12, true)
