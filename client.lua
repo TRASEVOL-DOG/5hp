@@ -144,30 +144,45 @@ function define_controls()
   register_btn("mouse_y", 0, input_id("mouse_position", "y"))
   register_btn("mouse_lb", 0, input_id("mouse_button", "lb"))
   register_btn("mouse_rb", 0, input_id("mouse_button", "rb"))
-                           
-  register_btn("left", 0,  {input_id("keyboard", "left"),
-                            input_id("keyboard", "a"),
-                            input_id("controller_button", "dpleft")})
-                            
-  register_btn("right", 0, {input_id("keyboard", "right"),
-                            input_id("keyboard", "d"),
-                            input_id("controller_button", "dpright")})
-                            
-  register_btn("up", 0,    {input_id("keyboard", "up"),
-                            input_id("keyboard", "w"),
-                            input_id("controller_button", "dpup")})
-                            
-  register_btn("down", 0,  {input_id("keyboard", "down"),
-                            input_id("keyboard", "s"),
-                            input_id("controller_button", "dpdown")})
 
-  
-  register_btn("ctrl", 0, {input_id("keyboard", "lctrl"),
-                           input_id("keyboard", "rctrl")})
-                           
+  register_btn("left", 0,  {
+    input_id("keyboard", "left"),
+    input_id("keyboard", "a"),
+    input_id("controller_button", "dpleft")
+  })
+
+  register_btn("right", 0, {
+    input_id("keyboard", "right"),
+    input_id("keyboard", "d"),
+    input_id("controller_button", "dpright")
+  })
+
+  register_btn("up", 0,    {
+    input_id("keyboard", "up"),
+    input_id("keyboard", "w"),
+    input_id("controller_button", "dpup")
+  })
+
+  register_btn("down", 0,  {
+    input_id("keyboard", "down"),
+    input_id("keyboard", "s"),
+    input_id("controller_button", "dpdown")
+  })
+
+  register_btn("ctrl", 0, {
+    input_id("keyboard", "lctrl"),
+    input_id("keyboard", "rctrl")
+  })
+
   register_btn("tab", 0, input_id("keyboard", "tab"))
   
-  local keyboard_keys = {"backspace", "v", "r"}
+  register_btn("pause", 0, {
+    input_id("keyboard", "escape"),
+    input_id("keyboard", "p"),
+    input_id("keyboard", "o")
+  })
+  
+  local keyboard_keys = {"backspace", "v", "r", "return"}
   for k in all(keyboard_keys) do
     register_btn(k, 0, input_id("keyboard", k))
   end

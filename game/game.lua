@@ -24,6 +24,8 @@ c_lit = {[0]=3, 4, 5, 11, 9, 10, 1, 13, 11, 12, 14, 13, 14, 14, 14}
 
 my_name = ""
 
+start_timer = 60
+
 function _init()
   init_network()
   
@@ -66,6 +68,7 @@ function _init()
     
     define_menus()
     menu("mainmenu")
+    --game_over_menu()
   end
   
 end
@@ -98,16 +101,21 @@ function _update()
   player_respawner()
   
   
-  if not IS_SERVER and get_menu() == "mainmenu" then
+  if not IS_SERVER and get_menu() == "mainmenu" or get_menu() == "mainmenu_ig" then
     if btn("r") then
       my_name = generate_name()
     end
   end
   
+  if not IS_SERVER and btnp("pause") then
+    menu(get_menu() ~= "settings" and "settings")
+    sfx("menu_confirm")
+  end
+  
   update_menu()
   update_log()
   
-  update_network()  
+  update_network()
   
 end
 
@@ -140,11 +148,17 @@ function _draw()
   draw_gamemode_infos() -- leaderboard, name of game mode, whatever we think of next
   
   draw_log()
-  draw_menu()
   
-  if get_menu() == "mainmenu" then
+  local m = get_menu()
+  if m == "mainmenu" or m == "mainmenu_ig" then
+    draw_connected_players()
     draw_title()
+  elseif m == "gameover" then
+    draw_connected_players()
+    -- draw leaderboard centered
   end
+  
+  draw_menu()
   
   if players[my_id] and draw_mobile_controls then
     draw_mobile_controls()
@@ -321,6 +335,21 @@ do -- ui stuff
       return _sfx_volume()*100
     end
   
+    local function set_ready()
+      connecting = not connecting
+      
+      local m = get_menu()
+      if connecting then
+        update_menu_entry(m, 1, ">>Ready!<<")
+      else
+        if m == "mainmenu" then
+          update_menu_entry(m, 1, "Ready")
+        else
+          update_menu_entry(m, 1, "Continue")
+        end
+      end
+    end
+  
     init_menu_system({
       test = {
         { "Hello",      function() log("Hello!") end },
@@ -331,8 +360,8 @@ do -- ui stuff
       },
       
       mainmenu = {
-        { "Play",      function() menu() connecting = true end },
-        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Ready",     set_ready },
+        { "Vote: <"..gamemode[1].name..">", client_next_gamemode},
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 3, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
         { "Settings",  function() menu("settings") end },
@@ -343,13 +372,15 @@ do -- ui stuff
         { "Play",      function() menu() connecting = true end },
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
-        { "Settings",  function() menu("settings") end }
+        { "Settings",  function() menu("settings") end },
+        params = {anc_y = 0.7 }
       },
       
       gameover = {
-        { "Ready", function()  end},
-        { "Mode: <"..gamemode[1].name..">", client_next_gamemode},
-        { "Settings",  function() menu("settings") end }
+        { "Continue",  set_ready },
+        { "Vote: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Settings",  function() menu("settings") end },
+        params = {anc_y = 0.8}
       },
   
       settings = {
@@ -360,9 +391,15 @@ do -- ui stuff
         { "Glow Strength",glow_strength,  "slider", 200 },
         { "CRT curve",    set_crt,        "slider", 200 },
         { "Scanlines",    set_scanlines,  "slider", 200 },
-        { "Back",         menu }
+        { "Back",         menu },
+        params = {spacing = 2}
       }
     })
+  end
+  
+  function game_over_menu()
+    connecting = false
+    menu("gameover")
   end
   
   function generate_name()
@@ -452,6 +489,26 @@ do -- ui stuff
     pprint(str, scrnw - str_px_width(str) - 4, scrnh-32)
     str = "@Eliott_MacR"
     pprint(str, scrnw - str_px_width(str) - 4, scrnh-16)
+  end
+
+  function draw_connected_players()
+    if IS_SERVER or not (client.share and client.share[10]) then
+      return
+    end
+  
+    local x, y, s = 4, 4, 10
+    printp(0x0300, 0x3130, 0x3230, 0x0300)
+    printp_color(14, 11, 6)
+    use_font("small")
+    
+    pprint("Connected:", x, y)
+    y = y + s
+    x = x + 4
+    
+    for _, d in pairs(client.share[10]) do
+      pprint("- "..(d[2] or "Player").." ("..(d[1] or "user")..") "..(d[3] and "[ready]" or ""), x, y)
+      y = y + s
+    end
   end
 end
 

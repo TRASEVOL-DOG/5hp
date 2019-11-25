@@ -71,15 +71,17 @@ do -- client
     client_sync_destructibles()
     
     client_sync_map(diff[7])
-    client_sync_gm_values(diff[7])
     
     if diff[9] and gm_values.gm ~= diff[9] then
-      gm_values.gm = client.share[9]
-      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
-      update_menu_entry("gameover", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
+      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[diff[9]].name..">")
+      update_menu_entry("gameover", 2, "Mode: <"..gamemode[diff[9]].name..">")
       
       new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
     end
+    
+    client_sync_gm_values()
+    
+    start_timer = client.share[11]
   end
   
   function client_output()
@@ -90,6 +92,11 @@ do -- client
 --    end
     
     client.home[11] = connecting
+    client.home[9] = my_name
+    
+    if castle then
+      client.home[16] = castle.user.getMe().username
+    end
     
     local my_player = players[client.id] or players[0]
     if my_player then
@@ -108,7 +115,6 @@ do -- client
       client.home[6] = my_player.angle
       client.home[8] = my_player.shoot_held
       
-      client.home[9] = my_name
     end
     
   end
@@ -363,7 +369,7 @@ do -- client
     end
   end
   
-  function client_sync_gm_values(diff)
+  function client_sync_gm_values()
     if not client.share[8] then return end
     if diff ~= nil then
       if not diff then client_init_gm() end 
@@ -390,6 +396,7 @@ do -- server
     server.share[5] = {}
     server.share[6] = {}
     server.share[8] = {}
+    server.share[10] = {}
   end
 
   function server_input(id, diff)
@@ -449,6 +456,10 @@ do -- server
     server_out_gm_values()
     
     server.share[9] = gm_values.gm or 0
+    
+    server_out_clientdata()
+    
+    server.share[11] = start_timer
   end
   
   function server_new_client(id)
@@ -571,6 +582,24 @@ do -- server
     if not gm_values then return end    
     server.share[8] = gm_values    
   end
+
+  function server_out_clientdata()
+    local data = server.share[10]
+  
+    for id,d in pairs(data) do
+      if not server.homes[id] then
+        data[id] = nil
+      end
+    end
+    
+    for id,h in pairs(server.homes) do
+      data[id] = {
+        h[16],
+        h[9],
+        h[11]
+      }
+    end
+  end
 end
 
 
@@ -591,7 +620,8 @@ end
     [12]= death_id,
     [13]= killed_by,
     [14]= player_vx,
-    [15]= player_vy
+    [15]= player_vy,
+    [16]= username
   }
   
   
@@ -662,8 +692,17 @@ end
       ...
     },
     [7] = map_data,
-    [8] = gm_values
-    [9] = current_gamemode
+    [8] = gm_values,
+    [9] = current_gamemode,
+    [10] = { -- clients
+      [id] = {
+        [1] = username,
+        [2] = name,
+        [3] = ready
+      },
+      ...
+    },
+    [11] = start_timer
   }
   
 --]]

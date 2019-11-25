@@ -65,20 +65,18 @@ function init_menu(data, name)
     add(m, n)
   end
   
-  local spacing = 8
+  local spacing = (data.params and data.params.spacing) or 8
   
-  if data.params then
-    m.params = copy_table(data.params)
-  else
-    m.params = {}
-  end
-  
-  merge_tables(m.params, {
+  m.params = {
     chosen  = nil,
     w       = maxw + 32,
     h       = toth + (#m-1) * spacing,
     spacing = spacing
-  })
+  }
+  
+  if data.params then
+    merge_tables(m.params, data.params)
+  end
   
   menus[name] = m
 end
@@ -217,7 +215,7 @@ function interact.text_field(s, rx, ry)
     love.keyboard.setTextInput(true)
     love.textinput = catch_text
     text_n = s
-  elseif btnr("mouse_lb") and abs(ry) > s.h/2 then
+  elseif btnp("return") or (btnr("mouse_lb") and abs(ry) > s.h/2) then
     sfx("menu_confirm")
     menulock = false
     menuchange = true
@@ -323,6 +321,14 @@ function menu(name)
   
   if curmenu then
     add(prevmenus, curmenu)
+    
+    if menulock then
+      menulock = false
+      menuchange = true
+      love.keyboard.setTextInput(false)
+      love.textinput = nil
+      text_n = nil
+    end
   end
   
   curmenu = name
