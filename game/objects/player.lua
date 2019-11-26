@@ -452,12 +452,6 @@ function hit_player(s, b)
       kill_player(s, b.from)
       client_die(b.from)
     end
-
-    if gm_values.gm == 2 and IS_SERVER then
-      if b.from and b.from ~= s.id then
-        gm_values.leaderboard[b.from].score = gm_values.leaderboard[b.from].score - 1  
-      end
-    end 
   end  
 end
 
@@ -543,9 +537,13 @@ function kill_player(s, killer_id)
       create_loot(nil, 3, s.x, s.y)
     end
     gm_values.crowned_player = nil
-    
   end
   
+  if gm_values.gm == 2 and IS_SERVER then
+    if killer_id and killer_id ~= s.id then
+      gm_values.leaderboard[killer_id].score = gm_values.leaderboard[killer_id].score - 1
+    end
+  end 
 end
 
 function forget_player(s)
