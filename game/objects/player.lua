@@ -441,16 +441,24 @@ function hit_player(s, b)
   s.hp = s.hp - b.damage
   s.hit_timer = 0.5
   
-  if s.id == "my_id" then
+  if s.id == my_id then
     sfx("get_hit_player", s.x, s.y)
   else
     sfx("get_hit", s.x, s.y)
   end
   
-  if s.hp <= 0 and s.id == my_id then
-    kill_player(s, b.from)
-    client_die(b.from)
-  end
+  if s.hp <= 0 then
+    if s.id == my_id then
+      kill_player(s, b.from)
+      client_die(b.from)
+    end
+
+    if gm_values.gm == 2 and IS_SERVER then
+      if b.from and b.from ~= s.id then
+        gm_values.leaderboard[b.from].score = gm_values.leaderboard[b.from].score - 1  
+      end
+    end 
+  end  
 end
 
 function heal_player(s)
