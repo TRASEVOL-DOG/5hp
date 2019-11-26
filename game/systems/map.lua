@@ -49,7 +49,14 @@ function init_map()
   map_h = #map_data+1
   
   gen_mapsurf()
-
+  
+  if loots then
+    for i, _ in pairs(loots)        do loots[i] = nil end
+  end
+  if loot_respawns then
+    for i, _ in pairs(loot_respawns)do loot_respawns[i] = nil end
+  end
+  
   local flower_spawns = {}
   local weapon_spawns = {}
   local heal_spawns = {}
@@ -76,11 +83,12 @@ function init_map()
           y = y*8+4
         }
         
-        if m == 7 and gm_values.gm == 1 and not crown then
-          if map_data[y][x+1] == 7 then p.x = p.x + 4 end
-          if map_data[y+1][x] == 7 then p.y = p.y + 4 end
-          crown = p
-        elseif m == 8 then
+        -- if m == 7 and gm_values.gm == 1 and not crown then
+          -- if map_data[y][x+1] == 7 then p.x = p.x + 4 end
+          -- if map_data[y+1][x] == 7 then p.y = p.y + 4 end
+          -- crown = p
+        -- else
+        if m == 8 then
           add(player_spawns, p)
         elseif m == 1 then
           add(weapon_spawns, p)
@@ -96,6 +104,32 @@ function init_map()
   
     init_destructibles(flower_spawns)
     init_loot(weapon_spawns, heal_spawns, crown)
+  end
+end
+
+function spawn_crown()
+
+  -- map_index = 1
+  -- map_data = decode_map(maps[map_index])
+  -- map_original_data = copy_table(map_data, true)
+  map_w = #map_data[0]+1
+  map_h = #map_data+1
+  
+  -- gen_mapsurf()
+  
+  if IS_SERVER then
+    for y = 0, map_h-1 do
+      for x = 0, map_w-1 do
+        local m = map_data[y][x]        
+        local p = { x = x*8+4, y = y*8+4 }        
+        if m == 7 and gm_values.gm == 1 and not crown then
+          if map_data[y][x+1] == 7 then p.x = p.x + 4 end
+          if map_data[y+1][x] == 7 then p.y = p.y + 4 end
+          crown = p
+          create_loot(nil, 3, p.x, p.y)
+        end        
+      end
+    end
   end
 end
 

@@ -71,7 +71,7 @@ do -- client
     client_sync_destructibles()
     
     client_sync_map(diff[7])
-    
+
     if diff[9] and gm_values.gm ~= diff[9] then
       update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[diff[9]].name..">")
       update_menu_entry("gameover", 2, "Mode: <"..gamemode[diff[9]].name..">")
@@ -371,9 +371,6 @@ do -- client
   
   function client_sync_gm_values()
     if not client.share[8] then return end
-    if diff ~= nil then
-      if not diff then client_init_gm() end 
-    end
     gm_values = copy_table(client.share[8])
   end
   
@@ -580,7 +577,7 @@ do -- server
   
   function server_out_gm_values()
     if not gm_values then return end    
-    server.share[8] = gm_values    
+    server.share[8] = copy_table(gm_values)    
   end
 
   function server_out_clientdata()

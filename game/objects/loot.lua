@@ -15,6 +15,9 @@ local loot_respawns = {}
 function init_loot(weapon_spawns, heal_spawns, crown)
   if not IS_SERVER then return end
   
+  if loots then for i, _ in pairs(loots) do loots[i] = nil end end
+  if loot_respawns then for i, _ in pairs(loot_respawns)do loot_respawns[i] = nil end end
+  
   for _, p in pairs(weapon_spawns) do
     create_loot(nil, 1, p.x, p.y)
   end
@@ -73,6 +76,8 @@ function create_loot(id, type, x, y)
   
   if s.type == 1 then -- weapon
     s.weapon = pick(weapon_list)
+  elseif s.type == 3 then -- weapon
+    crown = {x = x, y = y}
   end
   
   if id then
@@ -182,6 +187,7 @@ loot_effect = {
     if IS_SERVER then
       gm_values.crowned_player = p.id
       gm_values.leaderboard[p.id].time_picked_crown = t()
+      crown = nil
     end
   end
 }

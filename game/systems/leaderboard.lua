@@ -44,7 +44,7 @@ function draw_leaderboard()
       l.name = players[i].name
     end
     
-    local tab = get_ordered_tab("descending", leaderboard, "score") or {}
+    local tab = get_ordered_tab(gm_values.leaderboard_order or "descending", leaderboard, "score") or {}
     local my_rank = get_rank(tab, my_id)
     
     if leaderboard_is_large or size < 6 then
@@ -121,7 +121,12 @@ function get_ordered_tab(mode, tab, key)
       sorted_list[#sorted_list + 1] = tab[i]
       copy_t[i] = nil
     end  
-  -- elseif mode == "ascending" then
+  elseif mode == "ascending" then
+    while count(copy_t) > 0 do
+      local mx, i = get_min(copy_t, key)
+      sorted_list[#sorted_list + 1] = tab[i]
+      copy_t[i] = nil
+    end
   end
   
   return sorted_list
@@ -149,6 +154,23 @@ function get_max(tab, key)
     end    
   end
   return mx, index
+end
+
+function get_min(tab, key)
+  if tab == {} or not key then return end
+  local mn
+  local index
+  for i, l in pairs(tab) do
+    mn = mn or l[key]    
+    index = index or i   
+    if l[key] then 
+      if l[key] < mn then 
+        mn = l[key] 
+        index = i 
+      end    
+    end    
+  end
+  return mn, index
 end
 
 function get_rank(lb, id)
