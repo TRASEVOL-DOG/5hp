@@ -76,6 +76,33 @@ function _init()
 end
 
 function _update()
+  if IS_SERVER and start_timer > 0 then
+    local n,r = 0,0
+    for _, ho in pairs(server.homes) do
+      n = n + 1
+      if ho[11] then
+        r = r + 1
+      end
+    end
+    
+    if n > 0 and n == r then
+      start_timer = min(start_timer - dt(), 5)
+    elseif r > 0 then
+      start_timer = start_timer - dt()
+    else
+      start_timer = 60
+    end
+    
+    if start_timer <= 0 then
+      log("The game starts now.")
+      for id, ho in pairs(server.homes) do
+        if ho[3] then
+          create_player(id)
+        end
+      end
+    end
+  end
+
   if my_id then
     cam.follow = players[my_id]
   end

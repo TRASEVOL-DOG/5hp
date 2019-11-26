@@ -81,7 +81,20 @@ do -- client
     
     client_sync_gm_values()
     
-    start_timer = client.share[11]
+    if diff[11] then
+      start_timer = diff[11]
+      if start_timer <= 0 then
+        if connecting then
+          menu()
+        elseif get_menu() == "gameover" then
+          connecting = true
+          menu()
+        else
+          menu()
+          menu("mainmenu_ig")
+        end
+      end
+    end
   end
   
   function client_output()
@@ -405,7 +418,7 @@ do -- server
       end
     end
     
-    if not ho[1] or not ho[11] then return end
+    if not ho[1] or not ho[11] or start_timer > 0 then return end
   
     local player = players[id]
     if not player then

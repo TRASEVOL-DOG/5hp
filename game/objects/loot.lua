@@ -15,8 +15,15 @@ local loot_respawns = {}
 function init_loot(weapon_spawns, heal_spawns, crown)
   if not IS_SERVER then return end
   
-  if loots then for i, _ in pairs(loots) do loots[i] = nil end end
-  if loot_respawns then for i, _ in pairs(loot_respawns)do loot_respawns[i] = nil end end
+  if loots then
+    for i, o in pairs(loots) do
+      deregister_object(o)
+      loots[i] = nil
+    end
+  end
+  
+  loots = {}
+  loot_respawns = {}
   
   for _, p in pairs(weapon_spawns) do
     create_loot(nil, 1, p.x, p.y)
@@ -53,8 +60,6 @@ local function respawn_loot(s)
     t = t() + 8 + rnd(3)
   })
 end
-
-
 
 
 
