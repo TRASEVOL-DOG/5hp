@@ -2,7 +2,7 @@
 local logs = {}
 local font = "big"
 
-function new_log(str, c)
+function new_log(str, c, l)
   if IS_SERVER or (logs[#logs] and logs[#logs].str == str) then return end
   
   use_font(font)  
@@ -11,7 +11,7 @@ function new_log(str, c)
     c   = c,
     y   = 32,
     w   = str_px_width(str),
-    l   = 5
+    l   = l or 5
   })
   
 end
@@ -48,7 +48,7 @@ function draw_log()
       printp_color(14, c, 6)
     end
     
-    local x = screen_w()/2 - l.w/2
+    local x = 4--screen_w()/2 - l.w/2
     local y = y + l.y
     pprint(l.str, x, y)
   end

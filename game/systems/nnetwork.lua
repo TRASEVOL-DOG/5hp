@@ -81,8 +81,9 @@ do -- client
     
     client_sync_gm_values()
     
-    if diff[11] then
-      start_timer = diff[11]
+    if client.share[11] ~= start_timer then
+      local otimer = start_timer
+      start_timer = client.share[11]
       if start_timer <= 0 then
         if connecting then
           menu()
@@ -93,6 +94,9 @@ do -- client
           menu()
           menu("mainmenu_ig")
         end
+        new_log("The game starts!")
+      elseif flr(otimer) > flr(start_timer) then
+        new_log("Starting in "..ceil(start_timer).."\"", nil, 2)
       end
     end
   end
