@@ -62,11 +62,6 @@ function game_over()
   t_game_over = 0
 end
 
-function is_game_over()
-  if not gm_values.gm then return end
-  return gamemode[gm_values.gm].is_game_over()  
-end
-
 function notify_gamemode_new_p(id_player, score)
   if not id_player or not gm_values.gm then return end
   gamemode[gm_values.gm].new_p(id_player, score)  
@@ -81,10 +76,9 @@ do
 
   gamemode = {
     {    
-      -- (temporary name)
       name = "Keep the Crown",
       
-      description = "The Crown's description, and it's holy.",
+      description = "Keep your head and the crown on it for long enough.",
       
       base_score = 5,
       
@@ -105,7 +99,12 @@ do
           end
         end
         
-        is_game_over()
+        for i, l in pairs(gm_values.leaderboard) do
+          if l.score <= 0 then 
+            l.score = 0 
+            game_over()
+          end
+        end
         
       end,
       
@@ -127,52 +126,34 @@ do
         
       end,
       
-      is_game_over = function()
-        for i, l in pairs(gm_values.leaderboard) do
-          if l.score <= 0 then 
-            l.score = 0 
-            game_over()
-          end
-        end
-      end,
     },
     {    
-      -- (temporary name) 
       name = "Deathmatch",
       
-      description = "Deathmatch is a match to the death.",
+      description = "Empty your kill count before others do.",
+      
+      max_kills = 30,
       
       init = function()
-        gm_values.leaderboard = {}        
+        gm_values.leaderboard = {}  
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end
       end,
     
       update = function()
-        for i, l in pairs(gm_values.leaderboard) do  
-        
-        
-          l.score = 5 - flr((t() - l.time_joined)*10)/10
-          
-          
-          
-        end
-      end,
-      
-      new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm].base_score, time_joined = t()}      
-      end,
-      
-      deleted_p = function(id_player)
-        gm_values.leaderboard[id_player or 0] = nil     
-      end,
-      
-      is_game_over = function()
         for i, l in pairs(gm_values.leaderboard) do
           if l.score <= 0 then 
             l.score = 0 
             game_over()
           end
         end
+      end,
+      
+      new_p = function(id_player, score)
+        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].max_kills}
+      end,
+      
+      deleted_p = function(id_player)
+        gm_values.leaderboard[id_player or 0] = nil     
       end,
   
     }
