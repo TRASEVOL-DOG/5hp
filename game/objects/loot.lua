@@ -52,6 +52,8 @@ end
 
 local function respawn_loot(s)
   if not IS_SERVER then return end
+  
+  log("respawn loot "..s.id)
 
   add(loot_respawns, {
     x = s.x,
@@ -166,10 +168,7 @@ function take_loot(s, p)
   deregister_object(s)
   
   p.last_loot = s.id
-  
-  if IS_SERVER then
-    loots[s.id] = nil
-  end
+  loots[s.id] = nil
 end
 
 

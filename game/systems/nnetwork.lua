@@ -98,12 +98,8 @@ do -- client
   end
   
   function client_output()
---    if connecting then
-      client.home[1] = t()
---    else
---      client.home[1] = nil
---    end
-    
+    client.home[1] = t()
+      
     client.home[11] = connecting
     client.home[9] = my_name
     
@@ -127,9 +123,7 @@ do -- client
       client.home[5] = my_player.dy_input
       client.home[6] = my_player.angle
       client.home[8] = my_player.shoot_held
-      
     end
-    
   end
   
   function client_connect()
@@ -238,7 +232,7 @@ do -- client
       
       p.name = d[13]
       
-      if p.last_loot ~= d[16] then
+      if d[16] and p.last_loot ~= d[16] then
         take_loot(loots[d[16]], p)
       end
       

@@ -50,16 +50,6 @@ function init_map()
   
   gen_mapsurf()
   
-  if loots then
-    for i, _ in pairs(loots)        do loots[i] = nil end
-  end
-  if loot_respawns then
-    for i, _ in pairs(loot_respawns)do loot_respawns[i] = nil end
-  end
-  
-  local flower_spawns = {}
-  local weapon_spawns = {}
-  local heal_spawns = {}
   
   for y = 0, map_h-1 do
     wall_hp[y] = {}
@@ -72,8 +62,12 @@ function init_map()
     end
   end
   
-  local crown
   if IS_SERVER then
+    local crown
+    local flower_spawns = {}
+    local weapon_spawns = {}
+    local heal_spawns = {}
+    
     for y = 0, map_h-1 do
       for x = 0, map_w-1 do
         local m = map_data[y][x]
