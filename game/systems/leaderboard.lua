@@ -1,92 +1,62 @@
 
-function draw_leaderboard()
 
-  use_font("small")  
+function draw_leaderboard(x, y, align_x, align_y, font, force_large, title)
   if not gm_values.leaderboard then return end
-  
+
+  use_font(font or "small")
+
   local leaderboard = {}
   for i, l in pairs(gm_values.leaderboard) do
-    if players[i] then leaderboard[i] = l end 
-  end
-  
-  local sx, sy = screen_size()
-  local size = count(leaderboard)
-  
-  local l_t = " Leaderboard  "
-  local l_w = str_px_width(l_t)
-  
-  local width = str_px_width(get_longest_line(leaderboard))
-  local w = max(str_px_width(l_t), str_px_width("  ") + width) + 6  
-  
-  
-  local y = 8
-  
-  if not leaderboard_is_large then
-    if size > 5 then    
-      size = 5  
-      pprint("\"Tab\" to expand ", sx - str_px_width("\"Tab\" to expand "),  y + (size)*9)    
-    end
-  else  
-    local h = size*9
-    
-    palt(2,true)
-    palt(6,false)    
-    frame(448,  sx - w, y - 4, sx - 1, y + h + 24, true)
-    palt(6,true)  
-    palt(2,false)
-    
-    pprint(l_t, sx - w/2 - l_w/2 , y - 2)
-    
-  end
-  -- if small and player >  5th, will display 3 first, "..." + the player on the 5th line
-  if count(leaderboard) > 0 then
-    for i, l in pairs(leaderboard) do
-      l.name = players[i].name
-    end
-    
-    local tab = get_ordered_tab(gm_values.leaderboard_order or "descending", leaderboard, "score") or {}
-    local my_rank = get_rank(tab, my_id)
-    
-    if leaderboard_is_large or size < 6 then
-    -- if big, will display everything  
-      for i = 1, size do
-        local l = tab[i]    
-        local str = " "..i.."."..(l.name or "").." ("..l.score..") "
-        t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - width/2 , y + (i-1)*8.8 + 9 * (leaderboard_is_large and 1 or -1) ,(i==my_rank) )
-      end
-    else    
-      for i = 1, 3 do
-        local l = tab[i]    
-        local str = i.."."..(l.name or "").." ("..l.score..") "
-        t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
-      end    
-    
-      -- if small and player <= 5th, will display 5 first
-      if my_rank < 6 then     
-        for i = 4, 5 do
-          local l = tab[i]        
-          local str = i.."."..(l.name or "").." ("..l.score..") "
-          t_pprint(str, sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (i-1)*8.8 - 9 ,(i==my_rank) )
-        end
-      else
-        -- 4th
-        t_pprint("...", sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (4-1)*8.8 - 9 ,(i==my_rank) )
-        
-        -- 5th
-        local l = tab[5]        
-        local str = "5".."."..(l.name or "").." ("..l.score..") "
-        t_pprint(str  , sx - (leaderboard_is_large and w or width)/2 - str_px_width(str)/2 , y + (5-1)*8.8 - 9 ,(i==my_rank) )    
-      end
+    local p = players[i]
+    if p then
+      leaderboard[i] = { score = l.score, name = p.name or "" }
     end
   end
-end
+  
+  local tab = get_ordered_tab(gm_values.leaderboard_order or "descending", leaderboard, "score") or {}
 
-function t_pprint(str, x, y, bool) -- will print player's rank in another color if bool is true
-  if bool then 
-    printp_color(12 + flr(t()*2)%2, 11, 6)
-  end  
-  pprint(str, x, y)  
-  printp_color(14, 11, 6)
+  local title = (title or "Leaderboard").." "
+  local spacing = (font and font == "big" and 12) or 9
+  local my_rank = get_rank(tab, my_id) or 0
+  local large = leaderboard_is_large or force_large
+  
+  local w = max(str_px_width(title), str_px_width(get_longest_line(leaderboard))) + 8
+  local h = #tab * spacing + 24
+  
+  x = x - align_x * w
+  y = y - align_y * h
+  
+  printp(0x0300, 0x3130, 0x3230, 0x0300)
+  printp_color(12, 4, 6)
+  
+  if large then
+    palt(2, true) palt(6, false)
+    frame(448, x-2, y-2, x+w+2, y+h+4, true)
+    palt(2, false) palt(6, true)
+    
+    pprint(title, x + (w-str_px_width(title))/2, y+spacing-9)
+    y = y + flr(1.4 * spacing)
+  end
+  
+  for i, l in pairs(tab) do
+    l.str = i..". "..l.name.." ("..l.score..")"
+  end
+  
+  if not large and my_rank > 5 then
+    tab[4].str = "..."
+    tab[5] = tab[my_rank]
+    tab[6] = nil
+  end
+  
+  for i, l in ipairs(tab) do
+    pprint(l.str, x+4, y, (i == my_rank and t()%1 < 0.5) and 14 or 12)
+    y = y + spacing
+  end
+  
+  if not large then
+    local str = '"Tab" to expand'
+    pprint(str, x+w-str_px_width(str), y)
+  end
 end
 
 function get_longest_line(leaderboard)
@@ -109,7 +79,7 @@ function get_longest_line(leaderboard)
       s = p.score
     end
   end
-  return j..". "..n.." ( "..s.." ) "
+  return j..". "..n.." ("..s..") "
 end
 
 function get_ordered_tab(mode, tab, key)

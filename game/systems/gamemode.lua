@@ -25,30 +25,21 @@ function update_gamemode()
       if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
         gamemode[gm_values.gm].update()
       end
---    else
---      t_game_over = t_game_over + dt()
---      if t_game_over > 3 then
---        init_gamemode(gm_values.gm)
---      end
     end
   else -- Client
     if btnp("tab") then 
       leaderboard_is_large = not leaderboard_is_large 
       sfx("tab")
     end   
---    if gm_values.GAME_OVER then
---      if not displayed_g_o then
---        displayed_g_o = true
---        new_log("The game is over !")
---      end
---    end
   end
 end
 
 function draw_gamemode_infos()
 
-  draw_leaderboard()
- 
+  if not gm_values.GAME_OVER then
+    draw_leaderboard(screen_w()-4, 4, 1, 0)
+  end
+  
   use_font("small")
   local str = gm_values.gm and ("Playing "..gamemode[gm_values.gm].name) or ""
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)

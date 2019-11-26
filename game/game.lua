@@ -156,7 +156,9 @@ function _draw()
     draw_title()
   elseif m == "gameover" then
     draw_connected_players()
-    -- draw leaderboard centered
+    
+    local scrw, scrh = screen_size()
+    draw_leaderboard(scrw * 0.5, scrh * 0.3, 0.5, 0.5, "big", true, "Results")
   end
   
   draw_menu()
@@ -435,7 +437,7 @@ do -- ui stuff
   
   function game_over_menu()
     log("Game over!")
-    sfx("cant_shoot")
+    sfx("startplay", nil, nil, 0.9)
     
     connecting = false
     menu("gameover")
