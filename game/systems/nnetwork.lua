@@ -62,43 +62,20 @@ do -- client
       return
     end
   
+    client_sync_map(diff[7])
+    
     if not gm_values.GAME_OVER then
       client_sync_players()
       client_sync_bullets()
-      client_sync_loot()
       client_sync_enemies()
     end
-    client_sync_destructibles()
     
-    client_sync_map(diff[7])
-
-    if diff[9] and gm_values.gm ~= diff[9] then
-      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[diff[9]].name..">")
-      update_menu_entry("gameover", 2, "Mode: <"..gamemode[diff[9]].name..">")
-      
-      new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
-    end
+    client_sync_loot()
+    client_sync_destructibles()
     
     client_sync_gm_values()
     
-    if client.share[11] ~= start_timer then
-      local otimer = start_timer
-      start_timer = client.share[11]
-      if start_timer <= 0 then
-        if connecting then
-          menu()
-        elseif get_menu() == "gameover" then
-          connecting = true
-          menu()
-        else
-          menu()
-          menu("mainmenu_ig")
-        end
-        new_log("The game starts!")
-      elseif flr(otimer) > flr(start_timer) then
-        new_log("Starting in "..ceil(start_timer).."\"", nil, 2)
-      end
-    end
+    client_sync_start_timer()
   end
   
   function client_output()
@@ -113,7 +90,7 @@ do -- client
     
     local my_player = players[client.id] or players[0]
     if my_player then
-      if my_player.dead then
+      if my_player.dead or gm_values.GAME_OVER then
         client.home[2] = nil
         client.home[3] = nil
         client.home[4] = nil
@@ -365,16 +342,20 @@ do -- client
   end
   
   function client_sync_map(diff)
-    if not diff then return end
-    
-    for y, d_line in pairs(diff) do
-      local m_line = map_data[y]
+    if client.share[9] ~= map_index then
+      init_map(client.share[9])
+    else
+      if not diff then return end
       
-      for x, d_v in pairs(d_line) do
-        local m_v = m_line[x]
+      for y, d_line in pairs(diff) do
+        local m_line = map_data[y]
         
-        if d_v ~= m_v then
-          update_map_wall(x, y, d_v == 2, true)
+        for x, d_v in pairs(d_line) do
+          local m_v = m_line[x]
+          
+          if d_v ~= m_v then
+            update_map_wall(x, y, d_v == 2, true)
+          end
         end
       end
     end
@@ -382,7 +363,49 @@ do -- client
   
   function client_sync_gm_values()
     if not client.share[8] then return end
+    
+    local old_gm = gm_values
     gm_values = copy_table(client.share[8])
+    
+    if old_gm.gm ~= gm_values.gm then
+      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
+      update_menu_entry("gameover", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
+      
+      new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
+    end
+    
+    if gm_values.GAME_OVER and not old_gm.GAME_OVER then
+      game_over_menu()
+    end
+  end
+  
+  function client_sync_start_timer(diff)
+    if client.share[11] ~= start_timer then
+      local otimer = start_timer
+      start_timer = client.share[11]
+      if start_timer <= 0 then
+        if connecting then
+          menu()
+        elseif get_menu() == "gameover" then
+          connecting = true
+          menu()
+        else
+          menu()
+          menu("mainmenu_ig")
+        end
+        
+        new_log("The game starts!")
+        
+      elseif flr(otimer) > flr(start_timer) then
+        new_log("Starting in "..ceil(start_timer).."\"", nil, 2)
+      end
+      
+      if start_timer > 0 and start_timer <= 3 then
+        for _, p in pairs(players) do
+          forget_player(p)
+        end
+      end
+    end
   end
   
 end
@@ -460,10 +483,9 @@ do -- server
     server_out_enemies()
     
     server.share[7] = map_data
+    server.share[9] = map_index
     
     server_out_gm_values()
-    
-    server.share[9] = gm_values.gm or 0
     
     server_out_clientdata()
     
@@ -701,7 +723,7 @@ end
     },
     [7] = map_data,
     [8] = gm_values,
-    [9] = current_gamemode,
+    [9] = map_id,
     [10] = { -- clients
       [id] = {
         [1] = username,

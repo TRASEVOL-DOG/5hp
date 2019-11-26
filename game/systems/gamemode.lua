@@ -25,23 +25,23 @@ function update_gamemode()
       if gamemode and gamemode[gm_values.gm] and gamemode[gm_values.gm].update then
         gamemode[gm_values.gm].update()
       end
-    else
-      t_game_over = t_game_over + dt()
-      if t_game_over > 3 then
-        init_gamemode(gm_values.gm)
-      end
+--    else
+--      t_game_over = t_game_over + dt()
+--      if t_game_over > 3 then
+--        init_gamemode(gm_values.gm)
+--      end
     end
   else -- Client
     if btnp("tab") then 
       leaderboard_is_large = not leaderboard_is_large 
       sfx("tab")
     end   
-    if gm_values.GAME_OVER then
-      if not displayed_g_o then
-        displayed_g_o = true
-        new_log("The game is over !")
-      end
-    end
+--    if gm_values.GAME_OVER then
+--      if not displayed_g_o then
+--        displayed_g_o = true
+--        new_log("The game is over !")
+--      end
+--    end
   end
 end
 
@@ -59,7 +59,9 @@ end
 
 function game_over()
   gm_values.GAME_OVER = true
-  t_game_over = 0
+  start_timer = 60
+  
+  --t_game_over = 0
 end
 
 function notify_gamemode_new_p(id_player, score)

@@ -107,8 +107,15 @@ end
 
 
 function init_destructibles(spawns)
+  for _, o in pairs(destructibles) do
+    deregister_object(o)
+  end
+  destructibles = {}
   
-  if destructibles then for i, _ in pairs(destructibles) do destructibles[i] = nil end end
+  if IS_SERVER then
+    server.share[4] = {}
+  end
+
   for _, p in pairs(spawns) do
     if chance(90) then
       create_destructible(nil, p.x+irnd(3)-1, p.y+irnd(3)-2)

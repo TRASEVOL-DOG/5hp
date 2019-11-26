@@ -557,7 +557,7 @@ function forget_player(s)
   
   deregister_object(s)
   
-  if SERVER_ONLY then
+  if IS_SERVER then
     notify_gamemode_deleted_p(s.id or 0)
   end
   

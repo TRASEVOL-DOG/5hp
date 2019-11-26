@@ -11,31 +11,26 @@ for k, d in pairs(weapons) do
 end
 
 local loot_respawns = {}
+local crown_pos
 
 function init_loot(weapon_spawns, heal_spawns, crown)
-  if not IS_SERVER then return end
-  
-  if loots then
-    for i, o in pairs(loots) do
-      deregister_object(o)
-      loots[i] = nil
-    end
+  for i, o in pairs(loots) do
+    deregister_object(o)
+    loots[i] = nil
   end
   
   loots = {}
   loot_respawns = {}
   
   for _, p in pairs(weapon_spawns) do
-    create_loot(nil, 1, p.x, p.y)
+    create_loot(nil, 1, p.x, p.y - 2)
   end
   
   for _, p in pairs(heal_spawns) do
-    create_loot(nil, 2, p.x, p.y)
+    create_loot(nil, 2, p.x, p.y - 2)
   end
   
-  if crown then
-    create_loot(nil, 3, crown.x, crown.y)
-  end
+  crown_pos = crown
 end
 
 function loot_spawner()
@@ -63,6 +58,14 @@ local function respawn_loot(s)
   })
 end
 
+function spawn_crown()
+  if not crown_pos then
+    r_log("Could not spawn crown: no crown position registered for this map.")
+    return
+  end
+  
+  create_loot(nil, 3, crown_pos.x, crown_pos.y - 3)
+end
 
 
 local nextid = 1

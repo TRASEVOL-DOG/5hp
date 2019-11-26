@@ -40,9 +40,11 @@ function _init()
     "water"
   )
   
-  init_map()
-  
-  if not IS_SERVER then
+  if IS_SERVER then
+    init_map()
+    init_gamemode(1)
+  else
+    init_map(0)
     cursor = create_cursor()
     cam = create_camera(0, 0)
     
@@ -53,13 +55,7 @@ function _init()
     end
   end
   
-  init_map()
-  
-  init_gamemode(1)    
-  
   init_anims(get_anims())  
-  
-  init_game()
   
   if not IS_SERVER then
     if castle then
@@ -76,31 +72,8 @@ function _init()
 end
 
 function _update()
-  if IS_SERVER and start_timer > 0 then
-    local n,r = 0,0
-    for _, ho in pairs(server.homes) do
-      n = n + 1
-      if ho[11] then
-        r = r + 1
-      end
-    end
-    
-    if n > 0 and n == r then
-      start_timer = min(start_timer - dt(), 5)
-    elseif r > 0 then
-      start_timer = start_timer - dt()
-    else
-      start_timer = 60
-    end
-    
-    if start_timer <= 0 then
-      log("The game starts now.")
-      for id, ho in pairs(server.homes) do
-        if ho[3] then
-          create_player(id)
-        end
-      end
-    end
+  if start_timer > 0 then
+    update_gameover()
   end
 
   if my_id then
@@ -197,9 +170,43 @@ end
 
 
 
-function init_game()
+function update_gameover()
+  if not IS_SERVER then return end
 
---  cam.follow = create_player(0, 64, 64)
+  local n,r = 0,0
+  for _, ho in pairs(server.homes) do
+    n = n + 1
+    if ho[11] then
+      r = r + 1
+    end
+  end
+  
+  if n > 0 and n == r then
+    start_timer = min(start_timer - dt(), 5)
+  elseif r > 0 then
+    start_timer = start_timer - dt()
+  else
+    start_timer = 60
+  end
+  
+  if start_timer <= 0 then
+    log("The game starts now.")
+    
+    init_gamemode(gm_values.gm)
+    
+    for id, ho in pairs(server.homes) do
+      local p = players[id]
+      if p then
+        forget_player(p)
+      end
+      
+      if ho[11] then
+        create_player(id)
+      end
+    end
+  elseif start_timer <= 3 and start_timer+dt() > 3 then
+    init_map()
+  end
 end
 
 
@@ -207,6 +214,7 @@ do -- ui stuff
   local hp_disp = 0
   function draw_hp_ammo()
     if not my_id or not players[my_id] then return end
+    if gm_values and gm_values.GAME_OVER then return end
     
     palt(1, true)
     palt(6, false)
@@ -290,7 +298,7 @@ do -- ui stuff
   
   function draw_respawn()
     local p = players[my_id]
-    if not (p and p.dead and my_respawn) then
+    if not (p and p.dead and my_respawn) or (gm_values and gm_values.GAME_OVER) then
       return
     end
     
@@ -426,6 +434,9 @@ do -- ui stuff
   end
   
   function game_over_menu()
+    log("Game over!")
+    sfx("cant_shoot")
+    
     connecting = false
     menu("gameover")
   end
