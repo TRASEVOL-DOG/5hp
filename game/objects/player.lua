@@ -163,6 +163,8 @@ function draw_player(s)
     dy = -2
   end
   
+    -- local l = 15 + cos(t())
+  -- circfill (x, y, l)
   -- draw body outline
   spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
   

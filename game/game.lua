@@ -38,6 +38,8 @@ function _init()
     "water"
   )
   
+  init_map()
+  
   if not IS_SERVER then
     cursor = create_cursor()
     cam = create_camera(0, 0)
@@ -47,13 +49,13 @@ function _init()
     else
       select_shader("all")
     end
-  else
-    init_gamemode(1)
-  end  
-  
-  init_anims(get_anims())
+  end
   
   init_map()
+  
+  init_gamemode(1)    
+  
+  init_anims(get_anims())  
   
   init_game()
   
@@ -108,7 +110,6 @@ function _update()
   update_log()
   
   update_network()  
-  -- if IS_SERVER and gm_values and gm_values.crowned_player then log(gm_values and gm_values.crowned_player) end
 end
 
 function _draw()

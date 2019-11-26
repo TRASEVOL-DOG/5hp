@@ -76,6 +76,8 @@ function create_loot(id, type, x, y)
   
   if s.type == 1 then -- weapon
     s.weapon = pick(weapon_list)
+  elseif s.type == 3 then -- weapon
+    crown = {x = x, y = y}
   end
   
   if id then
@@ -185,6 +187,7 @@ loot_effect = {
     if IS_SERVER then
       gm_values.crowned_player = p.id
       gm_values.leaderboard[p.id].time_picked_crown = t()
+      crown = nil
     end
   end
 }

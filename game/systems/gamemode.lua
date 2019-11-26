@@ -8,10 +8,7 @@ leaderboard_is_large = true
 
 function init_gamemode(gm)
   log("Initializing game mode: " .. gamemode[gm].name)
-  
-  -- init_map()
   gm_values = {}
-  displayed_g_o = false
   
   if IS_SERVER then
     if gm < 1 then return end
@@ -56,7 +53,7 @@ function draw_gamemode_infos()
   local str = gm_values.gm and ("Playing "..gamemode[gm_values.gm].name) or ""
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
   
-  if gamemode == 1 then draw_crown_indicator() end
+  if gm_values.gm == 1 then draw_crown_indicator() end
   
 end
 
@@ -95,6 +92,9 @@ do
         gm_values.leaderboard = {}        
         gm_values.leaderboard_order = "ascending"
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end    
+        
+        spawn_crown()
+        
       end,
     
       update = function()
@@ -149,7 +149,12 @@ do
     
       update = function()
         for i, l in pairs(gm_values.leaderboard) do  
+        
+        
           l.score = 5 - flr((t() - l.time_joined)*10)/10
+          
+          
+          
         end
       end,
       
@@ -179,44 +184,46 @@ end
 do -- gamemode ui
   function draw_crown_indicator()
     if my_id then
-      if player_list[my_id] then
+      if players[my_id] then
         local angle = 0
-        local scrnw,scrnh = screen_size()
         local crowned_player = gm_values.crowned_player
-        if crowned_player ~= nil and crowned_player ~= my_id and player_list[crowned_player] then
-          angle = atan2(player_list[my_id].x - player_list[crowned_player].x,
-          player_list[my_id].y - player_list[crowned_player].y)
-          indicate_crown(angle)
-        else
-          local c = crown_looted()
-          if c then
-            angle = atan2(player_list[my_id].x - c.x, player_list[my_id].y - c.y)
-            indicate_crown(angle)
+        apply_camera()
+        if crowned_player then 
+          if crowned_player ~= my_id and players[crowned_player] then -- not the player
+            angle = atan2(players[my_id].x - players[crowned_player].x,
+            players[my_id].y - players[crowned_player].y)
+            indicate_crown(angle)     
+          else
+            palt(6,false)
+            palt(1,true)
+            aspr(233, players[my_id].x - cos(t()), players[my_id].y - 14 + sin(t()), angle, 1, 1)
+            palt(6,true)
+            palt(1,false)
           end
+        elseif crown then -- crown on map
+          angle = atan2(players[my_id].x - crown.x, players[my_id].y - crown.y)
+          indicate_crown(angle)  
         end
+        camera()      
       end
     end
   end
 
   function indicate_crown(angle)
   
-    local player = player_list[my_id]
+    local player = players[my_id]
     if not player then return end
 
     angle = angle + 0.5
-    
-    local l = 12 + cos(t)
-    local x = player.x + player.diff_x + l*cos(angle)
-    local y = player.y + player.diff_y + l*sin(angle)
+    local l = 15 + cos(t())    
+    local x = players[my_id].x + players[my_id].diff_x + l*cos(angle) - 1
+    local y = players[my_id].y + players[my_id].diff_y + l*sin(angle) - 2
 
     palt(6,false)
-    palt(1,true)
-    
-    spr(232, x, y, 1, 1, angle)
-  --  spr(233, x, y-4+cos(t))
-    
+    palt(1,true)    
+    aspr(232, x, y, angle, 1, 1)
     palt(6,true)
     palt(1,false)
   end
-
+  
 end
