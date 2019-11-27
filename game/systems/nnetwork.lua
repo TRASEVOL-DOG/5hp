@@ -280,7 +280,7 @@ do -- client
         s = create_destructible(id, d[1], d[2])
       end
       
-      if s.dead and not d[3] then
+      if s.dead and not d[3] and s.respawn < 9 then
         respawn_destructible(s)
       elseif d[3] and not s.dead then
         kill_destructible(s, d[4])
