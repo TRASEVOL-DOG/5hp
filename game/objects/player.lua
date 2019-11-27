@@ -343,9 +343,9 @@ if ON_MOBILE then
     if p then
       apply_camera()
       
-      local ax = p.x + 8*cos(p.angle),
-      local ay = p.y + 8*sin(p.angle),
-      local bx = p.x + 15*cos(p.angle),
+      local ax = p.x + 8*cos(p.angle)
+      local ay = p.y + 8*sin(p.angle)
+      local bx = p.x + 15*cos(p.angle)
       local by = p.y + 15*sin(p.angle)
       
       line(ax, ay, bx, by, 14)

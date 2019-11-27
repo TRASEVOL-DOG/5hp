@@ -542,10 +542,12 @@ do -- ui stuff
     
     spritesheet("sprites")
     
-    str = "@Trasevol_Dog"
-    pprint(str, scrnw - str_px_width(str) - 4, scrnh-32)
-    str = "@Eliott_MacR"
-    pprint(str, scrnw - str_px_width(str) - 4, scrnh-16)
+    if not ON_MOBILE then
+      str = "@Trasevol_Dog"
+      pprint(str, scrnw - str_px_width(str) - 4, scrnh-32)
+      str = "@Eliott_MacR"
+      pprint(str, scrnw - str_px_width(str) - 4, scrnh-16)
+    end
   end
 
   function draw_connected_players()
