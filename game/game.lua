@@ -169,13 +169,13 @@ function _draw()
     palt(6, false) palt(1, true)
     spr(0x1C9, 4, 48, 2, 2)
     palt(6, true) palt(1, false)
+    
+    if players[my_id] and draw_mobile_controls then
+      draw_mobile_controls()
+    end
   end
   
   draw_menu()
-  
-  if players[my_id] and draw_mobile_controls then
-    draw_mobile_controls()
-  end
   
   cursor:draw()
 end

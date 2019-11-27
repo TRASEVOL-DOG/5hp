@@ -324,7 +324,7 @@ if ON_MOBILE then
     s.shoot_held = d > r*0.75
     
     local w = s.weapon
-    s.shoot_trigger = s.shoot_held and not prev or (t() - (w.t_last_shot or 0) > w.fire_rate * 1.5)
+    s.shoot_trigger = s.shoot_held and not prev or (s.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate * 1.5)
   end
   
   function draw_mobile_controls()
