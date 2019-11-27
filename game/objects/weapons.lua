@@ -34,6 +34,7 @@ do -- Weapons --
   -- Done
   ------------------------------
   -- Gun                = "gun"
+  -- Revolver           = "rev"
   -- Assault rifle      = "ar"
   -- Shotgun            = "shotgun"
   -- Grenade Launcher   = "gl"
@@ -41,9 +42,6 @@ do -- Weapons --
   -- Flamethrower       = "ft"
   -- Bazooka            = "bz"
   -- Burster            = "br"
-
-  -- TODO
-  -- {"Mini Gun"}
 
   -- Gun
   weapons.gun = {
@@ -69,6 +67,36 @@ do -- Weapons --
                         local w = p.weapon
                         w.t_last_shot = t()
                         create_bullet(p.id, nil, w.bullet_type, p.angle )
+                      end
+  }
+  
+  -- Revolver
+  weapons.rev = {
+    get_attributes =  function()
+                        return {
+                          id   = "rev",
+                          name = "Revolver",
+                          bullet_type = 1,
+                          fire_rate   = .3,
+                          ammo        = 60,
+                          arm_sprite  = 0x269,
+                          loot_sprite = 0x249,
+                        }
+                      end
+
+    ,do_shoot =       function(p) -- determine if weapon should shoot this frame
+                        local w = p.weapon
+
+                        if (p.shoot_trigger and w.ammo%6 ~= 0) or ( p.shoot_held and (t() - (w.t_last_shot or 0) > w.fire_rate)) then return true
+                        end
+                      end
+
+    ,shoot  =         function(p)
+                        local w = p.weapon
+                        w.t_last_shot = t() + (w.ammo%6 ~= 0 and 0 or w.fire_rate )
+                        create_bullet(p.id, nil, w.bullet_type, p.angle )
+                        w.ammo = w.ammo - 1
+                        if w.ammo < 1 then p.weapon = create_weapon("gun") end
                       end
   }
 

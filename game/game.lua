@@ -80,15 +80,13 @@ function _update()
   end
   
   wind_maker()
-  update_objects()
   
   if (gm_values.gm or 0) ~= 0 then
-    update_gamemode() 
-  else
-    -- gm_values.init_gm = true
+    update_gamemode()
   end
   
   if not gm_values.GAME_OVER then 
+    update_objects()
   else
     if cursor then cursor:update() end
     for o in group("particles") do
