@@ -169,7 +169,7 @@ function draw_player(s)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x, y-1.5, s.angle, 1, 1, 1/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x-0.5, y-1.5, s.angle, 1, 1, 2/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
@@ -221,6 +221,26 @@ function water_draw_player(s)
   end
   
   palt(1, false)
+end
+
+function draw_player_names()
+  use_font("small")
+  printp(0x1, 0x2, 0x0, 0x0)
+
+  for s in group("player") do
+    if s.dead then
+      printp_color(3, 6, 6)
+    elseif s.id == my_id then
+      printp_color(14, 1, 6)
+    else
+      printp_color(14, 3, 6)
+    end
+    
+    local x = s.x + s.diff_x
+    local y = s.y + s.diff_y
+    local str = s.name
+    pprint(str, x-str_px_width(str)/2, y)
+  end
 end
 
 

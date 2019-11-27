@@ -146,6 +146,7 @@ function _draw()
   apply_camera()
   
   draw_objects(4)
+  draw_player_names()
     
   camera()
   
