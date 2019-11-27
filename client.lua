@@ -60,6 +60,7 @@ assert = oassert
 require("game/systems/nnetwork")
 start_client()
 
+ON_MOBILE = castle and not castle.system.isDesktop()
 require("game/game")
 
 

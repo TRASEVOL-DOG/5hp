@@ -87,8 +87,8 @@ function update_player(s)
 
   -- do input
   
-  if s.id == my_id then
-    if castle and not castle.system.isDesktop() then
+  if s.id == my_id and not get_menu() then
+    if ON_MOBILE then
       get_mobile_controls(s)
     else
       s.dx_input = btnv("right") - btnv("left")
@@ -99,7 +99,6 @@ function update_player(s)
       s.shoot_held    = btn("mouse_lb")
     end
   end
-  
  
   -- do movement
   
@@ -225,20 +224,30 @@ function water_draw_player(s)
 end
 
 
-if castle and not castle.system.isDesktop() then -- mobile_controls
+if ON_MOBILE then
 
   local r, xa, ya, xb, yb
   local xap, yap, xbp, ybp = 0, 0, 0, 0
+  local mobile_control_surf
   
   function get_mobile_controls(s)
     local scrw, scrh = screen_size()
     
+    local oxa, oxb = xa, xb
     local msize = min(scrw, scrh)
     r = msize/6
     xa = msize * 0.2
     ya = scrh - xa
     xb = scrw - xa
     yb = ya
+    
+    if oxa ~= xa or oxb ~= xb then
+      if mobile_control_surf then
+        delete_surface(mobile_control_surf)
+      end
+      
+      mobile_control_surf = new_surface(scrw, scrh)
+    end
     
     
     local touches = love.touch.getTouches()
@@ -250,12 +259,14 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
       x = x / winw * scrw
       y = y / winh * scrh
       
-      if x < scrw/2 then
-        add(xas, x)
-        add(yas, y)
-      else
-        add(xbs, x)
-        add(ybs, y)
+      if y > scrh/2 then
+        if x < scrw/2 then
+          add(xas, x)
+          add(yas, y)
+        else
+          add(xbs, x)
+          add(ybs, y)
+        end
       end
     end
     
@@ -290,7 +301,7 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     
     -- movement input
-    local d = dist(xap, yap)
+    local d = dist(xap, yap) * 1.5
     if d > r then
       xap = xap / d * r
       yap = yap / d * r
@@ -301,7 +312,7 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     
     -- aiming and shooting input
-    local d = dist(xbp, ybp)
+    local d = dist(xbp, ybp) * 1.5
     if d > r then
       xbp = xbp / d * r
       ybp = ybp / d * r
@@ -311,11 +322,16 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     
     local prev = s.shoot_held
     s.shoot_held = d > r*0.75
-    s.shoot_trigger = s.shoot_held and not prev
+    
+    local w = s.weapon
+    s.shoot_trigger = s.shoot_held and not prev or (t() - (w.t_last_shot or 0) > w.fire_rate * 1.5)
   end
   
   function draw_mobile_controls()
     if not r then return end
+    
+    target(mobile_control_surf)
+    cls(0)
     
     circ(xa, ya, r, 14)
     circfill(xa+xap, ya+yap, r/2, 14)
@@ -326,14 +342,34 @@ if castle and not castle.system.isDesktop() then -- mobile_controls
     local p = players[my_id]
     if p then
       apply_camera()
-      line(
-        p.x + 8*cos(p.angle),
-        p.y + 8*sin(p.angle),
-        p.x + 15*cos(p.angle),
-        p.y + 15*sin(p.angle)
-      )
+      
+      local ax = p.x + 8*cos(p.angle),
+      local ay = p.y + 8*sin(p.angle),
+      local bx = p.x + 15*cos(p.angle),
+      local by = p.y + 15*sin(p.angle)
+      
+      line(ax, ay, bx, by, 14)
+      
       camera()
     end
+    
+    target()
+    
+    palt(0, true) palt(6, false)
+    
+    pal(14, 6)
+    spr_sheet(mobile_control_surf, 0, -1)
+    spr_sheet(mobile_control_surf, -1, 0)
+    spr_sheet(mobile_control_surf, 1, 0)
+    spr_sheet(mobile_control_surf, -1, 1)
+    spr_sheet(mobile_control_surf, 1, 1)
+    spr_sheet(mobile_control_surf, 0, 2)
+    pal(14, 4)
+    spr_sheet(mobile_control_surf, 0, 1)
+    pal(14, 14)
+    spr_sheet(mobile_control_surf, 0, 0)
+    
+    palt(0, false) palt(6, true)
   end
 
 end

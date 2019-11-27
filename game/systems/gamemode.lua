@@ -4,7 +4,7 @@ gamemode = {}
 
 gm_values = {}
 
-leaderboard_is_large = true
+leaderboard_is_large = not ON_MOBILE
 
 function init_gamemode(gm)
   log("Initializing game mode: " .. gamemode[gm].name)

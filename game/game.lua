@@ -101,16 +101,23 @@ function _update()
   loot_spawner()
   player_respawner()
   
-  
-  if not IS_SERVER and get_menu() == "mainmenu" or get_menu() == "mainmenu_ig" then
-    if btn("r") then
-      my_name = generate_name()
+  if not IS_SERVER then
+    local m = get_menu()
+    if m == "mainmenu" or m == "mainmenu_ig" then
+      if btn("r") then
+        my_name = generate_name()
+      end
+    elseif not m then
+      local mx, my = btnv("mouse_x"), btnv("mouse_y")
+      if mx > 0 and mx < 24 and my > 44 and my < 68 and btnp("mouse_lb") then
+        menu("settings")
+      end
     end
-  end
-  
-  if not IS_SERVER and btnp("pause") then
-    menu(get_menu() ~= "settings" and "settings")
-    sfx("menu_confirm")
+
+    if btnp("pause") then
+      menu(get_menu() ~= "settings" and "settings")
+      sfx("menu_confirm")
+    end
   end
   
   update_menu()
@@ -158,6 +165,10 @@ function _draw()
     
     local scrw, scrh = screen_size()
     draw_leaderboard(scrw * 0.5, scrh * 0.3, 0.5, 0.5, "big", true, "Results")
+  elseif not m then
+    palt(6, false) palt(1, true)
+    spr(0x1C9, 4, 48, 2, 2)
+    palt(6, true) palt(1, false)
   end
   
   draw_menu()
