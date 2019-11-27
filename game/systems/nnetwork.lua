@@ -418,6 +418,14 @@ do -- client
         for _, p in pairs(players) do
           forget_player(p)
         end
+        
+        init_loot({}, {})
+        init_destructibles({})
+        
+        for _, s in pairs(enemies) do
+          deregister_object(s)
+        end
+        enemies = {}
       end
     end
   end
