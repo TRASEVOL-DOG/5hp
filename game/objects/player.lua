@@ -12,7 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("rev"),
+    weapon = create_weapon("gun"),
     hit_timer = 0,
     angle     = 0,
     
@@ -484,6 +484,8 @@ function update_corpse(s)
   if not IS_SERVER and get_maptile(s.x/8, s.y/8) == 12 and s.animt % 0.03 < dt() then
     create_ripple(s.x, s.y)
   end
+  
+  stay_inside_map(s)
 end
 
 function hit_player(s, b)
