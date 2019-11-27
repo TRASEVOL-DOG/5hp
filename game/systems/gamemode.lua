@@ -10,6 +10,18 @@ function init_gamemode(gm)
   log("Initializing game mode: " .. gamemode[gm].name)
   gm_values = {}
   
+  -- cleanup
+  do
+    -- Keep the Crown
+    for i, o in pairs(loots) do
+      if o.type == 3 then 
+        deregister_object(o) 
+        loots[i] = nil 
+      end
+    end
+    
+  end
+  
   if IS_SERVER then
     if gm < 1 then return end
     gm_values.gm = gm
@@ -35,9 +47,15 @@ function update_gamemode()
 end
 
 function draw_gamemode_infos()
-
+  if not gamemode[gm_values.gm] then return end
+  
   if not gm_values.GAME_OVER then
-    draw_leaderboard(screen_w()-4, 4, 1, 0)
+  
+    if not gamemode[gm_values.gm].special_leaderboard then  
+      draw_leaderboard(screen_w()-4, 4, 1, 0)
+    else
+      if gamemode[gm_values.gm].draw_spl then gamemode[gm_values.gm].draw_spl() end
+    end
   end
   
   use_font("small")
@@ -78,6 +96,14 @@ do
       init = function()
         gm_values.leaderboard = {}        
         gm_values.leaderboard_order = "ascending"
+        
+        for i, o in pairs(loots) do
+          if o.type == 3 then 
+            deregister_object(o)
+            loots[i] = nil
+          end
+        end
+        
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end    
         
         spawn_crown()
@@ -120,6 +146,36 @@ do
       end,
       
     },
+    -- {    
+      -- name = "Big Bad Wolf",
+      
+      -- description = "Nobody likes that wolf.",
+      
+      -- special_leaderboard = true,      
+      
+      -- base_score_wolf = 100,
+      
+      -- init = function()
+      
+      -- end,
+    
+      -- update = function()
+      
+      -- end,
+      
+      -- draw_spl = function ()
+      
+      -- end,
+      
+      -- new_p = function(id_player)
+      
+      -- end,
+      
+      -- deleted_p = function(id_player)
+      
+      -- end,
+      
+    -- },
     {    
       name = "Deathmatch",
       
@@ -129,6 +185,7 @@ do
       
       init = function()
         gm_values.leaderboard = {}  
+        gm_values.leaderboard_order = "ascending"
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end
       end,
     
