@@ -41,7 +41,7 @@ function _init()
   )
   
   if IS_SERVER then
-    init_map()
+    init_map(1)
     init_gamemode(1)
   else
     init_map(0)
@@ -68,7 +68,6 @@ function _init()
     menu("mainmenu")
     --game_over_menu()
   end
-  
 end
 
 function _update()
@@ -404,7 +403,7 @@ do -- ui stuff
       
       mainmenu = {
         { "Ready",     set_ready },
-        { "Vote: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Vote: <choose gamemode>", client_next_gamemode},
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 3, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
         { "Settings",  function() menu("settings") end },
@@ -421,7 +420,7 @@ do -- ui stuff
       
       gameover = {
         { "Continue",  set_ready },
-        { "Vote: <"..gamemode[1].name..">", client_next_gamemode},
+        { "Vote: <choose gamemode>", client_next_gamemode},
         { "Settings",  function() menu("settings") end },
         params = {anc_y = 0.8}
       },

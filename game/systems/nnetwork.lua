@@ -73,9 +73,15 @@ do -- client
     client_sync_loot()
     client_sync_destructibles()
     
-    client_sync_gm_values()
+    if diff[8] or not gm_values.gm then
+      client_sync_gm_values()
+    end
     
     client_sync_start_timer()
+    
+    if diff[10] then
+      client_sync_clientdata()
+    end
   end
   
   function client_output()
@@ -135,10 +141,10 @@ do -- client
   end
   
   function client_next_gamemode()
-    client.home[10] = (gm_values.gm or 0) % #gamemode + 1
+    client.home[10] = (client.home[10] or 0) % #gamemode + 1
     
-    update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[client.home[10]].name..">")
-    update_menu_entry("gameover", 2, "Mode: <"..gamemode[client.home[10]].name..">")
+    update_menu_entry("mainmenu", 2, "Vote: <"..gamemode[client.home[10]].name..">")
+    update_menu_entry("gameover", 2, "Vote: <"..gamemode[client.home[10]].name..">")
   end
   
   
@@ -368,10 +374,17 @@ do -- client
     gm_values = copy_table(client.share[8])
     
     if old_gm.gm ~= gm_values.gm then
-      update_menu_entry("mainmenu", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
-      update_menu_entry("gameover", 2, "Mode: <"..gamemode[gm_values.gm].name..">")
-      
       new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
+      if connecting then
+        new_log(">Ready< was unset.")
+        connecting = false
+        
+        if get_menu() == "mainmenu" then
+          update_menu_entry(m, 1, "Ready")
+        else
+          update_menu_entry(m, 1, "Continue")
+        end
+      end
     end
     
     if gm_values.GAME_OVER and not old_gm.GAME_OVER then
@@ -409,6 +422,27 @@ do -- client
     end
   end
   
+  function client_sync_clientdata()
+    local mode = client.home[10]
+    if not mode then return end
+    
+    local n, k = 0, 0
+    for _, h in pairs(client.share[10]) do
+      local m = h[4]
+      if m then
+        if m == mode then
+          n = n + 1
+        end
+        
+        k = k + 1
+      end
+    end
+    
+    local str = "Vote: <"..gamemode[client.home[10]].name.."> ("..n.."/"..k..")"
+    update_menu_entry("mainmenu", 2, str)
+    update_menu_entry("gameover", 2, str)
+  end
+  
 end
 
 
@@ -435,9 +469,7 @@ do -- server
     local ho = server.homes[id]
     
     if diff[10] then
-      if diff[10] ~= gm_values.gm then
-        init_gamemode(diff[10])
-      end
+      server_gamemode_vote()
     end
     
     if not ho[1] or (not ho[11] and not players[id]) or start_timer > 0 then return end
@@ -509,6 +541,25 @@ do -- server
     end
   end
   
+  
+  function server_gamemode_vote()
+    local votes = {}
+    for _, ho in pairs(server.homes) do
+      local m = ho[10] or -1
+      votes[m] = (votes[m] or 0) + 1
+    end
+    
+    local count, mode = 0, -1
+    for m, n in pairs(votes) do
+      if m ~= -1 and (n > count or (n == count and mode == gm_values.gm)) then
+        count, mode = n, m
+      end
+    end
+    
+    if mode ~= -1 and mode ~= gm_values.gm then
+      init_gamemode(mode)
+    end
+  end
   
  
   function server_out_players()
@@ -627,7 +678,8 @@ do -- server
       data[id] = {
         h[16],
         h[9],
-        h[11]
+        h[11],
+        h[10]
       }
     end
   end
@@ -729,7 +781,8 @@ end
       [id] = {
         [1] = username,
         [2] = name,
-        [3] = ready
+        [3] = ready,
+        [4] = gamemode_vote
       },
       ...
     },

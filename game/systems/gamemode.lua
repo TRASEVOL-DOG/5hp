@@ -50,7 +50,6 @@ function draw_gamemode_infos()
   if not gamemode[gm_values.gm] then return end
   
   if not gm_values.GAME_OVER then
-  
     if not gamemode[gm_values.gm].special_leaderboard then  
       draw_leaderboard(screen_w()-4, 4, 1, 0)
     else

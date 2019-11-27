@@ -55,9 +55,9 @@ function love.keyreleased(key)
 
     love.keyreleased = nil
     require("server")
+    catch_logs(get_logs)
     start_server()
     
-    catch_logs(get_logs)
     love.draw = oldraw
     
     love.graphics.setFont(love.graphics.newFont("sugarcoat/TeapotPro.ttf", 32))
