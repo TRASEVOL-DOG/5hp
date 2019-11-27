@@ -90,7 +90,7 @@ do
       
       description = "Keep your head and the crown on it for long enough.",
       
-      base_score = 5,
+      base_score = 50,
       
       init = function()
         gm_values.leaderboard = {}        
@@ -180,7 +180,7 @@ do
       
       description = "Empty your kill count before others do.",
       
-      max_kills = 30,
+      max_kills = 10,
       
       init = function()
         gm_values.leaderboard = {}  
