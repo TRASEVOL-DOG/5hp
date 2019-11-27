@@ -12,7 +12,7 @@ function create_player(id, x, y)
     w  = 6,
     h  = 7,
     
-    weapon = create_weapon("shotgun"),
+    weapon = create_weapon("gun"),
     hit_timer = 0,
     angle     = 0,
     
@@ -387,6 +387,8 @@ function player_movement(s)
   -- apply new positions
   s.x = nx
   s.y = ny
+  
+  stay_inside_map(s)
 end
 
 function update_corpse(s)

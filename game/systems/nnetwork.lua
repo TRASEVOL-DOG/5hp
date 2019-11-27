@@ -386,6 +386,7 @@ do -- client
       if start_timer <= 0 then
         if connecting then
           menu()
+          connecting = false
         elseif get_menu() == "gameover" then
           connecting = true
           menu()
@@ -439,7 +440,7 @@ do -- server
       end
     end
     
-    if not ho[1] or not ho[11] or start_timer > 0 then return end
+    if not ho[1] or (not ho[11] and not players[id]) or start_timer > 0 then return end
   
     local player = players[id]
     if not player then

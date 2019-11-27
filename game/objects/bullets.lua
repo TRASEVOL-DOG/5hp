@@ -154,9 +154,11 @@ function create_bullet(player_id, id, _type, angle, spd_mult, resistance)
     diff_y = 0
   }
   
-  while check_mapcol(s, s.x, s.y, 2, 2) do
+  local k = 0
+  while check_mapcol(s, s.x, s.y, 2, 2) and k<20 do
     s.x = s.x - co
     s.y = s.y - si
+    k = k+1
   end
   
   if IS_SERVER then

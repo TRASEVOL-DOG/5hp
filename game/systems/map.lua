@@ -103,6 +103,8 @@ function init_map(n)
     init_destructibles({})
     init_loot({}, {})
   end
+  
+  new_log("Map loaded!")
 end
 
 
@@ -215,6 +217,11 @@ function check_mapcol(s, x, y, w, h, water_stop)
   if res[2] ~= 0 then res[2] = sgn(res[2]) end
   
   return b and {dir_x = res[1], dir_y = res[2]}
+end
+
+function stay_inside_map(s)
+  s.x = mid(s.x, 9, map_w*8-9)
+  s.y = mid(s.y, 9, map_h*8-9)
 end
 
 function get_maptile(x,y)

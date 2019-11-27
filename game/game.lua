@@ -98,7 +98,7 @@ function _update()
   end
   
   grow_walls()
-  -- enemy_spawner()
+  enemy_spawner()
   loot_spawner()
   player_respawner()
   
@@ -195,6 +195,11 @@ function update_gameover()
     log("The game starts now.")
     
     init_gamemode(gm_values.gm)
+    
+    for _, s in pairs(enemies) do
+      deregister_object(s)
+    end
+    enemies = {}
     
     for id, ho in pairs(server.homes) do
       local p = players[id]
@@ -440,6 +445,7 @@ do -- ui stuff
     sfx("startplay", nil, nil, 0.9)
     
     connecting = false
+    menu() menu()
     menu("gameover")
   end
   
@@ -539,17 +545,20 @@ do -- ui stuff
   
     local x, y, s = 4, 4, 10
     printp(0x0300, 0x3130, 0x3230, 0x0300)
-    printp_color(14, 11, 6)
+    printp_color(14, 3, 6)
     use_font("small")
     
     pprint("Connected:", x, y)
     y = y + s
     x = x + 4
     
-    for _, d in pairs(client.share[10]) do
-      pprint("- "..(d[2] or "Player").." ("..(d[1] or "user")..") "..(d[3] and "[ready]" or ""), x, y)
+    for id, d in pairs(client.share[10]) do
+      local ready = d[3] and "[ready]" or (players[id] and not gm_values.GAME_OVER) and "[in-game]"
+      pprint("- "..(d[2] or "Player").." ("..(d[1] or "user")..") "..(ready or ""), x, y)
       y = y + s
     end
+    
+    pprint("Your ping: "..client.getPing(), x, y)
   end
 end
 

@@ -154,7 +154,7 @@ function draw_menu()
   local y = cy - p.h/2
   
   printp(0x0300, 0x3130, 0x3230, 0x0300)
-  printp_color(14, 9, 6)
+  printp_color(14, 4, 6)
   use_font("big")
   
   palt(6, false)

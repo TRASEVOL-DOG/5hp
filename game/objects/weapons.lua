@@ -61,7 +61,7 @@ do -- Weapons --
     ,do_shoot =       function(p) -- determine if weapon should shoot this frame
                         local w = p.weapon
 
-                        if p.shoot_held and t() - (w.t_last_shot or 0) > w.fire_rate then return true
+                        if p.shoot_trigger and t() - (w.t_last_shot or 0) > w.fire_rate then return true
                         end
                       end
 

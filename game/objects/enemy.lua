@@ -139,6 +139,8 @@ function update_enemy(s)
     s.vy = -s.vy
   end
   
+  stay_inside_map(s)
+  
   s.diff_x = lerp(s.diff_x, 0, dt())
   s.diff_y = lerp(s.diff_y, 0, dt())
   

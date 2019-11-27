@@ -227,7 +227,7 @@ do -- gamemode ui
           else
             palt(6,false)
             palt(1,true)
-            aspr(233, players[my_id].x - cos(t()), players[my_id].y - 14 + sin(t()), angle, 1, 1)
+            aspr(233, players[my_id].x - 0.5 - cos(t()), players[my_id].y - 14 + sin(t()), angle, 1, 1)
             palt(6,true)
             palt(1,false)
           end

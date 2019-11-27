@@ -30,7 +30,7 @@ function draw_leaderboard(x, y, align_x, align_y, font, force_large, title)
   printp_color(12, 4, 6)
   
   if large then
-    palt(2, true) palt(6, false)
+    palt(2, true) palt(6, false) palt(0, false)
     frame(448, x-2, y-2, x+w+2, y+h+4, true)
     palt(2, false) palt(6, true)
     

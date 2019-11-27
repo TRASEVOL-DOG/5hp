@@ -45,6 +45,8 @@ local function update_time()
     _last_time = new_time
   end
   
+  _delta_time = min(_delta_time, 0.3)
+  
   _frame_time_idx = (_frame_time_idx + 1) % 16
   _frame_time_buffer[_frame_time_idx] = _delta_time
 end
