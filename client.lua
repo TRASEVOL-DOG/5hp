@@ -83,6 +83,8 @@ function client.load()
   _init()
   
   initialized = true
+  
+  on_resize()
 end
 
 function client.update()

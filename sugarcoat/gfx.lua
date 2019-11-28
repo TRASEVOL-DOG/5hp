@@ -825,6 +825,7 @@ local function delete_surface(key)
   local w,h = canvas:getDimensions()
   
   _D.surf_list[key] = nil
+  canvas:release()
   
   sugar.debug.log("Deleted "..w.."x"..h.." surface '"..key.."'.");
 end
