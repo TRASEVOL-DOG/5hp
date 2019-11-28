@@ -159,19 +159,12 @@ local function init_gfx(window_name, w, h, scale)
     return
   end
   
-  -- Love2D rendering settings
-  love.mouse.setVisible(false)
-  love.graphics.setDefaultFilter("nearest","nearest",0)
-  love.graphics.setPointSize(1)
-  love.graphics.setLineWidth(1)
-  love.graphics.setLineStyle("rough")
-  love.graphics.setLineJoin("miter")
-  
   _load_shaders()
   
   _D.surf_list = {}
   _D.font_list = {}
   
+  love.graphics.setDefaultFilter("nearest","nearest",0)
   
   -- window size setting
   local win_w, win_h
@@ -219,7 +212,15 @@ local function init_gfx(window_name, w, h, scale)
   sugar.gfx.use_font()
   sugar.gfx.printp()
   sugar.gfx.printp_color()
-    
+  
+  -- Love2D rendering settings
+  love.mouse.setVisible(false)
+  love.graphics.setDefaultFilter("nearest","nearest",0)
+  love.graphics.setPointSize(1)
+  love.graphics.setLineWidth(1)
+  love.graphics.setLineStyle("rough")
+  love.graphics.setLineJoin("miter")
+  
   _D.init = true;
 
   sugar.gfx.screen_render_stretch(false)
