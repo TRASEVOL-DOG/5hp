@@ -605,7 +605,7 @@ function kill_player(s, killer_id)
   
   if gm_values.gm == 2 and IS_SERVER then
     if killer_id and killer_id ~= s.id then
-      gm_values.leaderboard[killer_id].score = gm_values.leaderboard[killer_id].score - 1
+      gm_values.leaderboard[killer_id].score = gm_values.leaderboard[killer_id].score + 1
     end
   end 
 end

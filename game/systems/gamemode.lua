@@ -145,8 +145,8 @@ do
       
       end,
       
-      new_p = function(id_player)
-        gm_values.leaderboard[id_player or 0] = { score = gamemode[gm_values.gm].base_score , 
+      new_p = function(id_player, score)
+        gm_values.leaderboard[id_player or 0] = { score = score or gamemode[gm_values.gm].base_score , 
                                                   time_picked_crown = nil, 
                                                   last_score = gamemode[gm_values.gm].base_score}
       end,
