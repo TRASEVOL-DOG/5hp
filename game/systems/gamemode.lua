@@ -128,6 +128,8 @@ do
           if l.score <= 0 then 
             l.score = 0 
             game_over()
+          elseif l.score < 8 then 
+            l.score = 8
           end
         end
         
@@ -143,8 +145,8 @@ do
       
       end,
       
-      new_p = function(id_player)
-        gm_values.leaderboard[id_player or 0] = { score = gamemode[gm_values.gm].base_score , 
+      new_p = function(id_player, score)
+        gm_values.leaderboard[id_player or 0] = { score = score or gamemode[gm_values.gm].base_score , 
                                                   time_picked_crown = nil, 
                                                   last_score = gamemode[gm_values.gm].base_score}
       end,
@@ -201,14 +203,13 @@ do
       
       init = function()
         gm_values.leaderboard = {}  
-        gm_values.leaderboard_order = "ascending"
         for i, p in pairs(players) do notify_gamemode_new_p(i, 0) end
       end,
     
       update = function()
         for i, l in pairs(gm_values.leaderboard) do
-          if l.score <= 0 then 
-            l.score = 0 
+          if l.score >= gamemode[gm_values.gm].max_kills then 
+            l.score = gamemode[gm_values.gm].max_kills 
             game_over()
           end
         end
@@ -224,7 +225,7 @@ do
       end,
       
       new_p = function(id_player, score)
-        gm_values.leaderboard[id_player or 0] = {score = score or gamemode[gm_values.gm].max_kills}
+        gm_values.leaderboard[id_player or 0] = {score = score or 0}
       end,
       
       deleted_p = function(id_player)

@@ -107,7 +107,7 @@ do -- Weapons --
                           id   = "ar",
                           name = "Assault Rifle",
                           bullet_type   = 2,
-                          fire_rate     = .1,
+                          fire_rate     = .18,
                           ammo          = 60,
                           rafale_length = 3,
                           arm_sprite    = 0x262,
@@ -118,7 +118,7 @@ do -- Weapons --
     ,do_shoot =       function(p) -- determine if weapon should shoot this frame
                         local w = p.weapon
 
-                        if p.shoot_trigger then
+                        if p.shoot_trigger and t() - (w.t_last_shot or 0) > w.fire_rate then
                           w.rafale_started = true
                           w.rafale_left = w.rafale_length - 1
                           return true

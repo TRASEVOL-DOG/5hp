@@ -223,10 +223,6 @@ do -- client
         take_loot(loots[d[16]], p)
       end
       
-      -- notify_gamemode_new_p(id, p.score)
-      -- gm_values.leaderboard = gm_values.leaderboard or {}      
-      -- gm_values.leaderboard[id] = {name = p.name or "", score = p.score or 0}
-      
     end
   end
 
@@ -372,6 +368,17 @@ do -- client
     
     local old_gm = gm_values
     gm_values = copy_table(client.share[8])
+    
+    if gm_values.gm == 1 then -- Keep the Crown
+      if old_gm.crowned_player ~= gm_values.crowned_player then
+        if old_gm.crowned_player then
+          new_log(players[old_gm.crowned_player].name .. " has lost the crown.")
+        end
+        if gm_values.crowned_player then
+          new_log(players[gm_values.crowned_player].name .. " has picked the crown.")
+        end      
+      end
+    end
     
     if old_gm.gm ~= gm_values.gm then
       new_log("Now playing " .. gamemode[gm_values.gm].name .. "!")
