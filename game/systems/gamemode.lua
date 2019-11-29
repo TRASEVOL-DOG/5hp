@@ -117,7 +117,7 @@ do
       end,
     
       update = function()
-        for i, l in pairs(gm_values.leaderboard) do  
+        for i, l in pairs(gm_values.leaderboard) do
           if gm_values.crowned_player == i then
             local p_since_picked = flr((t() - (l.time_picked_crown))*10)/10
             l.score = (l.last_score or gamemode[gm_values.gm].base_score) - p_since_picked
@@ -258,7 +258,7 @@ do -- gamemode ui
             
             palt(6,false)
             palt(1,true)
-            spr(233, p.x - 0.5 - cos(t()), p.y - 14 + sin(t()))
+            spr(233, p.x - 4.5 - cos(t()), p.y - 18 + sin(t()))
             palt(6,true)
             palt(1,false)
           end
