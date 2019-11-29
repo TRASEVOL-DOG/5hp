@@ -251,20 +251,23 @@ do -- gamemode ui
             if crowned_player ~= my_id then
               local mp = players[my_id]
               if mp then
-                angle = atan2(mp.x - p.x, mp.y - p.y)
+                angle = atan2(mp.x - p.x + p.diff_x, mp.y - p.y + p.diff_x)
                 indicate_crown(angle)
               end
             end
             
             palt(6,false)
             palt(1,true)
-            spr(233, p.x - 4.5 - cos(t()), p.y - 18 + sin(t()))
+            spr(233, p.x + p.diff_x - 4.5 - cos(t()), p.y + p.diff_y - 18 + sin(t()))
             palt(6,true)
             palt(1,false)
           end
         elseif crown then -- crown on map
-          angle = atan2(players[my_id].x - crown.x, players[my_id].y - crown.y)
-          indicate_crown(angle)  
+          local mp = players[my_id]
+          if mp then
+            angle = atan2(mp.x + mp.diff_x - crown.x, mp.y + mp.diff_y - crown.y)
+            indicate_crown(angle)
+          end
         end
         camera()      
       end
