@@ -245,14 +245,19 @@ do -- gamemode ui
         local crowned_player = gm_values.crowned_player
         apply_camera()
         if crowned_player then 
-          if crowned_player ~= my_id and players[crowned_player] then -- not the player
-            angle = atan2(players[my_id].x - players[crowned_player].x,
-            players[my_id].y - players[crowned_player].y)
-            indicate_crown(angle)     
-          else
+          local p = players[crowned_player]
+          if p then
+            if crowned_player ~= my_id then
+              local mp = players[my_id]
+              if mp then
+                angle = atan2(mp.x - p.x, mp.y - p.y)
+                indicate_crown(angle)
+              end
+            end
+            
             palt(6,false)
             palt(1,true)
-            aspr(233, players[my_id].x - 0.5 - cos(t()), players[my_id].y - 14 + sin(t()), angle, 1, 1)
+            spr(233, p.x - 0.5 - cos(t()), p.y - 14 + sin(t()))
             palt(6,true)
             palt(1,false)
           end
