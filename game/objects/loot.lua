@@ -194,6 +194,7 @@ loot_effect = {
     if IS_SERVER then
       gm_values.crowned_player = p.id
       gm_values.leaderboard[p.id].time_picked_crown = t()
+      gm_values.leaderboard[p.id].last_score = gm_values.leaderboard[p.id].score
       crown = nil
     end
   end
