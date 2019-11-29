@@ -153,27 +153,29 @@ function draw_player(s)
     all_colors_to(14)
   end
   
-  local spi, dy
+  local spi, dy, dyy
   if s.dead then
     spi = 142
     dy = -1
+    dyy = 3
   else
     spi = anim_sprite("player", s.state, s.animt)
     dy = -2
+    dyy = 0
   end
   
     -- local l = 15 + cos(t())
   -- circfill (x, y, l)
   -- draw body outline
-  spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
+  spr(spi, x-8, y+dy+dyy-8, 2, 2, s.faceleft)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x-0.5, y-1.5, s.angle, 1, 1, 2/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x-0.5, y+dyy-1.5, s.angle, 1, 1, 2/8, 5/8, 1, sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
-  spr(spi, x-8, y+dy-8, 2, 2, s.faceleft)
+  spr(spi, x-8, y+dyy+dy-8, 2, 2, s.faceleft)
 
   
   if flash then
@@ -195,25 +197,27 @@ function water_draw_player(s)
     all_colors_to(14)
   end
   
-  local spi, dy
+  local spi, dy, dyy
   if s.dead then
     spi = 142
     dy = -1
+    dyy = 4
   else
     spi = anim_sprite("player", s.state, s.animt)
     dy = -2
+    dyy = 2
   end
   
   -- draw body outline
-  spr(spi, x-8, y-dy+1, 2, 2, s.faceleft, true)
+  spr(spi, x-8, y-dy-dyy+1, 2, 2, s.faceleft, true)
   
   -- draw weapon arm
   if s.weapon then
-    aspr(s.weapon.arm_sprite, x, y+6.5, -s.angle, 1, 1, 1/8, 5/8, 1, -sgn((s.angle-0.25)%1-0.5))
+    aspr(s.weapon.arm_sprite, x, y-dyy+6.5, -s.angle, 1, 1, 1/8, 5/8, 1, -sgn((s.angle-0.25)%1-0.5))
   end
   -- draw body
   palt(6, true)
-  spr(spi, x-8, y-dy+1, 2, 2, s.faceleft, true)
+  spr(spi, x-8, y-dy-dyy+1, 2, 2, s.faceleft, true)
 
   
   if flash then
