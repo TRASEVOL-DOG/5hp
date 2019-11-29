@@ -107,7 +107,7 @@ do -- Weapons --
                           id   = "ar",
                           name = "Assault Rifle",
                           bullet_type   = 2,
-                          fire_rate     = .3,
+                          fire_rate     = .18,
                           ammo          = 60,
                           rafale_length = 3,
                           arm_sprite    = 0x262,
@@ -123,7 +123,6 @@ do -- Weapons --
                           w.rafale_left = w.rafale_length - 1
                           return true
                         elseif w.rafale_started then
-                          w.t_last_shot = t() + (w.ammo%6 ~= 0 and 0 or w.fire_rate )
                           if t() - (w.t_last_shot or 0) > w.fire_rate then
                             w.rafale_left = w.rafale_left - 1
                             w.rafale_started = w.rafale_left > 0
