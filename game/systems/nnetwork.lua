@@ -371,7 +371,7 @@ do -- client
     
     if gm_values.gm == 1 then -- Keep the Crown
       if old_gm.crowned_player ~= gm_values.crowned_player then
-        if old_gm.crowned_player then
+        if old_gm.crowned_player and players[old_gm.crowned_player] then
           new_log(players[old_gm.crowned_player].name .. " has lost the crown.")
         end
         if gm_values.crowned_player then

@@ -128,8 +128,12 @@ do
           if l.score <= 0 then 
             l.score = 0 
             game_over()
-          elseif l.score < 8 then 
-            l.score = 8
+          else
+            if i ~= gm_values.crowned_player then
+              if l.score < 8 then 
+                l.score = 8
+              end
+            end
           end
         end
         
