@@ -88,6 +88,7 @@ function _update()
   if not gm_values.GAME_OVER then 
     update_objects()
   else
+    gm_indicator = 0 -- variable counting time desc was on screen
     if cursor then cursor:update() end
     for o in group("particles") do
       o:update()
@@ -421,7 +422,7 @@ do -- ui stuff
       },
       
       mainmenu_ig = {
-        { "Play",      function() menu() connecting = true end },
+        { "Play",      function() menu() connecting = true gm_indicator = 0 end },
         { "Name",      function(str) my_name = str end, "text_field", 12, my_name },
         { "Randomize", function() my_name = generate_name() update_menu_entry("mainmenu", 2, nil, my_name) update_menu_entry("mainmenu_ig", 2, nil, my_name) end },
         { "Settings",  function() menu("settings") end },

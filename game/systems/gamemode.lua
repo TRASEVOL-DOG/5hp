@@ -6,12 +6,15 @@ gm_values = {}
 
 leaderboard_is_large = not ON_MOBILE
 
+TIME_DISPLAY_DESC = 2 -- time description will stay on screen after beginning of game
+gm_indicator = 0 -- variable counting time desc was on screen
+
 function init_gamemode(gm)
   log("Initializing game mode: " .. gamemode[gm].name)
   gm_values = {}
   
   -- cleanup
-  do
+    
     -- Keep the Crown
     for i, o in pairs(loots) do
       if o.type == 3 then 
@@ -19,8 +22,6 @@ function init_gamemode(gm)
         loots[i] = nil 
       end
     end
-    
-  end
   
   if IS_SERVER then
     if gm < 1 then return end
@@ -48,28 +49,34 @@ end
 
 function draw_gamemode_infos()
   if not gamemode[gm_values.gm] then return end
-  
-  if not gm_values.GAME_OVER then
-    if not gamemode[gm_values.gm].special_leaderboard then  
-      draw_leaderboard(screen_w()-4, 4, 1, 0)
-    else
-      if gamemode[gm_values.gm].draw_spl then gamemode[gm_values.gm].draw_spl() end
-    end
+          
+  if start_timer and start_timer <= 0 then
+    if gm_indicator < 4 and players[my_id] then
+      gm_indicator = gm_indicator + dt()
+      print_desc_gm(gamemode[gm_values.gm].description)
+    end                     
   end
   
+  if not gamemode[gm_values.gm].draw_hud then return end
+  gamemode[gm_values.gm].draw_hud()
+end
+
+function print_name_gm(name)
   use_font("small")
-  local str = gm_values.gm and ("Playing "..gamemode[gm_values.gm].name) or ""
+  local str = gm_values.gm and ("Playing " .. name) or ""
   pprint(str, screen_w()/2 - str_px_width(str)/2, 5)
-  
-  if gm_values.gm == 1 then draw_crown_indicator() end
-  
+end
+
+function print_desc_gm(desc)
+  use_font("big")
+  local str = gm_values.gm and (desc) or ""
+  pprint(str, screen_w()/2 - str_px_width(str)/2, screen_h()/4)
 end
 
 function game_over()
   gm_values.GAME_OVER = true
+  gm_indicator = 0
   start_timer = 60
-  
-  --t_game_over = 0
 end
 
 function notify_gamemode_new_p(id_player, score)
@@ -83,12 +90,12 @@ function notify_gamemode_deleted_p(id_player)
 end
 
 do
-
+  
   gamemode = {
     {    
       name = "Keep the Crown",
       
-      description = "Keep your head and the crown on it for long enough.",
+      description = "Keep your head and the crown on it for 50 seconds.",
       
       base_score = 50,
       
@@ -124,6 +131,16 @@ do
           end
         end
         
+      end,
+      
+      draw_hud = function ()
+      
+        if not gm_values.GAME_OVER then
+          draw_leaderboard(screen_w()-4, 4, 1, 0)          
+          print_name_gm(gamemode[gm_values.gm].name)
+          draw_crown_indicator()
+        end
+      
       end,
       
       new_p = function(id_player)
@@ -162,7 +179,7 @@ do
       
       -- end,
       
-      -- draw_spl = function ()
+      -- draw_hud = function ()
       
       -- end,
       
@@ -178,7 +195,7 @@ do
     {    
       name = "Deathmatch",
       
-      description = "Empty your kill count before others do.",
+      description = "Kill 10 people. Others won't make it easy.",
       
       max_kills = 10,
       
@@ -195,6 +212,15 @@ do
             game_over()
           end
         end
+      end,
+      
+      draw_hud = function ()
+      
+        if not gm_values.GAME_OVER then
+          draw_leaderboard(screen_w()-4, 4, 1, 0)
+          print_name_gm(gamemode[gm_values.gm].name)
+        end
+      
       end,
       
       new_p = function(id_player, score)
