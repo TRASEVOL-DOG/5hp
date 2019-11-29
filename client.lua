@@ -83,6 +83,8 @@ function client.load()
   _init()
   
   initialized = true
+  
+  on_resize()
 end
 
 function client.update()
@@ -149,6 +151,7 @@ function define_controls()
   register_btn("left", 0,  {
     input_id("keyboard", "left"),
     input_id("keyboard", "a"),
+    input_id("keyboard", "q"),
     input_id("controller_button", "dpleft")
   })
 
@@ -161,6 +164,7 @@ function define_controls()
   register_btn("up", 0,    {
     input_id("keyboard", "up"),
     input_id("keyboard", "w"),
+    input_id("keyboard", "z"),
     input_id("controller_button", "dpup")
   })
 
