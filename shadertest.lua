@@ -19,3 +19,5 @@
   else
     print("Could not validate shader: "..message)
   end
+  
+  print("All done!")
